@@ -1,29 +1,30 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --primary: #1173d4;
-  --background-light: #f6f7f8;
-  --background-dark: #101922;
-}
+@variant dark (&:is(.dark *));
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-primary: var(--primary);
-  --color-background-light: var(--background-light);
-  --color-background-dark: var(--background-dark);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-primary: #1173d4;
+  --color-background-light: #f6f7f8;
+  --color-background-dark: #101922;
 }
 
-/* Dark scheme variables are intentionally disabled to keep a light-only theme. */
+/* Instant theme changes - no transitions for CSS variables */
+html {
+  transition: none !important;
+}
 
 body {
-  background: var(--background);
-  color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Smooth transitions for other elements but exclude theme-related properties */
+* {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+/* Disable transitions for elements using CSS variables during theme changes */
+.theme-transitioning * {
+  transition: none !important;
 }
 
 @keyframes scroll-testimonials {

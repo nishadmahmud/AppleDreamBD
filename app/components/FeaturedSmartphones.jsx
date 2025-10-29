@@ -3,8 +3,8 @@ export default function FeaturedSmartphones() {
     <section className="px-4 sm:px-8 lg:px-10 py-10">
       <div className="flex flex-col w-full">
         <div className="text-center mb-10">
-          <h2 className="text-gray-900  text-3xl font-bold leading-tight tracking-[-0.015em]">Featured Smartphones</h2>
-          <p className="text-gray-600 mt-2">The best of the best, from the brands you love.</p>
+          <h2 className="text-gray-900 dark:text-white text-3xl font-bold leading-tight tracking-[-0.015em] transition-colors duration-300">Featured Smartphones</h2>
+          <p className="text-gray-600 dark:text-gray-400 mt-2 transition-colors duration-300">The best of the best, from the brands you love.</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="relative group overflow-hidden rounded-xl">

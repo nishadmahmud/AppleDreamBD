@@ -2,8 +2,8 @@ export default function DiscoverMore() {
   return (
     <section className="px-4 sm:px-8 lg:px-10 py-16">
       <div className="text-center mb-10">
-        <h2 className="text-gray-900  text-3xl font-bold leading-tight tracking-[-0.015em]">Discover More</h2>
-        <p className="text-gray-600 mt-2">Explore our wide range of tech categories.</p>
+        <h2 className="text-gray-900 dark:text-white text-3xl font-bold leading-tight tracking-[-0.015em] transition-colors duration-300">Discover More</h2>
+        <p className="text-gray-600 dark:text-gray-400 mt-2 transition-colors duration-300">Explore our wide range of tech categories.</p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="relative group overflow-hidden rounded-xl aspect-video md:aspect-auto">

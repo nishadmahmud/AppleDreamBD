@@ -2,8 +2,8 @@ export default function TopAccessories() {
   return (
     <section className="px-4 sm:px-8 lg:px-10 py-10">
       <div className="text-center mb-10">
-        <h2 className="text-gray-900  text-3xl font-bold leading-tight tracking-[-0.015em]">Top Accessories</h2>
-        <p className="text-gray-600 mt-2">Elevate your experience with essential add-ons.</p>
+        <h2 className="text-gray-900 dark:text-white text-3xl font-bold leading-tight tracking-[-0.015em] transition-colors duration-300">Top Accessories</h2>
+        <p className="text-gray-600 dark:text-gray-400 mt-2 transition-colors duration-300">Elevate your experience with essential add-ons.</p>
       </div>
       <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-6">
         {[{
@@ -16,12 +16,12 @@ export default function TopAccessories() {
           title: 'Spigen Tough Armor Case', price: '$35.00', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAtzw44DcUTgDKrS1TykHUoM6kcO-lW4nLELKXteN6YjvqWr_6z5i6wYFBELc8y-im6xwpf-RzLTTymRvqxUwL3SV_x_rlRaoh3iyu3jg4gLK9HvnL0Xy2c8_punkuKTH-k1QyQd6aiOZyh3IkcPjJL17BTVsKTl3_jeXo8CfFwK6rwugx6jVK-29DPSfKNpIQ_WJFhBd-aIDIZn24Rb-XFgKVhxW0Fu7DQlFHMMb3VZhlZYgObeH0AgfwzPzgl-Q0ckcAsrHjbjGjJ'
         }].map((p) => (
           <div key={p.title} className="flex flex-col gap-3 pb-3 group text-center">
-            <div className="w-full bg-gray-100 rounded-lg overflow-hidden">
+            <div className="w-full bg-gray-100 dark:bg-background-dark/50 rounded-lg overflow-hidden transition-colors duration-300">
               <img alt={p.title} src={p.img} className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300 aspect-square" />
             </div>
             <div>
-              <p className="text-base font-medium leading-normal text-gray-900">{p.title}</p>
-              <p className="text-sm font-normal leading-normal text-gray-600">{p.price}</p>
+              <p className="text-base font-medium leading-normal text-gray-900 dark:text-white transition-colors duration-300">{p.title}</p>
+              <p className="text-sm font-normal leading-normal text-gray-600 dark:text-gray-400 transition-colors duration-300">{p.price}</p>
               <a href="#" className="text-sm font-bold leading-normal text-primary hover:underline">Add to Cart</a>
             </div>
           </div>

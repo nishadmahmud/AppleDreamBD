@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import { Space_Grotesk } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from './context/ThemeContext';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,16 +25,35 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className="light">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  const theme = localStorage.getItem('theme') || 'light';
+                  console.log('Initial theme from localStorage:', theme);
+                  document.documentElement.classList.remove('light', 'dark');
+                  document.documentElement.classList.add(theme);
+                  console.log('HTML classes after init:', document.documentElement.classList.toString());
+                } catch (e) {
+                  console.error('Theme init error:', e);
+                }
+              })();
+            `,
+          }}
+        />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} antialiased bg-background-light text-gray-800`}
+        className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} antialiased bg-background-light dark:bg-background-dark text-gray-800 dark:text-gray-200 transition-colors duration-300`}
       >
-        {children}
+        <ThemeProvider>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
