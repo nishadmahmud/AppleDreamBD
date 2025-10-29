@@ -1,0 +1,44 @@
+export default function Testimonials() {
+  const testimonials = [{
+    quote: '"Absolutely thrilled with my new iPhone. The delivery was incredibly fast and the customer service was top-notch. Will definitely shop here again!"', author: 'Sarah L.'
+  },{
+    quote: '"Apple Dream BD is my go-to for all things tech. Their prices are competitive and the product selection is fantastic. My Galaxy S24 arrived in perfect condition."', author: 'Michael B.'
+  },{
+    quote: '"The website is so easy to navigate. Found the accessories I needed for my MacBook in seconds. A seamless shopping experience from start to finish."', author: 'Jessica P.'
+  },{
+    quote: '"Great selection of products and the checkout process was smooth. My only wish is for more color options on some items. Overall, a great experience."', author: 'Emily R.'
+  }];
+
+  // Duplicate testimonials for seamless loop
+  const duplicatedTestimonials = [...testimonials, ...testimonials];
+
+  return (
+    <section className="bg-gray-100 py-16 overflow-hidden">
+      <div className="px-4 sm:px-8 lg:px-10">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-gray-900">What Our Customers Say</h2>
+          <p className="text-gray-600 mt-2">Real feedback from our happy customers.</p>
+        </div>
+        <div className="relative overflow-hidden">
+          <div className="flex gap-8 animate-scroll-testimonials" style={{ width: 'max-content' }}>
+            {duplicatedTestimonials.map((t, index) => (
+              <div key={`${t.author}-${index}`} className="bg-background-light rounded-xl p-6 shadow-sm w-full max-w-sm shrink-0">
+                <div className="flex items-center mb-4 text-yellow-400">
+                  <span className="material-symbols-outlined text-xl">star</span>
+                  <span className="material-symbols-outlined text-xl">star</span>
+                  <span className="material-symbols-outlined text-xl">star</span>
+                  <span className="material-symbols-outlined text-xl">star</span>
+                  <span className="material-symbols-outlined text-xl">star</span>
+                </div>
+                <blockquote className="text-gray-600 italic mb-4">{t.quote}</blockquote>
+                <cite className="font-bold text-gray-900 not-italic">- {t.author}</cite>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+
