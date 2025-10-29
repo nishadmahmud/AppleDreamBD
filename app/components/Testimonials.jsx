@@ -1,3 +1,7 @@
+"use client";
+import { useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 export default function Testimonials() {
   const testimonials = [
     {
@@ -24,8 +28,21 @@ export default function Testimonials() {
 
   const duplicatedTestimonials = [...testimonials, ...testimonials];
 
+  const sectionRef = useRef(null);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    gsap.registerPlugin(ScrollTrigger);
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReduced) return;
+    gsap.from(sectionRef.current, {
+      opacity: 0,
+      duration: 0.6,
+      ease: "power2.out",
+      scrollTrigger: { trigger: sectionRef.current, start: "top 80%" },
+    });
+  }, []);
   return (
-    <section className="bg-gray-100 dark:bg-background-dark/50 py-16 overflow-hidden transition-colors duration-300">
+    <section ref={sectionRef} className="bg-gray-50 dark:bg-background-dark py-16 overflow-hidden transition-colors duration-300">
       <div className="px-4 sm:px-8 lg:px-10">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white transition-colors duration-300">
@@ -43,7 +60,7 @@ export default function Testimonials() {
             {duplicatedTestimonials.map((t, index) => (
               <div
                 key={`${t.author}-${index}`}
-                className="bg-background-light dark:bg-background-dark rounded-xl p-6 shadow-sm w-full max-w-sm shrink-0 transition-colors duration-300"
+                className="bg-gray-50 dark:bg-background-dark/60 border border-gray-200 dark:border-gray-800 rounded-[var(--radius-xl)] p-6 shadow-[var(--shadow-soft)] w-full max-w-sm shrink-0 transition-colors duration-300"
               >
                 <div className="flex items-center mb-4 text-yellow-400">
                   <span className="material-symbols-outlined text-xl">

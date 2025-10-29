@@ -1,46 +1,178 @@
+"use client";
 import Image from "next/image";
-export default function DiscoverMore() {
+import { useEffect, useRef, useState } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { motion } from "framer-motion";
+import { ArrowRight, Play } from "lucide-react";
+
+function CategoryTile({ title, description, img, delay = 0 }) {
+  const [isHovered, setIsHovered] = useState(false);
+  const imgRef = useRef(null);
+
+  useEffect(() => {
+    if (!imgRef.current) return;
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReduced) return;
+
+    if (isHovered) {
+      gsap.to(imgRef.current, {
+        scale: 1.15,
+        duration: 0.6,
+        ease: "power2.out",
+      });
+    } else {
+      gsap.to(imgRef.current, {
+        scale: 1,
+        duration: 0.4,
+        ease: "power2.out",
+      });
+    }
+  }, [isHovered]);
+
   return (
-    <section className="px-4 sm:px-8 lg:px-10 py-16">
-      <div className="text-center mb-10">
-        <h2 className="text-gray-900 dark:text-white text-3xl font-bold leading-tight tracking-[-0.015em] transition-colors duration-300">
+    <motion.div
+      data-tile
+      className="relative group overflow-hidden rounded-[var(--radius-xl)] aspect-video md:aspect-auto md:min-h-[400px] shadow-[var(--shadow-soft)] cursor-pointer"
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      whileHover={{ y: -8 }}
+    >
+      <Image
+        ref={imgRef}
+        unoptimized
+        className="w-full h-full object-cover"
+        alt={title}
+        src={img}
+        width={1000}
+        height={1000}
+      />
+      
+      {/* Gradient overlays */}
+      <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/40 to-transparent" />
+      <motion.div
+        className="absolute inset-0 bg-gradient-to-br from-primary/40 to-transparent"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isHovered ? 1 : 0 }}
+        transition={{ duration: 0.3 }}
+      />
+
+      {/* Content */}
+      <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-8">
+        <motion.div
+          initial={{ y: 0 }}
+          animate={{ y: isHovered ? -10 : 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <h3 className="text-3xl md:text-4xl font-black text-white mb-2 drop-shadow-lg">
+            {title}
+          </h3>
+          <motion.p
+            className="text-gray-100 mb-4 text-base leading-relaxed"
+            initial={{ opacity: 0.7 }}
+            animate={{ opacity: isHovered ? 1 : 0.7 }}
+          >
+            {description}
+          </motion.p>
+          
+          <motion.button
+            className="inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 backdrop-blur text-white px-5 py-2.5 rounded-lg font-semibold transition-colors"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{
+              opacity: isHovered ? 1 : 0,
+              x: isHovered ? 0 : -20,
+            }}
+            transition={{ duration: 0.3 }}
+            whileHover={{ scale: 1.05, x: 5 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <span>Explore</span>
+            <ArrowRight className="h-4 w-4" />
+          </motion.button>
+        </motion.div>
+      </div>
+
+      {/* Video play icon */}
+      <motion.div
+        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+        initial={{ opacity: 0, scale: 0.5 }}
+        animate={{
+          opacity: isHovered ? 1 : 0,
+          scale: isHovered ? 1 : 0.5,
+        }}
+        transition={{ duration: 0.3 }}
+      >
+        <motion.div
+          className="flex items-center justify-center w-16 h-16 bg-white/30 backdrop-blur rounded-full border-2 border-white/50"
+          whileHover={{ scale: 1.2 }}
+          animate={{
+            boxShadow: isHovered
+              ? [
+                  "0 0 0 0 rgba(255,255,255,0.7)",
+                  "0 0 0 20px rgba(255,255,255,0)",
+                ]
+              : "0 0 0 0 rgba(255,255,255,0)",
+          }}
+          transition={{ duration: 1.5, repeat: isHovered ? Infinity : 0 }}
+        >
+          <Play className="h-6 w-6 text-white fill-white ml-1" />
+        </motion.div>
+      </motion.div>
+
+      {/* Corner accent */}
+      <motion.div
+        className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/50 to-transparent"
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{
+          opacity: isHovered ? 1 : 0,
+          scale: isHovered ? 1 : 0,
+        }}
+        transition={{ duration: 0.4 }}
+        style={{ transformOrigin: "top right" }}
+      />
+    </motion.div>
+  );
+}
+
+export default function DiscoverMore() {
+  const sectionRef = useRef(null);
+
+  return (
+    <section
+      ref={sectionRef}
+      className="px-4 sm:px-8 lg:px-10 py-20 bg-background-light dark:bg-background-dark transition-colors duration-300"
+    >
+      <motion.div
+        className="text-center mb-12"
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+      >
+        <h2 className="text-gray-900 dark:text-white text-4xl font-bold mb-3">
           Discover More
         </h2>
-        <p className="text-gray-600 dark:text-gray-400 mt-2 transition-colors duration-300">
+        <p className="text-gray-600 dark:text-gray-400 text-lg">
           Explore our wide range of tech categories.
         </p>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="relative group overflow-hidden rounded-xl aspect-video md:aspect-auto">
-          <Image
-            unoptimized
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            alt="Collection of smartwatches"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAKs2p5lAueI9D6z-R03SLMiq8mm-cFbeXuDn94oF9XILmDiSgBqAEvSf0e62eZ7KBXvx2-5zsrlLWAER4ObLxsl27sAcc5I298LeArKf4yTJ2lPqeGWqiqsL3s93kzolOv55ax3uGGj5cK95jQ2a3WGhrnnz4IeYogHguRw3AH1zHG4DVyN1lvfesOLbsrG5BL5L5Mr0l9bBEUobJ3ilkiPQgz3t__SltvCfcb285cg_LKtE3udAuJREXwnC0xA_ceE0GILxqtsTr2"
-            width={1000}
-            height={1000}
-          />
-          <div className="absolute inset-0 bg-black/40"></div>
-          <div className="absolute inset-0 flex items-center justify-center text-white">
-            <h3 className="text-3xl font-bold">Smartwatches</h3>
-          </div>
-          <a className="absolute inset-0" href="#"></a>
-        </div>
-        <div className="relative group overflow-hidden rounded-xl aspect-video md:aspect-auto">
-          <Image
-            unoptimized
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            alt="Premium headphones on a dark background"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLVn_xtiNefXKWcoe6NgI2B8GXNmcVsIwgU-BvywRIQ5WN4YxGnKNnkO5lcjMBw_hZdGjy_Aj6WyuVQ7ZiLO26jWsk2nfauTzZweVtI1EK0vn5cQdyc6dtqlGNM2DPFgmtHblRY5bV4y2T20w9u8DhK8kM4wXaXE8nz3nsZ77u4TqUrS7qfpAe-u3P881tlUQQkjx1MgQCW3esM3E1fepY5cvWAN-uDw6IVC7jSqMPlrPW9J1yb7ljBWvFy_RK3W0Qu6Np-dombikF"
-            width={1000}
-            height={1000}
-          />
-          <div className="absolute inset-0 bg-black/40"></div>
-          <div className="absolute inset-0 flex items-center justify-center text-white">
-            <h3 className="text-3xl font-bold">Headphones</h3>
-          </div>
-          <a className="absolute inset-0" href="#"></a>
-        </div>
+      </motion.div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <CategoryTile
+          title="Smartwatches"
+          description="Track your fitness and stay connected with the latest smartwatch technology."
+          img="https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=800&q=80"
+          delay={0}
+        />
+        <CategoryTile
+          title="Headphones"
+          description="Immerse yourself in crystal-clear sound with premium audio gear."
+          img="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80"
+          delay={0.2}
+        />
       </div>
     </section>
   );

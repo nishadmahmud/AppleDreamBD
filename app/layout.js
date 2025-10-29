@@ -33,10 +33,7 @@ export default function RootLayout({ children }) {
           href="https://fonts.gstatic.com"
           crossOrigin=""
         />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined&display=optional"
-          rel="stylesheet"
-        />
+        {/* Material Symbols no longer needed; using lucide-react */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
