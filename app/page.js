@@ -1,7 +1,10 @@
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import FeaturedSmartphones from "./components/FeaturedSmartphones";
+import BestSellers from "./components/BestSellers";
+import BestDeals from "./components/BestDeals";
 import DealOfDay from "./components/DealOfDay";
+import NewArrivals from "./components/NewArrivals";
 import TopAccessories from "./components/TopAccessories";
 import DiscoverMore from "./components/DiscoverMore";
 import Testimonials from "./components/Testimonials";
@@ -15,7 +18,10 @@ export default function Home() {
         <main className="flex-1 bg-background-light dark:bg-background-dark transition-colors duration-300">
           <Hero />
           <FeaturedSmartphones />
+          <BestSellers />
+          <BestDeals />
           <DealOfDay />
+          <NewArrivals />
           <TopAccessories />
           <DiscoverMore />
           <Testimonials />
