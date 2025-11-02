@@ -1,5 +1,6 @@
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
+import Categories from "./components/Categories";
 import FeaturedSmartphones from "./components/FeaturedSmartphones";
 import BestSellers from "./components/BestSellers";
 import BestDeals from "./components/BestDeals";
@@ -17,6 +18,7 @@ export default function Home() {
         <Navbar />
         <main className="flex-1 bg-background-light dark:bg-background-dark transition-colors duration-300">
           <Hero />
+          <Categories />
           <FeaturedSmartphones />
           <BestSellers />
           <BestDeals />

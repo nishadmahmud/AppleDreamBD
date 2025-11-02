@@ -71,7 +71,7 @@ const ProductCard = ({ product, index }) => {
   return (
     <motion.div
       ref={cardRef}
-      className="relative group bg-white dark:bg-gray-900/50 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300"
+      className="relative group bg-white dark:bg-gray-900/50 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300 flex flex-col"
       style={{
         transformStyle: "preserve-3d",
         rotateX,
@@ -126,82 +126,65 @@ const ProductCard = ({ product, index }) => {
       </div>
 
       {/* Product Info */}
-      <div className="p-4 space-y-3">
-        {/* Brand */}
-        {product.brands && (
-          <div className="flex items-center gap-2">
-            {product.brands.image_path && (
-              <div className="relative w-6 h-6">
-                <Image
-                  src={product.brands.image_path}
-                  alt={product.brands.name}
-                  fill
-                  className="object-contain"
-                />
-              </div>
-            )}
-            <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-              {product.brands.name}
+      <div className="p-4 flex flex-col">
+        <div className="space-y-2">
+          {/* Product Name */}
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white line-clamp-2 min-h-[2.5rem]">
+            {product.name}
+          </h3>
+
+          {/* Rating */}
+          <div className="flex items-center gap-1">
+            {[...Array(5)].map((_, i) => (
+              <Star
+                key={i}
+                className={`h-3 w-3 ${
+                  i < 4
+                    ? "fill-yellow-400 text-yellow-400"
+                    : "fill-gray-300 text-gray-300 dark:fill-gray-600 dark:text-gray-600"
+                }`}
+              />
+            ))}
+            <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">
+              4.5
             </span>
           </div>
-        )}
 
-        {/* Product Name */}
-        <h3 className="text-sm font-semibold text-gray-900 dark:text-white line-clamp-2 min-h-[2.5rem]">
-          {product.name}
-        </h3>
+          {/* Sales Count */}
+          <div className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400">
+            <TrendingUp className="h-3 w-3" />
+            <span>{product.total_sales_qty} sold</span>
+          </div>
 
-        {/* Rating */}
-        <div className="flex items-center gap-1">
-          {[...Array(5)].map((_, i) => (
-            <Star
-              key={i}
-              className={`h-3 w-3 ${
-                i < 4
-                  ? "fill-yellow-400 text-yellow-400"
-                  : "fill-gray-300 text-gray-300 dark:fill-gray-600 dark:text-gray-600"
-              }`}
-            />
-          ))}
-          <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">
-            4.5
-          </span>
+          {/* Price */}
+          <div className="flex items-baseline gap-2">
+            <span className="text-2xl font-bold text-primary">
+              ৳{product.retails_price.toLocaleString()}
+            </span>
+            {product.discount > 0 && (
+              <>
+                <span className="text-sm text-gray-400 line-through">
+                  ৳
+                  {(
+                    product.retails_price +
+                    (product.discount_type === "percentage"
+                      ? (product.retails_price * product.discount) / 100
+                      : product.discount)
+                  ).toLocaleString()}
+                </span>
+                <span className="text-xs font-bold text-red-500 bg-red-100 dark:bg-red-900/30 px-2 py-1 rounded">
+                  {product.discount_type === "percentage"
+                    ? `-${product.discount}%`
+                    : `-৳${product.discount}`}
+                </span>
+              </>
+            )}
+          </div>
         </div>
 
-        {/* Sales Count */}
-        <div className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400">
-          <TrendingUp className="h-3 w-3" />
-          <span>{product.total_sales_qty} sold</span>
-        </div>
-
-        {/* Price */}
-        <div className="flex items-baseline gap-2">
-          <span className="text-2xl font-bold text-primary">
-            ৳{product.retails_price.toLocaleString()}
-          </span>
-          {product.discount > 0 && (
-            <>
-              <span className="text-sm text-gray-400 line-through">
-                ৳
-                {(
-                  product.retails_price +
-                  (product.discount_type === "percentage"
-                    ? (product.retails_price * product.discount) / 100
-                    : product.discount)
-                ).toLocaleString()}
-              </span>
-              <span className="text-xs font-bold text-red-500 bg-red-100 dark:bg-red-900/30 px-2 py-1 rounded">
-                {product.discount_type === "percentage"
-                  ? `-${product.discount}%`
-                  : `-৳${product.discount}`}
-              </span>
-            </>
-          )}
-        </div>
-
-        {/* Add to Cart Button */}
+        {/* Add to Cart Button - Always at bottom */}
         <motion.button
-          className={`w-full py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all ${
+          className={`w-full py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all mt-3 ${
             isInStock
               ? addedToCart
                 ? "bg-green-500 text-white"
