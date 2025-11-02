@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { ShoppingCart, Heart, Zap, Tag, Clock } from "lucide-react";
 import gsap from "gsap";
@@ -107,6 +108,8 @@ const DealCard = ({ product, index }) => {
       whileHover={{ scale: 1.02 }}
       transition={{ duration: 0.3 }}
     >
+      {/* Clickable overlay for product link */}
+      <Link href={`/product/${product.id}`} className="absolute inset-0 z-0" />
       {/* Discount Badge - Top Left */}
       <motion.div
         className="absolute top-3 left-3 z-20 bg-gradient-to-br from-blue-500 to-primary text-white px-3 py-2 rounded-xl shadow-lg"
@@ -133,7 +136,11 @@ const DealCard = ({ product, index }) => {
       {/* Like Button */}
       <motion.button
         className="absolute top-14 right-3 z-20 p-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur rounded-full shadow-md"
-        onClick={() => setIsLiked(!isLiked)}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setIsLiked(!isLiked);
+        }}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
       >
@@ -249,14 +256,18 @@ const DealCard = ({ product, index }) => {
 
         {/* Add to Cart Button */}
         <motion.button
-          className={`w-full py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${
+          className={`w-full py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all relative z-10 ${
             isInStock
               ? addedToCart
                 ? "bg-green-500 text-white"
                 : "bg-gradient-to-r from-blue-500 to-primary text-white hover:from-blue-600 hover:to-primary/90"
               : "bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
           }`}
-          onClick={handleAddToCart}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleAddToCart();
+          }}
           disabled={!isInStock || addedToCart}
           whileHover={isInStock ? { scale: 1.02, boxShadow: "0 10px 30px rgba(59, 130, 246, 0.3)" } : {}}
           whileTap={isInStock ? { scale: 0.98 } : {}}

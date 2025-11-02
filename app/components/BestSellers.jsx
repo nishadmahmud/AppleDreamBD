@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { ShoppingCart, Heart, TrendingUp, Star } from "lucide-react";
 import gsap from "gsap";
@@ -11,6 +12,7 @@ import { fetchBestSellers } from "../../lib/api";
 gsap.registerPlugin(ScrollTrigger);
 
 const ProductCard = ({ product, index }) => {
+  const router = useRouter();
   const [isLiked, setIsLiked] = useState(false);
   const [addedToCart, setAddedToCart] = useState(false);
   const cardRef = useRef(null);
@@ -68,10 +70,17 @@ const ProductCard = ({ product, index }) => {
 
   const isInStock = product.status === "In stock" || product.current_stock > 0;
 
+  const handleCardClick = (e) => {
+    // Only navigate if not clicking on a button
+    if (!e.target.closest('button')) {
+      router.push(`/product/${product.id}`);
+    }
+  };
+
   return (
     <motion.div
       ref={cardRef}
-      className="relative group bg-white dark:bg-gray-900/50 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300 flex flex-col"
+      className="relative group bg-white dark:bg-gray-900/50 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300 flex flex-col cursor-pointer"
       style={{
         transformStyle: "preserve-3d",
         rotateX,
@@ -79,6 +88,7 @@ const ProductCard = ({ product, index }) => {
       }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
+      onClick={handleCardClick}
       whileHover={{ scale: 1.02 }}
       transition={{ duration: 0.3 }}
     >
@@ -96,7 +106,11 @@ const ProductCard = ({ product, index }) => {
       {/* Like Button */}
       <motion.button
         className="absolute top-3 right-3 z-20 p-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur rounded-full shadow-md"
-        onClick={() => setIsLiked(!isLiked)}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setIsLiked(!isLiked);
+        }}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
       >
@@ -184,14 +198,18 @@ const ProductCard = ({ product, index }) => {
 
         {/* Add to Cart Button - Always at bottom */}
         <motion.button
-          className={`w-full py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all mt-3 ${
+          className={`w-full py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all mt-3 relative z-10 ${
             isInStock
               ? addedToCart
                 ? "bg-green-500 text-white"
                 : "bg-primary text-white hover:bg-primary/90"
               : "bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
           }`}
-          onClick={handleAddToCart}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleAddToCart();
+          }}
           disabled={!isInStock || addedToCart}
           whileHover={isInStock ? { scale: 1.02 } : {}}
           whileTap={isInStock ? { scale: 0.98 } : {}}

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { ShoppingCart, Heart, Sparkles, Star, Eye } from "lucide-react";
 import gsap from "gsap";
@@ -88,6 +89,8 @@ const NewArrivalCard = ({ product, index }) => {
       whileHover={{ scale: 1.03, y: -5 }}
       transition={{ duration: 0.3 }}
     >
+      {/* Clickable overlay for product link */}
+      <Link href={`/product/${product.id}`} className="absolute inset-0 z-0" />
       {/* New Badge - Animated */}
       <motion.div
         className="absolute top-3 left-3 z-20 flex items-center gap-1 bg-gradient-to-r from-blue-500 to-primary text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg"
@@ -116,7 +119,11 @@ const NewArrivalCard = ({ product, index }) => {
       <div className="absolute top-14 right-3 z-20 flex flex-col gap-2">
         <motion.button
           className="p-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur rounded-full shadow-md"
-          onClick={() => setIsLiked(!isLiked)}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setIsLiked(!isLiked);
+          }}
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
         >
@@ -129,6 +136,10 @@ const NewArrivalCard = ({ product, index }) => {
         
         <motion.button
           className="p-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur rounded-full shadow-md"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
         >
@@ -182,14 +193,13 @@ const NewArrivalCard = ({ product, index }) => {
 
         {/* Quick Add Overlay on Hover */}
         <motion.div
-          className="absolute inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-15"
+          className="absolute inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-15 pointer-events-none"
           initial={{ opacity: 0 }}
           animate={{ opacity: isHovered && isInStock ? 1 : 0 }}
           transition={{ duration: 0.3 }}
         >
-          <motion.button
-            className="bg-white text-gray-900 px-6 py-2 rounded-full font-semibold flex items-center gap-2"
-            onClick={handleAddToCart}
+          <motion.div
+            className="bg-white text-gray-900 px-6 py-2 rounded-full font-semibold flex items-center gap-2 pointer-events-auto"
             initial={{ y: 20 }}
             animate={{ y: isHovered ? 0 : 20 }}
             whileHover={{ scale: 1.05 }}
@@ -197,7 +207,7 @@ const NewArrivalCard = ({ product, index }) => {
           >
             <Eye className="h-4 w-4" />
             Quick View
-          </motion.button>
+          </motion.div>
         </motion.div>
       </div>
 
@@ -270,14 +280,18 @@ const NewArrivalCard = ({ product, index }) => {
 
         {/* Add to Cart Button */}
         <motion.button
-          className={`w-full py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all ${
+          className={`w-full py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all relative z-10 ${
             isInStock
               ? addedToCart
                 ? "bg-green-500 text-white"
                 : "bg-gradient-to-r from-blue-500 to-primary text-white hover:from-blue-600 hover:to-primary/90"
               : "bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
           }`}
-          onClick={handleAddToCart}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleAddToCart();
+          }}
           disabled={!isInStock || addedToCart}
           whileHover={isInStock ? { scale: 1.02 } : {}}
           whileTap={isInStock ? { scale: 0.98 } : {}}
