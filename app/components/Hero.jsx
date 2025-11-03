@@ -23,10 +23,10 @@ export default function Hero() {
       // Staggered entrance
       gsap.from([badgeRef.current, h1Ref.current, pRef.current, ctaRef.current], {
         opacity: 0,
-        y: 32,
-        duration: 1.1,
-        ease: "power3.out",
-        stagger: 0.15,
+        y: 20,
+        duration: 0.5,
+        ease: "power2.out",
+        stagger: 0.08,
       });
 
       // Parallax image
@@ -38,7 +38,7 @@ export default function Hero() {
             trigger: containerRef.current,
             start: "top top",
             end: "bottom top",
-            scrub: 1.5,
+            scrub: 0.8,
           },
         });
       }
@@ -54,7 +54,7 @@ export default function Hero() {
             unoptimized
             src="https://media.macphun.com/img/uploads/customer/blog/3501/1749749510684b0f06056cb7.96384689.jpg?q=85&w=1680"
             alt="Premium tech gadgets displayed on a sleek background"
-            className="w-full h-full object-cover scale-110 group-hover:scale-105 transition-transform duration-[1.2s] ease-out"
+            className="w-full h-full object-cover scale-110 group-hover:scale-105 transition-transform duration-500 ease-out"
             width={1000}
             height={1000}
           />
@@ -72,11 +72,11 @@ export default function Hero() {
                 top: `${30 + (i % 3) * 20}%`,
               }}
               animate={{
-                y: [0, -30, 0],
-                opacity: [0.3, 0.8, 0.3],
+                y: [0, -20, 0],
+                opacity: [0.2, 0.6, 0.2],
               }}
               transition={{
-                duration: 3 + i * 0.5,
+                duration: 2 + i * 0.3,
                 repeat: Infinity,
                 ease: "easeInOut",
               }}

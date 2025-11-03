@@ -492,13 +492,14 @@ export default function NewArrivals() {
           viewport={{ once: true }}
           transition={{ delay: 0.5 }}
         >
-          <motion.button
-            className="px-8 py-4 bg-gradient-to-r from-blue-500 to-primary text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-shadow"
+          <motion.a
+            href="/products"
+            className="inline-block px-8 py-4 bg-gradient-to-r from-blue-500 to-primary text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-shadow"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
             Explore All New Products →
-          </motion.button>
+          </motion.a>
         </motion.div>
       </div>
     </section>

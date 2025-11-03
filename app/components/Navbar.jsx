@@ -20,7 +20,12 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const navLinks = ["Phones", "Accessories", "Wearables", "Audio"];
+  const navLinks = [
+    { name: "Products", href: "/products" },
+    { name: "Phones", href: "/products" },
+    { name: "Accessories", href: "/products" },
+    { name: "Audio", href: "/products" },
+  ];
 
   return (
     <header className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 backdrop-blur-lg saturate-150 ${
@@ -30,29 +35,30 @@ export default function Navbar() {
     }`}>
       <div className="flex items-center justify-between whitespace-nowrap px-4 sm:px-8 lg:px-10 py-3">
         {/* Logo */}
-        <motion.div
-          className="flex items-center gap-3 text-gray-900 dark:text-white"
+        <motion.a
+          href="/"
+          className="flex items-center gap-3 text-gray-900 dark:text-white cursor-pointer"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
           <h2 className="text-xl font-bold leading-tight tracking-[-0.015em] bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
             Apple Dream BD
           </h2>
-        </motion.div>
+        </motion.a>
 
         {/* Desktop Navigation */}
         <nav className="hidden lg:flex items-center gap-8 ml-16">
           {navLinks.map((link, i) => (
             <motion.a
-              key={link}
-              href="#"
+              key={link.name}
+              href={link.href}
               className="relative text-sm font-medium leading-normal text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors group"
               whileHover={{ y: -2 }}
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.1 }}
             >
-              {link}
+              {link.name}
               <motion.div
                 className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary"
                 initial={{ scaleX: 0 }}
@@ -201,15 +207,15 @@ export default function Navbar() {
             <nav className="px-4 py-6 flex flex-col gap-4">
               {navLinks.map((link, i) => (
                 <motion.a
-                  key={link}
-                  href="#"
+                  key={link.name}
+                  href={link.href}
                   className="text-base font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary py-2 border-b border-gray-100 dark:border-gray-800"
                   initial={{ x: -20, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
                   transition={{ delay: i * 0.1 }}
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  {link}
+                  {link.name}
                 </motion.a>
               ))}
               

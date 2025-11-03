@@ -38,8 +38,8 @@ const ProductCard = ({ product, index }) => {
       {
         opacity: 1,
         y: 0,
-        duration: 0.6,
-        delay: index * 0.1,
+        duration: 0.4,
+        delay: index * 0.05,
         ease: "power2.out",
         scrollTrigger: {
           trigger: cardRef.current,
@@ -272,8 +272,8 @@ export default function BestSellers() {
       {
         opacity: 1,
         y: 0,
-        duration: 0.8,
-        ease: "power3.out",
+        duration: 0.4,
+        ease: "power2.out",
         scrollTrigger: {
           trigger: titleRef.current,
           start: "top 85%",
@@ -356,13 +356,14 @@ export default function BestSellers() {
           viewport={{ once: true }}
           transition={{ delay: 0.5 }}
         >
-          <motion.button
-            className="px-8 py-4 bg-gradient-to-r from-primary to-blue-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-shadow"
+          <motion.a
+            href="/products"
+            className="inline-block px-8 py-4 bg-gradient-to-r from-primary to-blue-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-shadow"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
             View All Best Sellers →
-          </motion.button>
+          </motion.a>
         </motion.div>
       </div>
     </section>

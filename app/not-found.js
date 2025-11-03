@@ -115,11 +115,11 @@ export default function NotFound() {
 
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link
-                href="/"
+                href="/products"
                 className="inline-flex items-center gap-2 px-6 py-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-semibold rounded-full shadow-md hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700"
               >
                 <Grid3x3 className="w-5 h-5" />
-                Browse Categories
+                Browse Products
               </Link>
             </motion.div>
           </motion.div>
@@ -135,23 +135,26 @@ export default function NotFound() {
               You might be looking for:
             </p>
             <div className="flex flex-wrap justify-center gap-3">
-              {["Products", "Best Sellers", "New Arrivals", "Deals"].map(
-                (link, i) => (
-                  <motion.div
-                    key={link}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.9 + i * 0.1 }}
+              {[
+                { name: "Products", href: "/products" },
+                { name: "Best Sellers", href: "/products" },
+                { name: "New Arrivals", href: "/products" },
+                { name: "Home", href: "/" },
+              ].map((link, i) => (
+                <motion.div
+                  key={link.name}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.9 + i * 0.1 }}
+                >
+                  <Link
+                    href={link.href}
+                    className="text-sm text-primary hover:underline px-3 py-1 rounded-lg hover:bg-primary/10 transition-colors"
                   >
-                    <Link
-                      href="/"
-                      className="text-sm text-primary hover:underline px-3 py-1 rounded-lg hover:bg-primary/10 transition-colors"
-                    >
-                      {link}
-                    </Link>
-                  </motion.div>
-                )
-              )}
+                    {link.name}
+                  </Link>
+                </motion.div>
+              ))}
             </div>
           </motion.div>
         </div>

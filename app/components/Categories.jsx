@@ -145,14 +145,14 @@ const CategoryCard = ({ category, index }) => {
 
     gsap.fromTo(
       cardRef.current,
-      { opacity: 0, y: 30, scale: 0.9 },
+      { opacity: 0, y: 20, scale: 0.95 },
       {
         opacity: 1,
         y: 0,
         scale: 1,
-        duration: 0.5,
-        delay: index * 0.05,
-        ease: "back.out(1.7)",
+        duration: 0.3,
+        delay: index * 0.03,
+        ease: "power2.out",
         scrollTrigger: {
           trigger: cardRef.current,
           start: "top 90%",
@@ -164,9 +164,9 @@ const CategoryCard = ({ category, index }) => {
   return (
     <motion.a
       ref={cardRef}
-      href={`/category/${category.slug}`}
-      className={`relative group ${category.bgColor} rounded-2xl p-6 overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-xl`}
-      whileHover={{ scale: 1.05, y: -5 }}
+      href={`/products?category=${category.id}`}
+      className={`relative group ${category.bgColor} rounded-2xl p-6 overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-xl`}
+      whileHover={{ scale: 1.03, y: -3 }}
       whileTap={{ scale: 0.98 }}
     >
       {/* Animated gradient background */}
@@ -175,26 +175,12 @@ const CategoryCard = ({ category, index }) => {
       {/* Icon with animated background */}
       <motion.div
         className="relative mb-4"
-        whileHover={{ rotate: [0, -10, 10, -10, 0] }}
-        transition={{ duration: 0.5 }}
+        whileHover={{ rotate: [0, -5, 5, 0] }}
+        transition={{ duration: 0.3 }}
       >
-        <div className={`w-16 h-16 mx-auto bg-gradient-to-br ${category.color} rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-2xl transition-shadow duration-300`}>
+        <div className={`w-16 h-16 mx-auto bg-gradient-to-br ${category.color} rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-2xl transition-all duration-200`}>
           <Icon className="h-8 w-8 text-white" />
         </div>
-        
-        {/* Pulse effect */}
-        <motion.div
-          className={`absolute inset-0 bg-gradient-to-br ${category.color} rounded-2xl opacity-20`}
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.2, 0, 0.2],
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
       </motion.div>
 
       {/* Category name */}
@@ -206,35 +192,12 @@ const CategoryCard = ({ category, index }) => {
         {category.name}
       </h3>
 
-      {/* Arrow indicator on hover */}
-      <motion.div
-        className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-        initial={{ x: -10 }}
-        whileHover={{ x: 0 }}
-      >
-        <div className={`w-6 h-6 bg-gradient-to-br ${category.color} rounded-full flex items-center justify-center`}>
-          <svg
-            className="w-3 h-3 text-white"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 5l7 7-7 7"
-            />
-          </svg>
-        </div>
-      </motion.div>
-
       {/* Shine effect on hover */}
       <motion.div
         className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
         initial={{ x: "-100%" }}
         whileHover={{ x: "100%" }}
-        transition={{ duration: 0.6 }}
+        transition={{ duration: 0.4 }}
       />
     </motion.a>
   );
@@ -249,12 +212,12 @@ export default function Categories() {
 
     gsap.fromTo(
       titleRef.current,
-      { opacity: 0, y: -30 },
+      { opacity: 0, y: -20 },
       {
         opacity: 1,
         y: 0,
-        duration: 0.8,
-        ease: "power3.out",
+        duration: 0.4,
+        ease: "power2.out",
         scrollTrigger: {
           trigger: titleRef.current,
           start: "top 85%",
@@ -309,13 +272,14 @@ export default function Categories() {
           viewport={{ once: true }}
           transition={{ delay: 0.5 }}
         >
-          <motion.button
-            className="px-8 py-4 bg-gradient-to-r from-primary to-blue-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-shadow"
+          <motion.a
+            href="/products"
+            className="inline-block px-8 py-4 bg-gradient-to-r from-primary to-blue-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-shadow"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            View All Categories →
-          </motion.button>
+            View All Products →
+          </motion.a>
         </motion.div>
       </div>
     </section>
