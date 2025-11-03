@@ -3,7 +3,9 @@
 @variant dark (&:where(.dark, .dark *));
 
 @theme inline {
-  --color-primary: #1173d4;
+  --color-primary: #4a90e2;
+  --color-primary-dark: #3b7bc9;
+  --color-primary-light: #6ba3e8;
   --color-background-light: #f5f7fb; /* subtle cool neutral */
   --color-background-dark: #0b0f14;  /* rich dark for depth */
   --radius-xl: 1.25rem;

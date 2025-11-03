@@ -274,7 +274,7 @@ export default function Categories() {
         >
           <motion.a
             href="/products"
-            className="inline-block px-8 py-4 bg-gradient-to-r from-primary to-blue-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-shadow"
+            className="inline-block px-8 py-4 bg-primary hover:bg-primary/90 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >

@@ -384,7 +384,7 @@ export default function ProductDetailPage() {
                   isInStock
                     ? addedToCart
                       ? "bg-green-500 text-white"
-                      : "bg-gradient-to-r from-primary to-blue-600 text-white hover:from-primary/90 hover:to-blue-600/90"
+                      : "bg-primary hover:bg-primary/90 text-white"
                     : "bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
                 }`}
                 onClick={handleAddToCart}

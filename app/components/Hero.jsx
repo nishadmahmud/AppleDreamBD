@@ -119,7 +119,7 @@ export default function Hero() {
                 <span className="relative z-10">Explore Collection</span>
                 <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-primary to-blue-500"
+                  className="absolute inset-0 bg-primary/90"
                   initial={{ x: "-100%" }}
                   whileHover={{ x: 0 }}
                   transition={{ duration: 0.3 }}

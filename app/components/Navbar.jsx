@@ -1,15 +1,25 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { useTheme } from "../context/ThemeContext";
 import { Moon, Sun, Search, User, Heart, ShoppingBag, Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Navbar() {
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [cartCount, setCartCount] = useState(3);
   const { isDark, toggleTheme } = useTheme();
+
+  // Check if link is active
+  const isActiveLink = (href) => {
+    if (href.startsWith('#')) {
+      return false; // Hash links are handled by scroll position
+    }
+    return pathname === href;
+  };
 
   useEffect(() => {
     const onScroll = () => {
@@ -21,10 +31,11 @@ export default function Navbar() {
   }, []);
 
   const navLinks = [
-    { name: "Products", href: "/products" },
-    { name: "Phones", href: "/products" },
-    { name: "Accessories", href: "/products" },
-    { name: "Audio", href: "/products" },
+    { name: "Home", href: "/" },
+    { name: "All Products", href: "/products" },
+    { name: "Best Sellers", href: "#best-sellers" },
+    { name: "New Arrivals", href: "#new-arrivals" },
+    { name: "Deals", href: "#deals" },
   ];
 
   return (
@@ -41,32 +52,40 @@ export default function Navbar() {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
-          <h2 className="text-xl font-bold leading-tight tracking-[-0.015em] bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
+          <h2 className="text-xl font-bold leading-tight tracking-[-0.015em] text-primary">
             Apple Dream BD
           </h2>
         </motion.a>
 
         {/* Desktop Navigation */}
         <nav className="hidden lg:flex items-center gap-8 ml-16">
-          {navLinks.map((link, i) => (
-            <motion.a
-              key={link.name}
-              href={link.href}
-              className="relative text-sm font-medium leading-normal text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors group"
-              whileHover={{ y: -2 }}
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
-            >
-              {link.name}
-              <motion.div
-                className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary"
-                initial={{ scaleX: 0 }}
-                whileHover={{ scaleX: 1 }}
-                transition={{ duration: 0.2 }}
-              />
-            </motion.a>
-          ))}
+          {navLinks.map((link, i) => {
+            const isActive = isActiveLink(link.href);
+            return (
+              <motion.a
+                key={link.name}
+                href={link.href}
+                className={`relative text-sm font-medium leading-normal transition-colors group whitespace-nowrap ${
+                  isActive
+                    ? "text-primary dark:text-primary"
+                    : "text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary"
+                }`}
+                whileHover={{ y: -2 }}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.05 }}
+              >
+                {link.name}
+                <motion.div
+                  className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary"
+                  initial={{ scaleX: isActive ? 1 : 0 }}
+                  animate={{ scaleX: isActive ? 1 : 0 }}
+                  whileHover={{ scaleX: 1 }}
+                  transition={{ duration: 0.2 }}
+                />
+              </motion.a>
+            );
+          })}
         </nav>
 
         {/* Right Actions */}
@@ -85,7 +104,11 @@ export default function Navbar() {
               <input
                 className="flex w-full min-w-0 flex-1 bg-gray-100/80 dark:bg-background-dark/60 text-gray-900 dark:text-white focus:outline-0 border-none h-full placeholder:text-gray-500 dark:placeholder:text-gray-400 px-4 text-sm"
                 placeholder="Search products..."
-                defaultValue=""
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    window.location.href = '/products';
+                  }
+                }}
               />
             </div>
           </motion.label>
@@ -205,19 +228,34 @@ export default function Navbar() {
             transition={{ duration: 0.3 }}
           >
             <nav className="px-4 py-6 flex flex-col gap-4">
-              {navLinks.map((link, i) => (
-                <motion.a
-                  key={link.name}
-                  href={link.href}
-                  className="text-base font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary py-2 border-b border-gray-100 dark:border-gray-800"
-                  initial={{ x: -20, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  transition={{ delay: i * 0.1 }}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {link.name}
-                </motion.a>
-              ))}
+              {navLinks.map((link, i) => {
+                const isActive = isActiveLink(link.href);
+                return (
+                  <motion.a
+                    key={link.name}
+                    href={link.href}
+                    className={`text-base font-medium py-2 border-b border-gray-100 dark:border-gray-800 ${
+                      isActive
+                        ? "text-primary dark:text-primary font-semibold"
+                        : "text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary"
+                    }`}
+                    initial={{ x: -20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: i * 0.1 }}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {link.name}
+                    {isActive && (
+                      <motion.div
+                        className="h-1 w-1 rounded-full bg-primary inline-block ml-2"
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ type: "spring", stiffness: 500 }}
+                      />
+                    )}
+                  </motion.a>
+                );
+              })}
               
               {/* Mobile Search */}
               <motion.div
@@ -233,6 +271,12 @@ export default function Navbar() {
                   <input
                     className="flex-1 bg-gray-100 dark:bg-background-dark/60 text-gray-900 dark:text-white focus:outline-0 border-none h-10 placeholder:text-gray-500 px-4 text-sm"
                     placeholder="Search..."
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        window.location.href = '/products';
+                        setMobileMenuOpen(false);
+                      }
+                    }}
                   />
                 </div>
               </motion.div>

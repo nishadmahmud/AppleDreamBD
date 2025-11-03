@@ -89,7 +89,7 @@ export default function Footer() {
                 height={20}
                 className="dark:invert"
               />
-              <span className="text-2xl font-bold text-gray-900 dark:text-white bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
+              <span className="text-2xl font-bold text-primary">
                 Apple Dream BD
               </span>
             </motion.a>

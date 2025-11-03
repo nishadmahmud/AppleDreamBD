@@ -314,6 +314,7 @@ export default function BestSellers() {
 
   return (
     <section
+      id="best-sellers"
       ref={sectionRef}
       className="px-4 sm:px-8 lg:px-10 py-20 bg-background-light dark:bg-background-dark transition-colors duration-300 relative overflow-hidden"
     >
@@ -358,7 +359,7 @@ export default function BestSellers() {
         >
           <motion.a
             href="/products"
-            className="inline-block px-8 py-4 bg-gradient-to-r from-primary to-blue-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-shadow"
+            className="inline-block px-8 py-4 bg-primary hover:bg-primary/90 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -270,8 +270,8 @@ const ProductCard = ({ product, viewMode }) => {
   );
 };
 
-// Main Products Page Component
-export default function ProductsPage() {
+// Products Page Component with Search Params
+function ProductsPageContent() {
   const searchParams = useSearchParams();
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -548,7 +548,7 @@ export default function ProductsPage() {
                     onClick={() => setSelectedCategories([])}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap ${
                       selectedCategories.length === 0
-                        ? "bg-gradient-to-r from-primary to-blue-600 text-white shadow-md"
+                        ? "bg-primary hover:bg-primary/90 text-white shadow-md"
                         : "bg-white dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-primary"
                     }`}
                     whileHover={{ scale: 1.02 }}
@@ -571,7 +571,7 @@ export default function ProductsPage() {
                       }}
                       className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap ${
                         selectedCategories.includes(category.id)
-                          ? "bg-gradient-to-r from-primary to-blue-600 text-white shadow-md"
+                          ? "bg-primary hover:bg-primary/90 text-white shadow-md"
                           : "bg-white dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-primary"
                       }`}
                       whileHover={{ scale: 1.02 }}
@@ -894,6 +894,35 @@ export default function ProductsPage() {
 
       <Footer />
     </div>
+  );
+}
+
+// Wrap with Suspense for useSearchParams
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-background-light dark:bg-background-dark flex items-center justify-center">
+        <div className="relative w-20 h-20">
+          <motion.div
+            className="absolute inset-0 border-4 border-primary/20 rounded-full"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+          />
+          <motion.div
+            className="absolute inset-0 border-4 border-transparent border-t-primary border-r-primary rounded-full"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
+          />
+          <motion.div
+            className="absolute inset-0 m-auto w-3 h-3 bg-primary rounded-full"
+            animate={{ scale: [1, 1.5, 1], opacity: [1, 0.5, 1] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+          />
+        </div>
+      </div>
+    }>
+      <ProductsPageContent />
+    </Suspense>
   );
 }
 
