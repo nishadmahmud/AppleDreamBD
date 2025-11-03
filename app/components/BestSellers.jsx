@@ -8,14 +8,20 @@ import { ShoppingCart, Heart, TrendingUp, Star } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { fetchBestSellers } from "../../lib/api";
+import { useCart } from "../context/CartContext";
+import { useFavorites } from "../context/FavoritesContext";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const ProductCard = ({ product, index }) => {
   const router = useRouter();
-  const [isLiked, setIsLiked] = useState(false);
+  const { addToCart, isInCart } = useCart();
+  const { toggleFavorite, isFavorite } = useFavorites();
   const [addedToCart, setAddedToCart] = useState(false);
   const cardRef = useRef(null);
+  
+  const isLiked = isFavorite(product.id);
+  const inCart = isInCart(product.id);
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -64,8 +70,15 @@ const ProductCard = ({ product, index }) => {
   };
 
   const handleAddToCart = () => {
-    setAddedToCart(true);
-    setTimeout(() => setAddedToCart(false), 2000);
+    if (isInStock && !inCart) {
+      addToCart(product);
+      setAddedToCart(true);
+      setTimeout(() => setAddedToCart(false), 2000);
+    }
+  };
+
+  const handleToggleFavorite = () => {
+    toggleFavorite(product);
   };
 
   const isInStock = product.status === "In stock" || product.current_stock > 0;
@@ -109,7 +122,7 @@ const ProductCard = ({ product, index }) => {
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          setIsLiked(!isLiked);
+          handleToggleFavorite();
         }}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
@@ -200,7 +213,7 @@ const ProductCard = ({ product, index }) => {
         <motion.button
           className={`w-full py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all mt-3 relative z-10 ${
             isInStock
-              ? addedToCart
+              ? inCart || addedToCart
                 ? "bg-green-500 text-white"
                 : "bg-primary text-white hover:bg-primary/90"
               : "bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
@@ -210,11 +223,11 @@ const ProductCard = ({ product, index }) => {
             e.stopPropagation();
             handleAddToCart();
           }}
-          disabled={!isInStock || addedToCart}
-          whileHover={isInStock ? { scale: 1.02 } : {}}
-          whileTap={isInStock ? { scale: 0.98 } : {}}
+          disabled={!isInStock || inCart}
+          whileHover={isInStock && !inCart ? { scale: 1.02 } : {}}
+          whileTap={isInStock && !inCart ? { scale: 0.98 } : {}}
         >
-          {addedToCart ? (
+          {inCart || addedToCart ? (
             <>
               <motion.div
                 initial={{ scale: 0 }}
@@ -223,7 +236,7 @@ const ProductCard = ({ product, index }) => {
               >
                 ✓
               </motion.div>
-              Added!
+              {addedToCart ? "Added!" : "In Cart"}
             </>
           ) : (
             <>

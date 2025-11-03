@@ -23,24 +23,37 @@ import { useRouter } from "next/navigation";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { fetchAllProducts, getAllCategories } from "../../lib/api";
+import { useCart } from "../context/CartContext";
+import { useFavorites } from "../context/FavoritesContext";
 
 // Product Card Component
 const ProductCard = ({ product, viewMode }) => {
   const router = useRouter();
-  const [isLiked, setIsLiked] = useState(false);
+  const { addToCart, isInCart } = useCart();
+  const { toggleFavorite, isFavorite } = useFavorites();
   const [addedToCart, setAddedToCart] = useState(false);
+  
+  const isLiked = isFavorite(product.id);
+  const inCart = isInCart(product.id);
+  const isInStock = product.status === "In stock" || product.current_stock > 0;
 
   const handleAddToCart = (e) => {
     e.stopPropagation();
-    setAddedToCart(true);
-    setTimeout(() => setAddedToCart(false), 2000);
+    if (isInStock && !inCart) {
+      addToCart(product);
+      setAddedToCart(true);
+      setTimeout(() => setAddedToCart(false), 2000);
+    }
+  };
+
+  const handleToggleFavorite = (e) => {
+    e.stopPropagation();
+    toggleFavorite(product);
   };
 
   const handleCardClick = () => {
     router.push(`/product/${product.id}`);
   };
-
-  const isInStock = product.status === "In stock" || product.current_stock > 0;
 
   if (viewMode === "list") {
     return (
@@ -116,10 +129,7 @@ const ProductCard = ({ product, viewMode }) => {
             {/* Actions */}
             <div className="flex items-center gap-2">
               <motion.button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsLiked(!isLiked);
-                }}
+                onClick={handleToggleFavorite}
                 className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
@@ -129,19 +139,19 @@ const ProductCard = ({ product, viewMode }) => {
               
               <motion.button
                 onClick={handleAddToCart}
-                disabled={!isInStock || addedToCart}
+                disabled={!isInStock || inCart}
                 className={`px-6 py-2 rounded-xl font-semibold flex items-center gap-2 transition-all ${
                   isInStock
-                    ? addedToCart
+                    ? inCart || addedToCart
                       ? "bg-green-500 text-white"
                       : "bg-primary text-white hover:bg-primary/90"
                     : "bg-gray-300 dark:bg-gray-700 text-gray-500 cursor-not-allowed"
                 }`}
-                whileHover={isInStock ? { scale: 1.05 } : {}}
-                whileTap={isInStock ? { scale: 0.95 } : {}}
+                whileHover={isInStock && !inCart ? { scale: 1.05 } : {}}
+                whileTap={isInStock && !inCart ? { scale: 0.95 } : {}}
               >
-                {addedToCart ? (
-                  <>✓ Added</>
+                {inCart || addedToCart ? (
+                  <>✓ In Cart</>
                 ) : (
                   <>
                     <ShoppingCart className="h-4 w-4" />
@@ -185,10 +195,7 @@ const ProductCard = ({ product, viewMode }) => {
 
         {/* Like Button */}
         <motion.button
-          onClick={(e) => {
-            e.stopPropagation();
-            setIsLiked(!isLiked);
-          }}
+          onClick={handleToggleFavorite}
           className="absolute top-3 right-3 p-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur rounded-full shadow-md"
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
@@ -245,19 +252,19 @@ const ProductCard = ({ product, viewMode }) => {
         {/* Add to Cart Button */}
         <motion.button
           onClick={handleAddToCart}
-          disabled={!isInStock || addedToCart}
+          disabled={!isInStock || inCart}
           className={`w-full py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all mt-3 ${
             isInStock
-              ? addedToCart
+              ? inCart || addedToCart
                 ? "bg-green-500 text-white"
                 : "bg-primary text-white hover:bg-primary/90"
               : "bg-gray-300 dark:bg-gray-700 text-gray-500 cursor-not-allowed"
           }`}
-          whileHover={isInStock ? { scale: 1.02 } : {}}
-          whileTap={isInStock ? { scale: 0.98 } : {}}
+          whileHover={isInStock && !inCart ? { scale: 1.02 } : {}}
+          whileTap={isInStock && !inCart ? { scale: 0.98 } : {}}
         >
-          {addedToCart ? (
-            <>✓ Added</>
+          {inCart || addedToCart ? (
+            <>✓ In Cart</>
           ) : (
             <>
               <ShoppingCart className="h-5 w-5" />

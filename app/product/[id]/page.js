@@ -21,18 +21,22 @@ import {
 import { fetchProductDetail } from "../../../lib/api";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import { useCart } from "../../context/CartContext";
+import { useFavorites } from "../../context/FavoritesContext";
 
 export default function ProductDetailPage() {
   const params = useParams();
   const router = useRouter();
   const productId = params?.id;
+  
+  const { addToCart, isInCart, updateQuantity: updateCartQuantity, cart } = useCart();
+  const { toggleFavorite, isFavorite } = useFavorites();
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const [isLiked, setIsLiked] = useState(false);
   const [addedToCart, setAddedToCart] = useState(false);
 
   useEffect(() => {
@@ -76,8 +80,11 @@ export default function ProductDetailPage() {
   const originalPrice = product?.retails_price;
 
   const handleAddToCart = () => {
-    setAddedToCart(true);
-    setTimeout(() => setAddedToCart(false), 2000);
+    if (product && isInStock && !isInCart(product.id)) {
+      addToCart(product, quantity);
+      setAddedToCart(true);
+      setTimeout(() => setAddedToCart(false), 2000);
+    }
   };
 
   const handleQuantityChange = (delta) => {
@@ -186,13 +193,13 @@ export default function ProductDetailPage() {
                 {/* Like Button */}
                 <motion.button
                   className="absolute top-2 right-2 z-10 p-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur rounded-full shadow-md"
-                  onClick={() => setIsLiked(!isLiked)}
+                  onClick={() => product && toggleFavorite(product)}
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                 >
                   <Heart
                     className={`w-4 h-4 transition-colors ${
-                      isLiked ? "fill-red-500 text-red-500" : "text-gray-400"
+                      product && isFavorite(product.id) ? "fill-red-500 text-red-500" : "text-gray-400"
                     }`}
                   />
                 </motion.button>
@@ -382,23 +389,23 @@ export default function ProductDetailPage() {
               <motion.button
                 className={`w-full py-2.5 rounded-lg font-semibold flex items-center justify-center gap-2 text-sm transition-all ${
                   isInStock
-                    ? addedToCart
+                    ? (product && isInCart(product.id)) || addedToCart
                       ? "bg-green-500 text-white"
                       : "bg-primary hover:bg-primary/90 text-white"
                     : "bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
                 }`}
                 onClick={handleAddToCart}
-                disabled={!isInStock || addedToCart}
+                disabled={!isInStock || (product && isInCart(product.id))}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7 }}
-                whileHover={isInStock ? { scale: 1.02 } : {}}
-                whileTap={isInStock ? { scale: 0.98 } : {}}
+                whileHover={isInStock && !(product && isInCart(product.id)) ? { scale: 1.02 } : {}}
+                whileTap={isInStock && !(product && isInCart(product.id)) ? { scale: 0.98 } : {}}
               >
-                {addedToCart ? (
+                {(product && isInCart(product.id)) || addedToCart ? (
                   <>
                     <Check className="w-4 h-4" />
-                    Added to Cart!
+                    {addedToCart ? "Added to Cart!" : "In Cart"}
                   </>
                 ) : (
                   <>

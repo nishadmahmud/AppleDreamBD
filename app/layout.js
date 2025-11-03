@@ -2,6 +2,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "./context/ThemeContext";
+import { CartProvider } from "./context/CartContext";
+import { FavoritesProvider } from "./context/FavoritesContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -55,7 +57,13 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} antialiased bg-background-light dark:bg-background-dark text-gray-800 dark:text-gray-200 transition-colors duration-300`}
       >
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <CartProvider>
+            <FavoritesProvider>
+              {children}
+            </FavoritesProvider>
+          </CartProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
