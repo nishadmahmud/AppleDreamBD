@@ -3,118 +3,253 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { ArrowRight, Star } from "lucide-react";
+import { motion, useMotionValue, useSpring } from "framer-motion";
+import { ShoppingCart, Heart, Star, Sparkles } from "lucide-react";
+import { useCart } from "../context/CartContext";
+import { useFavorites } from "../context/FavoritesContext";
 
-function ProductCard({ title, description, img, delay = 0 }) {
-  const [isHovered, setIsHovered] = useState(false);
+function SmartphoneCard({ product, delay = 0, badge = null }) {
+  const { addToCart, isInCart } = useCart();
+  const { toggleFavorite, isFavorite } = useFavorites();
+  const [isAdding, setIsAdding] = useState(false);
   const cardRef = useRef(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-
-  const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [8, -8]), { stiffness: 300, damping: 30 });
-  const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-8, 8]), { stiffness: 300, damping: 30 });
+  
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const rotateX = useSpring(useMotionValue(0), { stiffness: 300, damping: 30 });
+  const rotateY = useSpring(useMotionValue(0), { stiffness: 300, damping: 30 });
 
   const handleMouseMove = (e) => {
     if (!cardRef.current) return;
     const rect = cardRef.current.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
-    x.set((e.clientX - centerX) / rect.width);
-    y.set((e.clientY - centerY) / rect.height);
+    const percentX = (e.clientX - centerX) / (rect.width / 2);
+    const percentY = (e.clientY - centerY) / (rect.height / 2);
+    
+    rotateY.set(percentX * 10);
+    rotateX.set(-percentY * 10);
+    mouseX.set(e.clientX - rect.left);
+    mouseY.set(e.clientY - rect.top);
   };
 
   const handleMouseLeave = () => {
-    setIsHovered(false);
-    x.set(0);
-    y.set(0);
+    rotateX.set(0);
+    rotateY.set(0);
   };
+
+  const handleAddToCart = () => {
+    addToCart(product, 1);
+    setIsAdding(true);
+    setTimeout(() => setIsAdding(false), 1500);
+  };
+
+  const handleToggleFavorite = () => {
+    toggleFavorite(product);
+  };
+
+  const inCart = isInCart(product.id);
+  const isFav = isFavorite(product.id);
 
   return (
     <motion.div
       ref={cardRef}
-      data-card
-      initial={{ opacity: 0, y: 40 }}
+      data-phone
+      className="group relative flex flex-col gap-4 rounded-[var(--radius-xl)] bg-gray-50 dark:bg-background-dark/50 border border-gray-200 dark:border-gray-800 shadow-[var(--shadow-soft)] p-5 overflow-hidden"
+      initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
-      className="relative group overflow-hidden rounded-[var(--radius-xl)] shadow-[var(--shadow-soft)] perspective-1000"
+      transition={{ duration: 0.5, delay, ease: [0.22, 1, 0.36, 1] }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
       style={{
         transformStyle: "preserve-3d",
-        perspective: 1000,
+        rotateX,
+        rotateY,
       }}
-      onMouseMove={handleMouseMove}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={handleMouseLeave}
     >
+      {/* Magnetic glow follow */}
       <motion.div
+        className="absolute w-32 h-32 bg-primary/30 rounded-full blur-2xl pointer-events-none"
         style={{
-          rotateX,
-          rotateY,
-          transformStyle: "preserve-3d",
+          left: mouseX,
+          top: mouseY,
+          x: "-50%",
+          y: "-50%",
         }}
-        className="relative w-full h-full"
+        initial={{ opacity: 0 }}
+        whileHover={{ opacity: 0.6 }}
+      />
+
+      {/* Like button */}
+      <motion.button
+        className="absolute top-4 right-4 z-10 p-2 bg-white/80 dark:bg-background-dark/80 backdrop-blur rounded-full shadow-md"
+        onClick={handleToggleFavorite}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+      >
+        <Heart
+          className={`h-5 w-5 transition-colors ${
+            isFav ? "fill-red-500 text-red-500" : "text-gray-400"
+          }`}
+        />
+      </motion.button>
+
+      {/* Badge */}
+      {badge && (
+        <motion.div
+          className="absolute top-4 left-4 z-10 flex items-center gap-1 bg-yellow-400 text-black text-xs font-bold px-2 py-1 rounded-full"
+          initial={{ rotate: -12 }}
+          animate={{ rotate: [-12, -10, -12] }}
+          transition={{ duration: 2, repeat: Infinity }}
+        >
+          <Sparkles className="h-3 w-3" />
+          <span>{badge}</span>
+        </motion.div>
+      )}
+
+      <motion.div
+        className="relative w-full bg-white dark:bg-background-dark/60 rounded-[calc(var(--radius-xl)-0.5rem)] overflow-hidden aspect-square"
+        whileHover={{ scale: 1.05 }}
+        transition={{ duration: 0.3 }}
       >
         <Image
           unoptimized
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-          alt={title}
-          src={img}
+          alt={product.name}
+          src={product.image_path || "/placeholder.png"}
+          className="w-full h-full object-contain p-6 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3"
           width={1000}
           height={1000}
         />
-        <div className="absolute inset-0 bg-linear-to-t from-black/85 via-black/40 to-transparent" />
-        
-        {/* Spotlight effect */}
-        <motion.div
-          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-          style={{
-            background: `radial-gradient(circle at ${useTransform(x, [-0.5, 0.5], ["30%", "70%"]).get()} ${useTransform(y, [-0.5, 0.5], ["30%", "70%"]).get()}, rgba(17, 115, 212, 0.3) 0%, transparent 60%)`,
-          }}
-        />
+      </motion.div>
 
-        <div className="absolute bottom-0 left-0 right-0 p-6 text-white transform translate-z-20" style={{ transform: "translateZ(20px)" }}>
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: isHovered ? 1 : 0, y: isHovered ? 0 : 10 }}
-            className="flex items-center gap-1 mb-2"
-          >
-            {[...Array(5)].map((_, i) => (
-              <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-            ))}
-            <span className="text-sm ml-2">(4.9)</span>
-          </motion.div>
-
-          <h3 className="text-2xl font-bold drop-shadow-lg mb-1">{title}</h3>
-          <p className="text-white/90 mb-4">{description}</p>
-          
-          <motion.button
-            className="group/btn inline-flex items-center gap-2 font-semibold text-white bg-primary/90 hover:bg-primary px-5 py-2.5 rounded-lg transition-all"
-            whileHover={{ scale: 1.05, x: 5 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            Shop Now
-            <ArrowRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
-          </motion.button>
+      <div className="flex flex-col gap-2 relative" style={{ transform: "translateZ(30px)" }}>
+        {/* Rating */}
+        <div className="flex items-center gap-1">
+          {[...Array(5)].map((_, i) => (
+            <Star key={i} className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+          ))}
+          <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">(4.8)</span>
         </div>
 
-        {/* Badge */}
-        <motion.div
-          className="absolute top-4 right-4 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full"
-          animate={{
-            scale: isHovered ? [1, 1.1, 1] : 1,
-          }}
-          transition={{ duration: 0.5, repeat: isHovered ? Infinity : 0, repeatDelay: 1 }}
+        <p className="text-base font-semibold text-gray-900 dark:text-white line-clamp-2">
+          {product.name}
+        </p>
+
+        <div className="flex items-center gap-2">
+          <motion.p
+            className="text-2xl font-black text-primary"
+            initial={{ scale: 1 }}
+            whileHover={{ scale: 1.1 }}
+          >
+            ৳{product.retails_price}
+          </motion.p>
+          {product.market_price && product.market_price > product.retails_price && (
+            <span className="text-sm text-gray-400 line-through">৳{product.market_price}</span>
+          )}
+        </div>
+
+        <motion.button
+          onClick={handleAddToCart}
+          className="relative flex items-center justify-center gap-2 mt-2 text-sm font-semibold text-white bg-primary/90 hover:bg-primary px-4 py-3 rounded-lg overflow-hidden group/btn disabled:opacity-50 disabled:cursor-not-allowed"
+          whileHover={{ scale: inCart ? 1 : 1.02, y: inCart ? 0 : -2 }}
+          whileTap={{ scale: 0.98 }}
+          disabled={isAdding || inCart}
         >
-          HOT
+          {isAdding ? (
+            <motion.div
+              className="flex items-center gap-2"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              >
+                <ShoppingCart className="h-4 w-4" />
+              </motion.div>
+              <span>Adding...</span>
+            </motion.div>
+          ) : inCart ? (
+            <>
+              <ShoppingCart className="h-4 w-4 fill-current" />
+              <span>In Cart</span>
+            </>
+          ) : (
+            <>
+              <ShoppingCart className="h-4 w-4 group-hover/btn:scale-110 transition-transform" />
+              <span>Add to Cart</span>
+            </>
+          )}
+          
+          {/* Shine effect */}
+          {!inCart && (
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+              initial={{ x: "-100%" }}
+              whileHover={{ x: "100%" }}
+              transition={{ duration: 0.6 }}
+            />
+          )}
+        </motion.button>
+      </div>
+
+      {/* Success animation */}
+      {isAdding && (
+        <motion.div
+          className="absolute inset-0 flex items-center justify-center bg-primary/20 backdrop-blur-sm z-20"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          <motion.div
+            className="bg-white dark:bg-background-dark rounded-full p-4 shadow-xl"
+            initial={{ scale: 0, rotate: -180 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ type: "spring", stiffness: 200, damping: 15 }}
+          >
+            <ShoppingCart className="h-8 w-8 text-primary" />
+          </motion.div>
         </motion.div>
-      </motion.div>
+      )}
     </motion.div>
   );
 }
 
 export default function FeaturedSmartphones() {
   const sectionRef = useRef(null);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchSmartphones = async () => {
+      try {
+        // Fetch from Official Phone category (ID: 6530)
+        const response = await fetch('https://www.outletexpense.xyz/api/public/categorywise-products/6530?page=1&limit=2');
+        const data = await response.json();
+        
+        if (data.success && data.data) {
+          setProducts(data.data.slice(0, 2));
+        }
+      } catch (error) {
+        console.error("Failed to fetch smartphones:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSmartphones();
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="px-4 sm:px-8 lg:px-10 py-16 bg-background-light dark:bg-background-dark transition-colors duration-300">
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section ref={sectionRef} className="px-4 sm:px-8 lg:px-10 py-16 bg-background-light dark:bg-background-dark transition-colors duration-300">
@@ -145,19 +280,15 @@ export default function FeaturedSmartphones() {
           </motion.p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <ProductCard
-            title="iPhone 15 Pro"
-            description="The ultimate iPhone experience."
-            img="https://lh3.googleusercontent.com/aida-public/AB6AXuAuxKnfL_88VwTYjnOdnDQf93pXS6vbbXTOb_9zsQjcjkzjANe9iWYQRsSnN7OVNlbScbBaUfudtTCOBWpL5Ekkmzjxn0Ra-OgOcQ0xaeDwUPg__yjLtSn71Lz5Lv8mY2SBzuIcT5ulrlHwcmaAhX96SSDU-OtANcI6-FQFtH86-8mJzvieh3lLkN7K07tSGgCd3NXolkhRON4y0pBSyafCpV53xXtQ0EBYiliJMfELe2Whu5u26F1ksrDX0RF88dErw-cx7L_FTCEr"
-            delay={0}
-          />
-          <ProductCard
-            title="Samsung Galaxy S24 Ultra"
-            description="Galaxy AI is here."
-            img="https://lh3.googleusercontent.com/aida-public/AB6AXuD5EJOx7VnWcnyOHjROUZJ52faau-PoqbUHl59Pa7atb4bf1_KxRiVygVRl2MHoykvoiB0e5ngz7hSJfyRIM76oH6CBqs6ALGBUcgNLIq64CiI5_8CKvx2RwckoVXezR1Kk2Fd1bOKs4Lfu6h_JXqE3Q_Kk5xH1hwDt_j69bSxPTjucJPYfBhEkDcqYdSdElgtLyiiaeapUfL7neYw9kOZOoOK26KCfw3l7CPhaowUOZkctG5DSKpkNdkqwXXsskMBof_R8qSzZebz2"
-            delay={0.2}
-          />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
+          {products.map((product, i) => (
+            <SmartphoneCard 
+              key={product.id} 
+              product={product} 
+              delay={i * 0.1} 
+              badge={i === 0 ? "HOT" : null}
+            />
+          ))}
         </div>
       </div>
     </section>

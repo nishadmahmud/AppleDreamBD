@@ -3,12 +3,46 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { motion, AnimatePresence } from "framer-motion";
-import { Clock, Zap, TrendingUp } from "lucide-react";
+import { motion, AnimatePresence, useMotionValue, useSpring } from "framer-motion";
+import { Clock, Zap, TrendingUp, ShoppingCart, Heart, Star, Sparkles } from "lucide-react";
+import { useCart } from "../context/CartContext";
+import { useFavorites } from "../context/FavoritesContext";
 
 export default function DealOfDay() {
   const sectionRef = useRef(null);
+  const cardRef = useRef(null);
   const [timeLeft, setTimeLeft] = useState({ hours: 12, minutes: 45, seconds: 32 });
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [isAdding, setIsAdding] = useState(false);
+
+  const { addToCart, isInCart } = useCart();
+  const { toggleFavorite, isFavorite } = useFavorites();
+
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const rotateX = useSpring(useMotionValue(0), { stiffness: 300, damping: 30 });
+  const rotateY = useSpring(useMotionValue(0), { stiffness: 300, damping: 30 });
+
+  useEffect(() => {
+    const fetchSmartwatch = async () => {
+      try {
+        // Fetch from Smart Watches category (ID: 6528)
+        const response = await fetch('https://www.outletexpense.xyz/api/public/categorywise-products/6528?page=1&limit=1');
+        const data = await response.json();
+        
+        if (data.success && data.data && data.data.length > 0) {
+          setProduct(data.data[0]);
+        }
+      } catch (error) {
+        console.error("Failed to fetch smartwatch:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSmartwatch();
+  }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -49,6 +83,39 @@ export default function DealOfDay() {
 
     return () => clearInterval(interval);
   }, []);
+
+  const handleMouseMove = (e) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const percentX = (e.clientX - centerX) / (rect.width / 2);
+    const percentY = (e.clientY - centerY) / (rect.height / 2);
+    
+    rotateY.set(percentX * 10);
+    rotateX.set(-percentY * 10);
+    mouseX.set(e.clientX - rect.left);
+    mouseY.set(e.clientY - rect.top);
+  };
+
+  const handleMouseLeave = () => {
+    rotateX.set(0);
+    rotateY.set(0);
+  };
+
+  const handleAddToCart = () => {
+    if (product) {
+      addToCart(product, 1);
+      setIsAdding(true);
+      setTimeout(() => setIsAdding(false), 1500);
+    }
+  };
+
+  const handleToggleFavorite = () => {
+    if (product) {
+      toggleFavorite(product);
+    }
+  };
 
   const CounterBox = ({ value, label, prevValue }) => {
     const [displayValue, setDisplayValue] = useState(value);
@@ -96,6 +163,24 @@ export default function DealOfDay() {
     );
   };
 
+  if (loading) {
+    return (
+      <section className="px-4 sm:px-8 lg:px-10 py-16 bg-background-light dark:bg-background-dark transition-colors duration-300">
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
+        </div>
+      </section>
+    );
+  }
+
+  if (!product) {
+    return null;
+  }
+
+  const inCart = isInCart(product.id);
+  const isFav = isFavorite(product.id);
+  const discountPercent = product.market_price ? Math.round(((product.market_price - product.retails_price) / product.market_price) * 100) : 43;
+
   return (
     <section
       ref={sectionRef}
@@ -126,99 +211,200 @@ export default function DealOfDay() {
       </div>
 
       <motion.div
-        className="relative bg-gradient-to-br from-gray-50 to-white dark:from-background-dark/60 dark:to-background-dark/40 border border-gray-200 dark:border-gray-800 rounded-[var(--radius-2xl)] p-8 lg:p-12 flex flex-col lg:flex-row items-center gap-12 shadow-[var(--shadow-strong)] overflow-hidden"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
+        className="text-center mb-12 relative z-10"
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
       >
-        {/* Spotlight effect */}
+        <h2 className="text-gray-900 dark:text-white text-4xl font-bold mb-3">
+          Deal of the Day
+        </h2>
+        <p className="text-gray-600 dark:text-gray-400 text-lg">
+          Limited time offer on premium smartwatch
+        </p>
+      </motion.div>
+
+      <div className="max-w-6xl mx-auto relative z-10">
         <motion.div
-          className="absolute -top-1/2 -right-1/2 w-full h-full bg-gradient-to-br from-primary/20 to-transparent rounded-full blur-3xl"
-          animate={{
-            scale: [1, 1.2, 1],
-            rotate: [0, 90, 0],
+          ref={cardRef}
+          className="group relative flex flex-col gap-6 rounded-[var(--radius-xl)] bg-gray-50 dark:bg-background-dark/50 border border-gray-200 dark:border-gray-800 shadow-[var(--shadow-strong)] p-8 overflow-hidden"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
+          style={{
+            transformStyle: "preserve-3d",
+            rotateX,
+            rotateY,
           }}
-          transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-        />
-
-        <motion.div
-          className="w-full lg:w-1/2 flex justify-center relative z-10"
-          whileHover={{ scale: 1.05, rotate: 3 }}
-          transition={{ type: "spring", stiffness: 300, damping: 20 }}
         >
-          <div className="relative">
-            <Image
-              unoptimized
-              className="max-w-xs md:max-w-sm rounded-2xl shadow-2xl"
-              alt="Apple Watch Ultra 2"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQeMqxDvk9cDu01zKqKg5LHKI20ktPYWaluale0LTt94JKzm9I5cy-H8DSzHOFX-9SH46v-6MihVk6CuzbpU0rBa6wg9w5Ke2Q6jackJXdHHGxDb008dbCwjcZEhoKUPsBEyi8Y6J60Pu7_Fr4NhA-t2Rtu6h2XsEgJlAy6QNSunw3oXb5Du3D-zCDWgzCHWVH2WRvGga38wbF5Sx1ims6XNgZylHAqcuuIL4--6SqAhO5fWITj3Qg0--2i0aFXGp_8eU_8pp-_2-t"
-              width={1000}
-              height={1000}
-            />
-            {/* Glow effect */}
-            <div className="absolute inset-0 -z-10 bg-primary/30 blur-2xl scale-110 rounded-2xl" />
-          </div>
-        </motion.div>
-
-        <div className="w-full lg:w-1/2 text-center lg:text-left relative z-10">
+          {/* Magnetic glow follow */}
           <motion.div
-            className="inline-flex items-center gap-2 bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 px-4 py-2 rounded-full mb-4"
+            className="absolute w-40 h-40 bg-primary/30 rounded-full blur-3xl pointer-events-none"
+            style={{
+              left: mouseX,
+              top: mouseY,
+              x: "-50%",
+              y: "-50%",
+            }}
+            initial={{ opacity: 0 }}
+            whileHover={{ opacity: 0.6 }}
+          />
+
+          {/* Deal Badge */}
+          <motion.div
+            className="absolute top-4 left-4 z-10 flex items-center gap-2 bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 px-3 py-1.5 rounded-full"
             animate={{
               scale: [1, 1.05, 1],
             }}
             transition={{ duration: 2, repeat: Infinity }}
           >
             <Zap className="h-4 w-4 fill-current" />
-            <span className="font-bold uppercase tracking-wider text-sm">Deal of the Day</span>
+            <span className="font-bold uppercase tracking-wider text-xs">HOT DEAL</span>
           </motion.div>
 
-          <h2 className="text-3xl md:text-5xl font-black text-gray-900 dark:text-white mb-3 bg-gradient-to-r from-gray-900 via-primary to-gray-900 dark:from-white dark:via-primary dark:to-white bg-clip-text">
-            Apple Watch Ultra 2
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-6 text-lg leading-relaxed">
-            Next-level adventure. The most rugged and capable Apple Watch pushes
-            limits again. Featuring an all-new S9 SiP and a magical new way to
-            use your watch without touching the screen.
-          </p>
-
-          <div className="flex items-center gap-2 justify-center lg:justify-start mb-8">
-            <motion.div
-              className="flex items-center gap-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-4 py-2 rounded-full"
-              whileHover={{ scale: 1.05 }}
-            >
-              <TrendingUp className="h-4 w-4" />
-              <span className="font-bold text-sm">43% OFF</span>
-            </motion.div>
-            <span className="text-gray-400 line-through text-lg">$799</span>
-            <span className="text-3xl font-black text-primary">$455</span>
-          </div>
-
-          <div className="flex justify-center lg:justify-start gap-3 mb-8 flex-wrap">
-            <CounterBox value={timeLeft.hours} label="Hours" />
-            <CounterBox value={timeLeft.minutes} label="Mins" />
-            <CounterBox value={timeLeft.seconds} label="Secs" />
-          </div>
-
+          {/* Like button */}
           <motion.button
-            className="group relative inline-flex items-center gap-2 overflow-hidden rounded-[0.9rem] h-14 px-8 bg-primary text-white text-lg font-bold shadow-[var(--shadow-soft)]"
-            whileHover={{
-              scale: 1.05,
-              boxShadow: "0 0 40px rgba(17, 115, 212, 0.5)",
-            }}
-            whileTap={{ scale: 0.95 }}
+            className="absolute top-4 right-4 z-10 p-2 bg-white/80 dark:bg-background-dark/80 backdrop-blur rounded-full shadow-md"
+            onClick={handleToggleFavorite}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
           >
-            <Clock className="h-5 w-5" />
-            <span>Grab Deal Now</span>
-            <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-blue-600 to-primary"
-              initial={{ x: "-100%" }}
-              whileHover={{ x: 0 }}
-              transition={{ duration: 0.3 }}
+            <Heart
+              className={`h-5 w-5 transition-colors ${
+                isFav ? "fill-red-500 text-red-500" : "text-gray-400"
+              }`}
             />
-            <span className="relative z-10">Limited Stock!</span>
           </motion.button>
-        </div>
-      </motion.div>
+
+          <div className="flex flex-col lg:flex-row gap-6 items-center">
+            {/* Product Image */}
+            <motion.div
+              className="relative w-full lg:w-1/2 bg-white dark:bg-background-dark/60 rounded-[calc(var(--radius-xl)-0.5rem)] overflow-hidden aspect-square"
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Image
+                unoptimized
+                alt={product.name}
+                src={product.image_path || "/placeholder.png"}
+                className="w-full h-full object-contain p-8 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3"
+                width={1000}
+                height={1000}
+              />
+            </motion.div>
+
+            {/* Product Details */}
+            <div className="w-full lg:w-1/2 flex flex-col gap-4 relative" style={{ transform: "translateZ(30px)" }}>
+              {/* Rating */}
+              <div className="flex items-center gap-1">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                ))}
+                <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">(4.9)</span>
+              </div>
+
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white line-clamp-2">
+                {product.name}
+              </h3>
+
+              {/* Price & Discount */}
+              <div className="flex items-center gap-3 flex-wrap">
+                <motion.div
+                  className="flex items-center gap-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-3 py-1.5 rounded-full"
+                  whileHover={{ scale: 1.05 }}
+                >
+                  <TrendingUp className="h-4 w-4" />
+                  <span className="font-bold text-sm">{discountPercent}% OFF</span>
+                </motion.div>
+                {product.market_price && (
+                  <span className="text-gray-400 line-through text-lg">৳{product.market_price}</span>
+                )}
+                <motion.span
+                  className="text-3xl font-black text-primary"
+                  initial={{ scale: 1 }}
+                  whileHover={{ scale: 1.1 }}
+                >
+                  ৳{product.retails_price}
+                </motion.span>
+              </div>
+
+              {/* Countdown Timer */}
+              <div className="flex gap-2 flex-wrap">
+                <CounterBox value={timeLeft.hours} label="Hours" />
+                <CounterBox value={timeLeft.minutes} label="Mins" />
+                <CounterBox value={timeLeft.seconds} label="Secs" />
+              </div>
+
+              {/* Add to Cart Button */}
+              <motion.button
+                onClick={handleAddToCart}
+                className="relative flex items-center justify-center gap-2 text-base font-semibold text-white bg-primary/90 hover:bg-primary px-6 py-4 rounded-xl overflow-hidden group/btn disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                whileHover={{ scale: inCart ? 1 : 1.02, y: inCart ? 0 : -2, boxShadow: "0 0 30px rgba(74, 144, 226, 0.5)" }}
+                whileTap={{ scale: 0.98 }}
+                disabled={isAdding || inCart}
+              >
+                {isAdding ? (
+                  <motion.div
+                    className="flex items-center gap-2"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                  >
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    >
+                      <ShoppingCart className="h-5 w-5" />
+                    </motion.div>
+                    <span>Adding...</span>
+                  </motion.div>
+                ) : inCart ? (
+                  <>
+                    <ShoppingCart className="h-5 w-5 fill-current" />
+                    <span>In Cart</span>
+                  </>
+                ) : (
+                  <>
+                    <Clock className="h-5 w-5 group-hover/btn:scale-110 transition-transform" />
+                    <span>Grab Deal Now - Limited Stock!</span>
+                  </>
+                )}
+                
+                {/* Shine effect */}
+                {!inCart && (
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                    initial={{ x: "-100%" }}
+                    whileHover={{ x: "100%" }}
+                    transition={{ duration: 0.6 }}
+                  />
+                )}
+              </motion.button>
+            </div>
+          </div>
+
+          {/* Success animation */}
+          {isAdding && (
+            <motion.div
+              className="absolute inset-0 flex items-center justify-center bg-primary/20 backdrop-blur-sm z-20"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <motion.div
+                className="bg-white dark:bg-background-dark rounded-full p-6 shadow-xl"
+                initial={{ scale: 0, rotate: -180 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ type: "spring", stiffness: 200, damping: 15 }}
+              >
+                <ShoppingCart className="h-10 w-10 text-primary" />
+              </motion.div>
+            </motion.div>
+          )}
+        </motion.div>
+      </div>
     </section>
   );
 }

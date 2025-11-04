@@ -5,9 +5,12 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 import { ShoppingCart, Heart, Star, Sparkles } from "lucide-react";
+import { useCart } from "../context/CartContext";
+import { useFavorites } from "../context/FavoritesContext";
 
-function AccessoryCard({ title, price, img, delay = 0 }) {
-  const [isLiked, setIsLiked] = useState(false);
+function AccessoryCard({ product, delay = 0, badge = null }) {
+  const { addToCart, isInCart } = useCart();
+  const { toggleFavorite, isFavorite } = useFavorites();
   const [isAdding, setIsAdding] = useState(false);
   const cardRef = useRef(null);
   
@@ -36,9 +39,17 @@ function AccessoryCard({ title, price, img, delay = 0 }) {
   };
 
   const handleAddToCart = () => {
+    addToCart(product, 1);
     setIsAdding(true);
     setTimeout(() => setIsAdding(false), 1500);
   };
+
+  const handleToggleFavorite = () => {
+    toggleFavorite(product);
+  };
+
+  const inCart = isInCart(product.id);
+  const isFav = isFavorite(product.id);
 
   return (
     <motion.div
@@ -73,19 +84,19 @@ function AccessoryCard({ title, price, img, delay = 0 }) {
       {/* Like button */}
       <motion.button
         className="absolute top-4 right-4 z-10 p-2 bg-white/80 dark:bg-background-dark/80 backdrop-blur rounded-full shadow-md"
-        onClick={() => setIsLiked(!isLiked)}
+        onClick={handleToggleFavorite}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
       >
         <Heart
           className={`h-5 w-5 transition-colors ${
-            isLiked ? "fill-red-500 text-red-500" : "text-gray-400"
+            isFav ? "fill-red-500 text-red-500" : "text-gray-400"
           }`}
         />
       </motion.button>
 
       {/* Badge */}
-      {delay < 0.2 && (
+      {badge && (
         <motion.div
           className="absolute top-4 left-4 z-10 flex items-center gap-1 bg-yellow-400 text-black text-xs font-bold px-2 py-1 rounded-full"
           initial={{ rotate: -12 }}
@@ -93,7 +104,7 @@ function AccessoryCard({ title, price, img, delay = 0 }) {
           transition={{ duration: 2, repeat: Infinity }}
         >
           <Sparkles className="h-3 w-3" />
-          <span>BEST SELLER</span>
+          <span>{badge}</span>
         </motion.div>
       )}
 
@@ -104,15 +115,15 @@ function AccessoryCard({ title, price, img, delay = 0 }) {
       >
         <Image
           unoptimized
-          alt={title}
-          src={img}
+          alt={product.name}
+          src={product.image_path || "/placeholder.png"}
           className="w-full h-full object-contain p-6 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3"
           width={1000}
           height={1000}
         />
       </motion.div>
 
-      <div className="flex flex-col gap-2 relative" style={{ transform: "translateZ(30px)" }}>
+      <div className="flex flex-col gap-2 relative flex-1" style={{ transform: "translateZ(30px)" }}>
         {/* Rating */}
         <div className="flex items-center gap-1">
           {[...Array(5)].map((_, i) => (
@@ -122,26 +133,28 @@ function AccessoryCard({ title, price, img, delay = 0 }) {
         </div>
 
         <p className="text-base font-semibold text-gray-900 dark:text-white line-clamp-2">
-          {title}
+          {product.name}
         </p>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 mb-auto">
           <motion.p
             className="text-2xl font-black text-primary"
             initial={{ scale: 1 }}
             whileHover={{ scale: 1.1 }}
           >
-            {price}
+            ৳{product.retails_price}
           </motion.p>
-          <span className="text-sm text-gray-400 line-through">${(parseFloat(price.slice(1)) * 1.3).toFixed(2)}</span>
+          {product.market_price && product.market_price > product.retails_price && (
+            <span className="text-sm text-gray-400 line-through">৳{product.market_price}</span>
+          )}
         </div>
 
         <motion.button
           onClick={handleAddToCart}
-          className="relative flex items-center justify-center gap-2 mt-2 text-sm font-semibold text-white bg-primary/90 hover:bg-primary px-4 py-3 rounded-lg overflow-hidden group/btn"
-          whileHover={{ scale: 1.02, y: -2 }}
+          className="relative flex items-center justify-center gap-2 mt-2 text-sm font-semibold text-white bg-primary/90 hover:bg-primary px-4 py-3 rounded-lg overflow-hidden group/btn disabled:opacity-50 disabled:cursor-not-allowed"
+          whileHover={{ scale: inCart ? 1 : 1.02, y: inCart ? 0 : -2 }}
           whileTap={{ scale: 0.98 }}
-          disabled={isAdding}
+          disabled={isAdding || inCart}
         >
           {isAdding ? (
             <motion.div
@@ -157,6 +170,11 @@ function AccessoryCard({ title, price, img, delay = 0 }) {
               </motion.div>
               <span>Adding...</span>
             </motion.div>
+          ) : inCart ? (
+            <>
+              <ShoppingCart className="h-4 w-4 fill-current" />
+              <span>In Cart</span>
+            </>
           ) : (
             <>
               <ShoppingCart className="h-4 w-4 group-hover/btn:scale-110 transition-transform" />
@@ -165,12 +183,14 @@ function AccessoryCard({ title, price, img, delay = 0 }) {
           )}
           
           {/* Shine effect */}
-          <motion.div
-            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-            initial={{ x: "-100%" }}
-            whileHover={{ x: "100%" }}
-            transition={{ duration: 0.6 }}
-          />
+          {!inCart && (
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+              initial={{ x: "-100%" }}
+              whileHover={{ x: "100%" }}
+              transition={{ duration: 0.6 }}
+            />
+          )}
         </motion.button>
       </div>
 
@@ -198,29 +218,49 @@ function AccessoryCard({ title, price, img, delay = 0 }) {
 
 export default function TopAccessories() {
   const sectionRef = useRef(null);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const products = [
-    {
-      title: "AirPods Pro (2nd Gen)",
-      price: "$249.00",
-      img: "https://lh3.googleusercontent.com/aida-public/AB6AXuAbr8T6gjc7Ft2NHBOPujLVWuTiMxndJ5yqJfilwgLaIDCAznNx0s2PbDHieXQPxrgYKXYPkruO4AEwt_LwHDqm6Z7MXxFes1v_Kk7LPdrxQ-ZYh4OcM9gHUfa9cGok2vjwgD0mwDTgivlNShgPegE0KwkN9A2TogxhrR-kw3SN8WgRybNovKncLp1pOHo_UglEEelnLE2HGBkUFV0oX6yhq8r6YyVbFv1q8thU9MSMBCsIvc6hMz0LGHfC2IwxTSc3iq9ZX3cvKT0y",
-    },
-    {
-      title: "Samsung Galaxy Watch6",
-      price: "$299.00",
-      img: "https://lh3.googleusercontent.com/aida-public/AB6AXuCZ9aq-bO6MyfeXwH8imafNWiBAeR3qsUMIXe7QUZJyy5Au9rZscQqQoUjKkdGLxjuaLHlD_jA-P9PYuokUS5ZKcXy_aKLQOVNseqyNq8cPZX0VHdjvPcRDbjoZGzJnkoM3mq6YcY2KIOdiAqIRYtOXVsImssXZyVwQTq9Wquy75L9H2ggTo7BhhoeXyySxcUBjyWSdZqzORVeVKyonD-VBpMY4lzMG8o2ZfY4u4vT6Ouk0udgrKXXFRimKQ727rDJJ57liP2hIrOTX",
-    },
-    {
-      title: "Anker Power Bank",
-      price: "$59.99",
-      img: "https://lh3.googleusercontent.com/aida-public/AB6AXuCLBMAX_0aWt8-kS5Sqfj_k9uKTizAOxDIOkjck0LjpyCXM0DXY_fnuiUAFMRgeQ2rgE0gQIFn4hTKieiXNvJU5WG85AlcaQwmV6uBrrUMvw2lDdd9ySr3nJaIfKLNA5jx-Bm2RHyx5MbLBgqL_H4vM5qt5IvYip0-7wd02MekddwyIiIlaACcMvRcUTWdSr11-yNJWaQ3QNA4XgPYsg0NlzoPZdb2t3QF-XML4IT2l4A151p9ClFcSZvQH4xPdtOB1ULCBMTi0mGLL",
-    },
-    {
-      title: "Spigen Tough Armor Case",
-      price: "$35.00",
-      img: "https://lh3.googleusercontent.com/aida-public/AB6AXuAtzw44DcUTgDKrS1TykHUoM6kcO-lW4nLELKXteN6YjvqWr_6z5i6wYFBELc8y-im6xwpf-RzLTTymRvqxUwL3SV_x_rlRaoh3iyu3jg4gLK9HvnL0Xy2c8_punkuKTH-k1QyQd6aiOZyh3IkcPjJL17BTVsKTl3_jeXo8CfFwK6rwugx6jVK-29DPSfKNpIQ_WJFhBd-aIDIZn24Rb-XFgKVhxW0Fu7DQlFHMMb3VZhlZYgObeH0AgfwzPzgl-Q0ckcAsrHjbjGjJ",
-    },
-  ];
+  useEffect(() => {
+    const fetchAccessories = async () => {
+      try {
+        // Fetch from multiple accessory categories
+        const categories = [
+          6527, // EarBuds
+          6520, // Powerbank
+          6525, // Cover & Glass
+          6519, // Charger & Cable
+        ];
+
+        const promises = categories.map(catId => 
+          fetch(`https://www.outletexpense.xyz/api/public/categorywise-products/${catId}?page=1&limit=1`)
+            .then(r => r.json())
+            .then(data => data.success && data.data && data.data.length > 0 ? data.data[0] : null)
+        );
+
+        const results = await Promise.all(promises);
+        const validProducts = results.filter(p => p !== null);
+        
+        setProducts(validProducts);
+      } catch (error) {
+        console.error("Failed to fetch accessories:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAccessories();
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="px-4 sm:px-8 lg:px-10 py-16 bg-background-light dark:bg-background-dark transition-colors duration-300">
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section ref={sectionRef} className="px-4 sm:px-8 lg:px-10 py-16 bg-background-light dark:bg-background-dark transition-colors duration-300">
@@ -239,8 +279,13 @@ export default function TopAccessories() {
       </motion.div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {products.map((p, i) => (
-          <AccessoryCard key={p.title} {...p} delay={i * 0.1} />
+        {products.map((product, i) => (
+          <AccessoryCard 
+            key={product.id} 
+            product={product} 
+            delay={i * 0.1} 
+            badge={i === 0 ? "BEST SELLER" : null}
+          />
         ))}
       </div>
     </section>

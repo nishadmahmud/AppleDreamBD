@@ -119,8 +119,8 @@ const DealCard = ({ product, index }) => {
       }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      whileHover={{ scale: 1.02 }}
-      transition={{ duration: 0.3 }}
+      whileHover={{ scale: 1.005 }}
+      transition={{ duration: 0.15 }}
     >
       {/* Clickable overlay for product link */}
       <Link href={`/product/${product.id}`} className="absolute inset-0 z-0" />
@@ -140,8 +140,8 @@ const DealCard = ({ product, index }) => {
       {/* Limited Time Badge - Top Right */}
       <motion.div
         className="absolute top-3 right-3 z-20 flex items-center gap-1 bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-300 text-xs font-bold px-2 py-1 rounded-full"
-        animate={{ scale: [1, 1.05, 1] }}
-        transition={{ duration: 2, repeat: Infinity }}
+        animate={{ scale: [1, 1.02, 1] }}
+        transition={{ duration: 3, repeat: Infinity }}
       >
         <Zap className="h-3 w-3" />
         <span>DEAL</span>
@@ -169,15 +169,15 @@ const DealCard = ({ product, index }) => {
       <div className="relative w-full aspect-square bg-gray-100 dark:bg-gray-800 overflow-hidden">
         {/* Pulsing glow effect */}
         <motion.div
-          className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-primary/10"
-          animate={{ opacity: [0.3, 0.5, 0.3] }}
-          transition={{ duration: 3, repeat: Infinity }}
+          className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-primary/5"
+          animate={{ opacity: [0.2, 0.3, 0.2] }}
+          transition={{ duration: 4, repeat: Infinity }}
         />
         
         <motion.div
           className="relative w-full h-full z-10"
-          whileHover={{ scale: 1.15, rotate: 5 }}
-          transition={{ duration: 0.4 }}
+          whileHover={{ scale: 1.02 }}
+          transition={{ duration: 0.2 }}
         >
           <Image
             src={product.image_path}

@@ -1,18 +1,24 @@
 "use client";
 import Image from "next/image";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 
 export default function Hero() {
   const containerRef = useRef(null);
-  const imgRef = useRef(null);
   const h1Ref = useRef(null);
   const pRef = useRef(null);
   const ctaRef = useRef(null);
   const badgeRef = useRef(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const images = [
+    "https://media.macphun.com/img/uploads/customer/blog/3501/1749749510684b0f06056cb7.96384689.jpg?q=85&w=1680",
+    "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=85&w=1680",
+    "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=85&w=1680"
+  ];
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -28,42 +34,48 @@ export default function Hero() {
         ease: "power2.out",
         stagger: 0.08,
       });
-
-      // Parallax image
-      if (imgRef.current && containerRef.current) {
-        gsap.to(imgRef.current, {
-          yPercent: -15,
-          ease: "none",
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: "top top",
-            end: "bottom top",
-            scrub: 0.8,
-          },
-        });
-      }
     }
   }, []);
+
+  // Auto-slide effect
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % images.length);
+    }, 5000); // Change image every 5 seconds
+
+    return () => clearInterval(interval);
+  }, [images.length]);
 
   return (
     <section className="px-4 sm:px-8 lg:px-10 py-12 bg-background-light dark:bg-background-dark transition-colors duration-300">
       <div ref={containerRef} className="relative w-full @container rounded-[var(--radius-2xl)] overflow-hidden text-white min-h-[580px] flex items-center shadow-[var(--shadow-strong)] group">
         <div className="absolute inset-0">
-          <Image
-            ref={imgRef}
-            unoptimized
-            src="https://media.macphun.com/img/uploads/customer/blog/3501/1749749510684b0f06056cb7.96384689.jpg?q=85&w=1680"
-            alt="Premium tech gadgets displayed on a sleek background"
-            className="w-full h-full object-cover scale-110 group-hover:scale-105 transition-transform duration-500 ease-out"
-            width={1000}
-            height={1000}
-          />
+          <AnimatePresence initial={false}>
+            <motion.div
+              key={currentSlide}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+              className="absolute inset-0"
+            >
+              <Image
+                unoptimized
+                src={images[currentSlide]}
+                alt="Premium tech gadgets displayed on a sleek background"
+                className="w-full h-full object-cover"
+                width={1000}
+                height={1000}
+                priority={currentSlide === 0}
+              />
+            </motion.div>
+          </AnimatePresence>
         </div>
         <div className="absolute inset-0 bg-gradient-to-tr from-black/85 via-black/40 to-transparent" />
         
-        {/* Floating particles effect */}
-        <div className="absolute inset-0 opacity-30">
-          {[...Array(8)].map((_, i) => (
+        {/* Floating particles effect (reduced) */}
+        <div className="absolute inset-0 opacity-20">
+          {[...Array(2)].map((_, i) => (
             <motion.div
               key={i}
               className="absolute w-1 h-1 bg-white rounded-full"
@@ -72,11 +84,11 @@ export default function Hero() {
                 top: `${30 + (i % 3) * 20}%`,
               }}
               animate={{
-                y: [0, -20, 0],
-                opacity: [0.2, 0.6, 0.2],
+                y: [0, -10, 0],
+                opacity: [0.2, 0.4, 0.2],
               }}
               transition={{
-                duration: 2 + i * 0.3,
+                duration: 1.5 + i * 0.2,
                 repeat: Infinity,
                 ease: "easeInOut",
               }}
@@ -139,10 +151,11 @@ export default function Hero() {
 
         {/* Carousel indicators with animation */}
         <div className="absolute bottom-6 right-6 flex gap-2 z-10">
-          {[0, 1, 2].map((i) => (
+          {images.map((_, i) => (
             <motion.button
               key={i}
-              className={`h-2 rounded-full ${i === 0 ? "w-8 bg-white" : "w-2 bg-white/50"}`}
+              onClick={() => setCurrentSlide(i)}
+              className={`h-2 rounded-full transition-all ${i === currentSlide ? "w-8 bg-white" : "w-2 bg-white/50"}`}
               whileHover={{ scale: 1.2, backgroundColor: "rgba(255,255,255,1)" }}
               transition={{ duration: 0.2 }}
             />

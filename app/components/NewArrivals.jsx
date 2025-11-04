@@ -162,25 +162,13 @@ const NewArrivalCard = ({ product, index }) => {
       </div>
 
       {/* Product Images */}
-      <div className="relative w-full aspect-square bg-gradient-to-br from-blue-50 to-primary/10 dark:from-blue-900/20 dark:to-primary/20 overflow-hidden">
-        {/* Animated gradient background */}
-        <motion.div
-          className="absolute inset-0 bg-gradient-to-br from-blue-400/10 to-primary/10"
-          animate={{
-            background: [
-              "linear-gradient(135deg, rgba(59,130,246,0.1) 0%, rgba(147,51,234,0.1) 100%)",
-              "linear-gradient(135deg, rgba(147,51,234,0.1) 0%, rgba(59,130,246,0.1) 100%)",
-              "linear-gradient(135deg, rgba(59,130,246,0.1) 0%, rgba(147,51,234,0.1) 100%)",
-            ],
-          }}
-          transition={{ duration: 3, repeat: Infinity }}
-        />
+      <div className="relative w-full aspect-square bg-gray-100 dark:bg-gray-800 overflow-hidden">
 
         {/* Main Image */}
         <motion.div
           className="relative w-full h-full z-10"
-          animate={{ scale: isHovered ? 1.1 : 1 }}
-          transition={{ duration: 0.4 }}
+          animate={{ scale: isHovered ? 1.02 : 1 }}
+          transition={{ duration: 0.2 }}
         >
           <Image
             src={product.image_path}

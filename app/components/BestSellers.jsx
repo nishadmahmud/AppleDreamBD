@@ -40,16 +40,16 @@ const ProductCard = ({ product, index }) => {
 
     gsap.fromTo(
       cardRef.current,
-      { opacity: 0, y: 50 },
+      { opacity: 0, y: 25 },
       {
         opacity: 1,
         y: 0,
-        duration: 0.4,
-        delay: index * 0.05,
+        duration: 0.2,
+        delay: index * 0.02,
         ease: "power2.out",
         scrollTrigger: {
           trigger: cardRef.current,
-          start: "top 90%",
+          start: "top 92%",
         },
       }
     );
@@ -102,8 +102,8 @@ const ProductCard = ({ product, index }) => {
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       onClick={handleCardClick}
-      whileHover={{ scale: 1.02 }}
-      transition={{ duration: 0.3 }}
+      whileHover={{ scale: 1.005 }}
+      transition={{ duration: 0.15 }}
     >
       {/* Best Seller Badge */}
       <motion.div
