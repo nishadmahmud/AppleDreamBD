@@ -184,11 +184,7 @@ const CategoryCard = ({ category, index }) => {
       </motion.div>
 
       {/* Category name */}
-      <h3 className="text-center text-sm font-bold text-gray-800 dark:text-white group-hover:text-transparent group-hover:bg-gradient-to-br group-hover:bg-clip-text transition-all duration-300"
-        style={{
-          backgroundImage: `linear-gradient(to bottom right, var(--tw-gradient-stops))`,
-        }}
-      >
+      <h3 className="text-center text-sm font-bold text-gray-800 dark:text-white group-hover:text-gray-900 dark:group-hover:text-white transition-colors duration-300 relative z-10">
         {category.name}
       </h3>
 

@@ -58,12 +58,12 @@ const ProductCard = ({ product, viewMode }) => {
   if (viewMode === "list") {
     return (
       <motion.div
-        className="bg-white dark:bg-gray-900/50 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex cursor-pointer group"
+        className="bg-white dark:bg-gray-900/50 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-200 flex cursor-pointer group"
         onClick={handleCardClick}
-        whileHover={{ scale: 1.01 }}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        layout
+        whileHover={{ scale: 1.005 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.2 }}
       >
         {/* Image */}
         <div className="relative w-48 h-48 flex-shrink-0 bg-gray-100 dark:bg-gray-800">
@@ -71,7 +71,7 @@ const ProductCard = ({ product, viewMode }) => {
             src={product.image_path}
             alt={product.name}
             fill
-            className="object-cover group-hover:scale-110 transition-transform duration-500"
+            className="object-cover group-hover:scale-105 transition-transform duration-300"
             sizes="192px"
           />
           {product.discount > 0 && (
@@ -169,12 +169,12 @@ const ProductCard = ({ product, viewMode }) => {
   // Grid View
   return (
     <motion.div
-      className="bg-white dark:bg-gray-900/50 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col cursor-pointer group"
+      className="bg-white dark:bg-gray-900/50 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-200 flex flex-col cursor-pointer group"
       onClick={handleCardClick}
-      whileHover={{ scale: 1.02 }}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      layout
+      whileHover={{ scale: 1.01 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.2 }}
     >
       {/* Image */}
       <div className="relative w-full aspect-square bg-gray-100 dark:bg-gray-800">
@@ -182,7 +182,7 @@ const ProductCard = ({ product, viewMode }) => {
           src={product.image_path}
           alt={product.name}
           fill
-          className="object-cover group-hover:scale-110 transition-transform duration-500"
+          className="object-cover group-hover:scale-105 transition-transform duration-300"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
         
@@ -307,6 +307,10 @@ function ProductsPageContent() {
     const categoryParam = searchParams.get('category');
     if (categoryParam) {
       setSelectedCategories([categoryParam]);
+    }
+    const searchParam = searchParams.get('search');
+    if (typeof searchParam === 'string') {
+      setSearchQuery(searchParam);
     }
   }, [searchParams]);
 
@@ -468,22 +472,18 @@ function ProductsPageContent() {
               {/* Premium Loading Spinner */}
               <div className="relative w-20 h-20">
                 {/* Outer ring */}
-                <motion.div
-                  className="absolute inset-0 border-4 border-primary/20 rounded-full"
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                />
+                <div className="absolute inset-0 border-4 border-primary/20 rounded-full" />
                 {/* Spinning gradient ring */}
                 <motion.div
                   className="absolute inset-0 border-4 border-transparent border-t-primary border-r-primary rounded-full"
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
+                  animate={{ rotate: [0, 360] }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                 />
                 {/* Inner pulsing dot */}
                 <motion.div
                   className="absolute inset-0 m-auto w-3 h-3 bg-primary rounded-full"
-                  animate={{ scale: [1, 1.5, 1], opacity: [1, 0.5, 1] }}
-                  transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                  animate={{ scale: [1, 1.3, 1], opacity: [1, 0.6, 1] }}
+                  transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
                 />
               </div>
               {/* Loading text */}
@@ -529,8 +529,9 @@ function ProductsPageContent() {
           {/* Header */}
           <motion.div
             className="mb-8"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
           >
             <h1 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-4">
               All Products
@@ -543,9 +544,9 @@ function ProductsPageContent() {
           {/* Category Cards - Horizontal Scroll - Compact */}
           <motion.div
             className="mb-4"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
           >
             <div className="relative">
               <div className="overflow-x-auto hide-scrollbar">
@@ -558,7 +559,6 @@ function ProductsPageContent() {
                         ? "bg-primary hover:bg-primary/90 text-white shadow-md"
                         : "bg-white dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-primary"
                     }`}
-                    whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
                     <Grid3x3 className="h-3 w-3" />
@@ -597,9 +597,9 @@ function ProductsPageContent() {
           {/* Search and Filters Bar - Compact */}
           <motion.div
             className="mb-6 space-y-3"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
           >
             <div className="flex flex-col lg:flex-row gap-2">
               {/* Search Bar */}
@@ -634,7 +634,6 @@ function ProductsPageContent() {
                 <motion.button
                   onClick={() => setFiltersOpen(!filtersOpen)}
                   className="flex items-center gap-1.5 px-3 py-2 text-sm rounded-lg bg-white dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 hover:border-primary transition-all text-gray-900 dark:text-white font-medium relative"
-                  whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
                   <Filter className="h-4 w-4" />
@@ -704,7 +703,7 @@ function ProductsPageContent() {
                     animate={{ scale: 1 }}
                   >
                     <Search className="h-3 w-3" />
-                    "{searchQuery}"
+                    &quot;{searchQuery}&quot;
                   </motion.div>
                 )}
                 {inStockOnly && (
@@ -788,7 +787,7 @@ function ProductsPageContent() {
             className="mb-6 text-sm text-gray-600 dark:text-gray-400"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
+            transition={{ duration: 0.2 }}
           >
             Showing {indexOfFirstProduct + 1}-{Math.min(indexOfLastProduct, filteredProducts.length)} of {filteredProducts.length} products
           </motion.div>
@@ -821,10 +820,16 @@ function ProductsPageContent() {
               </div>
             </motion.div>
           ) : (
-            <div className={viewMode === "grid" 
-              ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-              : "space-y-4"
-            }>
+            <motion.div 
+              key={viewMode}
+              className={viewMode === "grid" 
+                ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+                : "space-y-4"
+              }
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
+            >
               {currentProducts.map((product, index) => (
                 <ProductCard
                   key={product.id}
@@ -833,7 +838,7 @@ function ProductsPageContent() {
                   index={index}
                 />
               ))}
-            </div>
+            </motion.div>
           )}
 
           {/* Pagination */}
@@ -848,7 +853,6 @@ function ProductsPageContent() {
                 onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                 disabled={currentPage === 1}
                 className="px-4 py-2 rounded-lg bg-white dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-900 dark:text-white font-medium hover:border-primary transition-all"
-                whileHover={{ scale: currentPage === 1 ? 1 : 1.05 }}
                 whileTap={{ scale: currentPage === 1 ? 1 : 0.95 }}
               >
                 Previous
@@ -876,7 +880,6 @@ function ProductsPageContent() {
                           ? "bg-primary text-white"
                           : "bg-white dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white hover:border-primary"
                       }`}
-                      whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                     >
                       {pageNum}
@@ -889,7 +892,6 @@ function ProductsPageContent() {
                 onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                 disabled={currentPage === totalPages}
                 className="px-4 py-2 rounded-lg bg-white dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-900 dark:text-white font-medium hover:border-primary transition-all"
-                whileHover={{ scale: currentPage === totalPages ? 1 : 1.05 }}
                 whileTap={{ scale: currentPage === totalPages ? 1 : 0.95 }}
               >
                 Next
@@ -910,20 +912,16 @@ export default function ProductsPage() {
     <Suspense fallback={
       <div className="min-h-screen bg-background-light dark:bg-background-dark flex items-center justify-center">
         <div className="relative w-20 h-20">
-          <motion.div
-            className="absolute inset-0 border-4 border-primary/20 rounded-full"
-            animate={{ rotate: 360 }}
-            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-          />
+          <div className="absolute inset-0 border-4 border-primary/20 rounded-full" />
           <motion.div
             className="absolute inset-0 border-4 border-transparent border-t-primary border-r-primary rounded-full"
-            animate={{ rotate: 360 }}
-            transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
+            animate={{ rotate: [0, 360] }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
           />
           <motion.div
             className="absolute inset-0 m-auto w-3 h-3 bg-primary rounded-full"
-            animate={{ scale: [1, 1.5, 1], opacity: [1, 0.5, 1] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+            animate={{ scale: [1, 1.3, 1], opacity: [1, 0.6, 1] }}
+            transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
           />
         </div>
       </div>

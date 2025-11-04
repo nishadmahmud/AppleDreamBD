@@ -18,7 +18,7 @@ import {
   Plus,
   Minus,
 } from "lucide-react";
-import { fetchProductDetail } from "../../../lib/api";
+import { fetchProductDetail, getAllCategories } from "../../../lib/api";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { useCart } from "../../context/CartContext";
@@ -38,6 +38,8 @@ export default function ProductDetailPage() {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [addedToCart, setAddedToCart] = useState(false);
+  const [recentlyViewed, setRecentlyViewed] = useState([]);
+  const [similar, setSimilar] = useState([]);
 
   useEffect(() => {
     if (!productId) return;
@@ -62,6 +64,48 @@ export default function ProductDetailPage() {
 
     loadProduct();
   }, [productId]);
+
+  // Persist recently viewed and fetch similar
+  useEffect(() => {
+    if (!product) return;
+    // Recently viewed (localStorage)
+    try {
+      const key = "recently_viewed";
+      const stored = JSON.parse(localStorage.getItem(key) || "[]");
+      const minimal = {
+        id: product.id,
+        name: product.name,
+        image_path: product.image_path || product.images?.[0] || null,
+        retails_price: product.retails_price,
+      };
+      const next = [minimal, ...stored.filter((p) => p.id !== product.id)].slice(0, 12);
+      localStorage.setItem(key, JSON.stringify(next));
+      setRecentlyViewed(next.filter((p) => p.id !== product.id));
+    } catch {}
+
+    // Similar products: prefer same category, else same brand
+    const loadSimilar = async () => {
+      try {
+        const catId = product.category_id || product.categoryId || product.category_id_fk;
+        if (catId) {
+          const res = await fetch(`https://www.outletexpense.xyz/api/public/categorywise-products/${catId}?page=1&limit=20`);
+          const data = await res.json();
+          const list = data?.success && Array.isArray(data?.data) ? data.data : [];
+          setSimilar(list.filter((p) => p.id !== product.id).slice(0, 8));
+          return;
+        }
+        if (product.brand_id) {
+          const res = await fetch(`https://www.outletexpense.xyz/api/public/brandwise-products/${product.brand_id}/188?page=1`);
+          const data = await res.json();
+          const list = data?.success && Array.isArray(data?.data) ? data.data : [];
+          setSimilar(list.filter((p) => p.id !== product.id).slice(0, 8));
+        }
+      } catch (e) {
+        console.warn("Similar products fetch failed", e);
+      }
+    };
+    loadSimilar();
+  }, [product]);
 
   // Get all available product images
   const productImages = product?.images && product.images.length > 0
@@ -488,6 +532,49 @@ export default function ProductDetailPage() {
           )}
         </div>
       </div>
+
+      {/* Recently Viewed */}
+      {recentlyViewed && recentlyViewed.length > 0 && (
+        <div className="px-4 sm:px-8 lg:px-10 pb-12">
+          <div className="max-w-6xl mx-auto">
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Recently Viewed</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+              {recentlyViewed.slice(0,8).map((item) => (
+                <Link key={item.id} href={`/product/${item.id}`} className="group">
+                  <div className="relative w-full aspect-square rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-800">
+                    <Image src={item.image_path || "/placeholder.png"} alt={item.name} fill className="object-cover group-hover:scale-105 transition-transform duration-300" />
+                  </div>
+                  <div className="mt-2 text-xs text-gray-700 dark:text-gray-300 line-clamp-2">{item.name}</div>
+                  <div className="text-sm font-semibold text-primary">৳{item.retails_price}</div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Similar Products */}
+      {similar && similar.length > 0 && (
+        <div className="px-4 sm:px-8 lg:px-10 pb-16">
+          <div className="max-w-6xl mx-auto">
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">You may also like</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+              {similar.slice(0,8).map((item) => (
+                <Link key={item.id} href={`/product/${item.id}`} className="group">
+                  <div className="relative w-full aspect-square rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-800">
+                    <Image src={item.image_path || "/placeholder.png"} alt={item.name} fill className="object-cover group-hover:scale-105 transition-transform duration-300" />
+                    {item.discount > 0 && (
+                      <div className="absolute top-2 left-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{item.discount_type === "percentage" ? `-${item.discount}%` : `-৳${item.discount}`}</div>
+                    )}
+                  </div>
+                  <div className="mt-2 text-xs text-gray-700 dark:text-gray-300 line-clamp-2">{item.name}</div>
+                  <div className="text-sm font-semibold text-primary">৳{item.retails_price}</div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>

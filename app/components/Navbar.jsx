@@ -5,8 +5,9 @@ import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "../context/ThemeContext";
 import { useCart } from "../context/CartContext";
 import { useFavorites } from "../context/FavoritesContext";
-import { Moon, Sun, Search, User, Heart, ShoppingBag, Menu, X, Trash2, Plus, Minus } from "lucide-react";
+import { Moon, Sun, Search, Heart, ShoppingBag, Menu, X, Trash2, Plus, Minus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { getAllCategories } from "../../lib/api";
 import Image from "next/image";
 
 export default function Navbar() {
@@ -17,6 +18,10 @@ export default function Navbar() {
   const [cartOpen, setCartOpen] = useState(false);
   const [favoritesOpen, setFavoritesOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+  const [recentSearches, setRecentSearches] = useState([]);
   const { isDark, toggleTheme } = useTheme();
   const { cart, getCartCount, getCartTotal, removeFromCart, updateQuantity, addToCart } = useCart();
   const { favorites, removeFromFavorites, toggleFavorite } = useFavorites();
@@ -27,6 +32,10 @@ export default function Navbar() {
   
   const cartRef = useRef(null);
   const favoritesRef = useRef(null);
+  const searchRef = useRef(null);
+  const abortRef = useRef(null);
+  const cacheRef = useRef({});
+  const allProductsRef = useRef(null);
 
   // Check if link is active
   const isActiveLink = (href) => {
@@ -54,11 +63,76 @@ export default function Navbar() {
       if (favoritesRef.current && !favoritesRef.current.contains(event.target)) {
         setFavoritesOpen(false);
       }
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setSearchOpen(false);
+      }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Load recent searches
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const stored = JSON.parse(localStorage.getItem("recent_searches") || "[]");
+      if (Array.isArray(stored)) setRecentSearches(stored.slice(0, 5));
+    } catch {}
+  }, []);
+
+  const pushToProducts = (q) => {
+    const query = (q ?? searchQuery).trim();
+    if (!query) return;
+    if (typeof window !== "undefined") {
+      try {
+        const next = [query, ...recentSearches.filter((s) => s !== query)].slice(0, 5);
+        setRecentSearches(next);
+        localStorage.setItem("recent_searches", JSON.stringify(next));
+      } catch {}
+    }
+    router.push(`/products?search=${encodeURIComponent(query)}`);
+    setSearchOpen(false);
+  };
+
+  // Debounced suggestions (fetch all category pages once, then filter client-side)
+  useEffect(() => {
+    const q = searchQuery.trim();
+    if (!q) {
+      setSuggestions([]);
+      setLoadingSuggestions(false);
+      return;
+    }
+    const handler = setTimeout(async () => {
+      try {
+        setLoadingSuggestions(true);
+        // If we already have the full list cached, just filter
+        if (!allProductsRef.current) {
+          const categories = getAllCategories();
+          // Limit per category to keep light
+          const promises = categories.map((c) =>
+            fetch(`https://www.outletexpense.xyz/api/public/categorywise-products/${c.id}?page=1&limit=100`)
+              .then((r) => r.json())
+              .then((d) => (d?.success && Array.isArray(d?.data) ? d.data : []))
+              .catch(() => [])
+          );
+          const results = await Promise.all(promises);
+          const combined = results.flat();
+          // Deduplicate by id
+          const unique = Array.from(new Map(combined.map((p) => [p.id, p])).values());
+          allProductsRef.current = unique;
+        }
+        const lower = q.toLowerCase();
+        const filtered = allProductsRef.current
+          .filter((p) => (p?.name || "").toLowerCase().includes(lower))
+          .slice(0, 5);
+        setSuggestions(filtered);
+      } finally {
+        setLoadingSuggestions(false);
+      }
+    }, 300);
+    return () => clearTimeout(handler);
+  }, [searchQuery]);
 
   const navLinks = [
     { name: "Home", href: "/" },
@@ -66,6 +140,7 @@ export default function Navbar() {
     { name: "Best Sellers", href: "#best-sellers" },
     { name: "New Arrivals", href: "#new-arrivals" },
     { name: "Deals", href: "#deals" },
+    { name: "Blog", href: "/blog" },
   ];
 
   return (
@@ -122,7 +197,8 @@ export default function Navbar() {
         <div className="flex flex-1 justify-end items-center gap-3">
           {/* Search Bar */}
           <motion.label
-            className="hidden md:flex flex-col min-w-40 h-10 max-w-64"
+            ref={searchRef}
+            className="hidden md:flex flex-col min-w-40 h-10 max-w-64 relative"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
@@ -136,11 +212,87 @@ export default function Navbar() {
                 placeholder="Search products..."
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
-                    window.location.href = '/products';
+                    pushToProducts();
+                  } else if (e.key === 'Escape') {
+                    setSearchOpen(false);
                   }
                 }}
+                onFocus={() => setSearchOpen(true)}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="px-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                  aria-label="Clear search"
+                >
+                  ×
+                </button>
+              )}
             </div>
+            <AnimatePresence>
+              {searchOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute top-11 left-0 right-0 z-50 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl overflow-hidden"
+                  role="listbox"
+                >
+                  {!searchQuery && recentSearches.length > 0 && (
+                    <div className="p-2">
+                      <div className="px-2 py-1 text-xs uppercase tracking-wide text-gray-500">Recent</div>
+                      {recentSearches.map((term) => (
+                        <button
+                          key={term}
+                          onClick={() => pushToProducts(term)}
+                          className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg"
+                        >
+                          {term}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {searchQuery && (
+                    <div className="p-2 max-h-80 overflow-y-auto">
+                      {loadingSuggestions ? (
+                        <div className="px-3 py-6 text-center text-sm text-gray-500">Searching…</div>
+                      ) : suggestions.length === 0 ? (
+                        <div className="px-3 py-6 text-center text-sm text-gray-500">No matches</div>
+                      ) : (
+                        suggestions.map((p) => (
+                          <a
+                            key={p.id}
+                            href={`/product/${p.id}`}
+                            className="flex items-center gap-3 px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg"
+                            role="option"
+                          >
+                            <div className="relative w-8 h-8 rounded bg-gray-100 dark:bg-gray-800 overflow-hidden flex-shrink-0">
+                              <Image src={p.image_path || "/placeholder.png"} alt={p.name} fill className="object-cover" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="text-sm text-gray-900 dark:text-white truncate">{p.name}</div>
+                              <div className="text-xs text-primary font-semibold">৳{p.retails_price}</div>
+                            </div>
+                          </a>
+                        ))
+                      )}
+                      <div className="mt-1 px-3">
+                        <button
+                          onClick={() => pushToProducts()}
+                          className="w-full text-sm py-2 rounded-lg bg-primary/10 dark:bg-primary/20 text-primary hover:bg-primary/20 dark:hover:bg-primary/30"
+                        >
+                          Search all for “{searchQuery}”
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.label>
 
           <div className="flex gap-2">
@@ -177,24 +329,6 @@ export default function Navbar() {
               </AnimatePresence>
             </motion.button>
 
-            {/* User / Test Button */}
-            <motion.button
-              onClick={() => {
-                console.log("🧪 TEST BUTTON CLICKED");
-                console.log("Cart state:", cart);
-                console.log("Favorites state:", favorites);
-                console.log("Testing addToCart with dummy product...");
-                addToCart({ id: 999, name: "Test Product", retails_price: 100, image_path: "/test.jpg" }, 1);
-                console.log("Testing toggleFavorite with dummy product...");
-                toggleFavorite({ id: 998, name: "Test Favorite", retails_price: 200, image_path: "/test2.jpg" });
-              }}
-              className="hidden sm:flex cursor-pointer items-center justify-center rounded-xl h-10 w-10 bg-gray-100/80 dark:bg-background-dark/60 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-background-dark border border-gray-200 dark:border-gray-700"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              title="Test Cart & Favorites (Debug)"
-            >
-              <User className="h-5 w-5" />
-            </motion.button>
 
             {/* Wishlist */}
             <div ref={favoritesRef} className="relative hidden sm:block">
@@ -207,10 +341,10 @@ export default function Navbar() {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
               >
-                <Heart className={`h-5 w-5 ${favCount > 0 ? "fill-red-500 text-red-500" : ""}`} />
+                <Heart className={`h-5 w-5 ${favCount > 0 ? "fill-rose-500/80 text-rose-500/80 dark:fill-rose-400/80 dark:text-rose-400/80" : ""}`} />
                 {favCount > 0 && (
                   <motion.span
-                    className="absolute -top-1 -right-1 flex items-center justify-center h-5 w-5 text-xs font-bold text-white bg-red-500 rounded-full"
+                    className="absolute -top-1 -right-1 flex items-center justify-center h-5 w-5 text-xs font-bold text-white bg-rose-500/80 dark:bg-rose-400/80 rounded-full"
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ type: "spring", stiffness: 500 }}
@@ -301,7 +435,7 @@ export default function Navbar() {
                 <ShoppingBag className="h-5 w-5" />
                 {cartCount > 0 && (
                   <motion.span
-                    className="absolute -top-1 -right-1 flex items-center justify-center h-5 w-5 text-xs font-bold text-white bg-red-500 rounded-full"
+                    className="absolute -top-1 -right-1 flex items-center justify-center h-5 w-5 text-xs font-bold text-white bg-rose-500/80 dark:bg-rose-400/80 rounded-full"
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ type: "spring", stiffness: 500 }}
@@ -486,7 +620,8 @@ export default function Navbar() {
                     placeholder="Search..."
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
-                        window.location.href = '/products';
+                        const val = e.currentTarget.value.trim();
+                        if (val) router.push(`/products?search=${encodeURIComponent(val)}`);
                         setMobileMenuOpen(false);
                       }
                     }}

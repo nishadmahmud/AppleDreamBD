@@ -2,6 +2,7 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Star } from "lucide-react";
 export default function Testimonials() {
   const testimonials = [
     {
@@ -62,22 +63,10 @@ export default function Testimonials() {
                 key={`${t.author}-${index}`}
                 className="bg-gray-50 dark:bg-background-dark/60 border border-gray-200 dark:border-gray-800 rounded-[var(--radius-xl)] p-6 shadow-[var(--shadow-soft)] w-full max-w-sm shrink-0 transition-colors duration-300"
               >
-                <div className="flex items-center mb-4 text-yellow-400">
-                  <span className="material-symbols-outlined text-xl">
-                    star
-                  </span>
-                  <span className="material-symbols-outlined text-xl">
-                    star
-                  </span>
-                  <span className="material-symbols-outlined text-xl">
-                    star
-                  </span>
-                  <span className="material-symbols-outlined text-xl">
-                    star
-                  </span>
-                  <span className="material-symbols-outlined text-xl">
-                    star
-                  </span>
+                <div className="flex items-center gap-0.5 mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400" />
+                  ))}
                 </div>
                 <blockquote className="text-gray-600 dark:text-gray-300 italic mb-4 transition-colors duration-300">
                   {t.quote}

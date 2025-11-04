@@ -1,12 +1,13 @@
 "use client";
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { motion } from "framer-motion";
 import { ArrowRight, Play } from "lucide-react";
 
-function CategoryTile({ title, description, img, delay = 0 }) {
+function CategoryTile({ title, description, img, delay = 0, categoryId }) {
   const [isHovered, setIsHovered] = useState(false);
   const imgRef = useRef(null);
 
@@ -31,17 +32,18 @@ function CategoryTile({ title, description, img, delay = 0 }) {
   }, [isHovered]);
 
   return (
-    <motion.div
-      data-tile
-      className="relative group overflow-hidden rounded-[var(--radius-xl)] aspect-video md:aspect-auto md:min-h-[400px] shadow-[var(--shadow-soft)] cursor-pointer"
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      whileHover={{ y: -8 }}
-    >
+    <Link href={`/products?category=${categoryId}`}>
+      <motion.div
+        data-tile
+        className="relative group overflow-hidden rounded-[var(--radius-xl)] aspect-video md:aspect-auto md:min-h-[400px] shadow-[var(--shadow-soft)] cursor-pointer"
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        whileHover={{ y: -8 }}
+      >
       <Image
         ref={imgRef}
         unoptimized
@@ -135,6 +137,7 @@ function CategoryTile({ title, description, img, delay = 0 }) {
         style={{ transformOrigin: "top right" }}
       />
     </motion.div>
+    </Link>
   );
 }
 
@@ -166,12 +169,14 @@ export default function DiscoverMore() {
           description="Track your fitness and stay connected with the latest smartwatch technology."
           img="https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=800&q=80"
           delay={0}
+          categoryId="6528"
         />
         <CategoryTile
           title="Headphones"
           description="Immerse yourself in crystal-clear sound with premium audio gear."
           img="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80"
           delay={0.2}
+          categoryId="6526"
         />
       </div>
     </section>

@@ -27,8 +27,8 @@ function SmartphoneCard({ product, delay = 0, badge = null }) {
     const percentX = (e.clientX - centerX) / (rect.width / 2);
     const percentY = (e.clientY - centerY) / (rect.height / 2);
     
-    rotateY.set(percentX * 10);
-    rotateX.set(-percentY * 10);
+    rotateY.set(percentX * 5);
+    rotateX.set(-percentY * 5);
     mouseX.set(e.clientX - rect.left);
     mouseY.set(e.clientY - rect.top);
   };
@@ -59,7 +59,7 @@ function SmartphoneCard({ product, delay = 0, badge = null }) {
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.5, delay, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.3, delay, ease: [0.22, 1, 0.36, 1] }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       style={{
@@ -108,20 +108,18 @@ function SmartphoneCard({ product, delay = 0, badge = null }) {
         </motion.div>
       )}
 
-      <motion.div
+      <div
         className="relative w-full bg-white dark:bg-background-dark/60 rounded-[calc(var(--radius-xl)-0.5rem)] overflow-hidden aspect-square"
-        whileHover={{ scale: 1.05 }}
-        transition={{ duration: 0.3 }}
       >
         <Image
           unoptimized
           alt={product.name}
           src={product.image_path || "/placeholder.png"}
-          className="w-full h-full object-contain p-6 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3"
+          className="w-full h-full object-contain p-6"
           width={1000}
           height={1000}
         />
-      </motion.div>
+      </div>
 
       <div className="flex flex-col gap-2 relative" style={{ transform: "translateZ(30px)" }}>
         {/* Rating */}
@@ -259,7 +257,7 @@ export default function FeaturedSmartphones() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.3 }}
         >
           <motion.h2
             className="text-gray-900 dark:text-white text-4xl font-bold leading-tight tracking-[-0.02em] mb-3"
@@ -274,7 +272,7 @@ export default function FeaturedSmartphones() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
+            transition={{ delay: 0.05 }}
           >
             The best of the best, from the brands you love.
           </motion.p>
