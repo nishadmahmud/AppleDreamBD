@@ -19,7 +19,7 @@ const ProductCard = ({ product, index }) => {
   const { toggleFavorite, isFavorite } = useFavorites();
   const [addedToCart, setAddedToCart] = useState(false);
   const cardRef = useRef(null);
-  
+
   const isLiked = isFavorite(product.id);
   const inCart = isInCart(product.id);
 
@@ -85,7 +85,7 @@ const ProductCard = ({ product, index }) => {
 
   const handleCardClick = (e) => {
     // Only navigate if not clicking on a button
-    if (!e.target.closest('button')) {
+    if (!e.target.closest("button")) {
       router.push(`/product/${product.id}`);
     }
   };
@@ -149,7 +149,6 @@ const ProductCard = ({ product, index }) => {
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         </motion.div>
-
       </div>
 
       {/* Product Info */}
@@ -383,4 +382,3 @@ export default function BestSellers() {
     </section>
   );
 }
-

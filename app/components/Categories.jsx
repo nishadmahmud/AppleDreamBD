@@ -170,15 +170,19 @@ const CategoryCard = ({ category, index }) => {
       whileTap={{ scale: 0.98 }}
     >
       {/* Animated gradient background */}
-      <div className={`absolute inset-0 bg-gradient-to-br ${category.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
-      
+      <div
+        className={`absolute inset-0 bg-gradient-to-br ${category.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}
+      />
+
       {/* Icon with animated background */}
       <motion.div
         className="relative mb-4"
         whileHover={{ rotate: [0, -5, 5, 0] }}
         transition={{ duration: 0.3 }}
       >
-        <div className={`w-16 h-16 mx-auto bg-gradient-to-br ${category.color} rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-2xl transition-all duration-200`}>
+        <div
+          className={`w-16 h-16 mx-auto bg-gradient-to-br ${category.color} rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-2xl transition-all duration-200`}
+        >
           <Icon className="h-8 w-8 text-white" />
         </div>
       </motion.div>
@@ -243,11 +247,11 @@ export default function Categories() {
             <Grid3x3 className="h-4 w-4" />
             <span className="text-sm font-semibold">EXPLORE</span>
           </motion.div>
-          
+
           <h2 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-4">
             Shop by Category
           </h2>
-          
+
           <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
             Browse through our wide range of product categories
           </p>
@@ -281,4 +285,3 @@ export default function Categories() {
     </section>
   );
 }
-

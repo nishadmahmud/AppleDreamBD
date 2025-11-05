@@ -35,7 +35,8 @@ export default function NotFound() {
               Page Not Found
             </h2>
             <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
-              Oops! The page you&apos;re looking for doesn&apos;t exist or has been moved.
+              Oops! The page you&apos;re looking for doesn&apos;t exist or has
+              been moved.
             </p>
           </motion.div>
 
@@ -48,7 +49,7 @@ export default function NotFound() {
           >
             <div className="relative w-64 h-64 mx-auto">
               {/* Animated search icon */}
-              {/* <motion.div
+          {/* <motion.div
                 className="absolute inset-0 flex items-center justify-center"
                 animate={{
                   rotate: [0, 10, -10, 10, 0],
@@ -63,8 +64,8 @@ export default function NotFound() {
                 <Search className="w-32 h-32 text-gray-300 dark:text-gray-700" />
               </motion.div> */}
 
-              {/* Floating particles */}
-              {/* {[...Array(6)].map((_, i) => (
+          {/* Floating particles */}
+          {/* {[...Array(6)].map((_, i) => (
                 <motion.div
                   key={i}
                   className="absolute w-2 h-2 bg-primary rounded-full"
@@ -162,4 +163,3 @@ export default function NotFound() {
     </div>
   );
 }
-

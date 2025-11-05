@@ -17,8 +17,12 @@ const DealCard = ({ product, index }) => {
   const { addToCart, isInCart } = useCart();
   const { toggleFavorite, isFavorite } = useFavorites();
   const [addedToCart, setAddedToCart] = useState(false);
-  const [timeLeft, setTimeLeft] = useState({ hours: 23, minutes: 45, seconds: 30 });
-  
+  const [timeLeft, setTimeLeft] = useState({
+    hours: 23,
+    minutes: 45,
+    seconds: 30,
+  });
+
   const isLiked = isFavorite(product.id);
   const inCart = isInCart(product.id);
   const cardRef = useRef(null);
@@ -89,7 +93,8 @@ const DealCard = ({ product, index }) => {
   };
 
   const handleAddToCart = () => {
-    const isInStock = product.status === "In stock" || product.current_stock > 0;
+    const isInStock =
+      product.status === "In stock" || product.current_stock > 0;
     if (isInStock && !inCart) {
       addToCart(product);
       setAddedToCart(true);
@@ -102,11 +107,12 @@ const DealCard = ({ product, index }) => {
   };
 
   const isInStock = product.status === "In stock" || product.current_stock > 0;
-  
+
   // Calculate discount percentage if not provided
-  const discountPercentage = product.discount_type === "Percentage" 
-    ? product.discount 
-    : Math.round(product.discount_rate);
+  const discountPercentage =
+    product.discount_type === "Percentage"
+      ? product.discount
+      : Math.round(product.discount_rate);
 
   return (
     <motion.div
@@ -129,7 +135,11 @@ const DealCard = ({ product, index }) => {
         className="absolute top-3 left-3 z-20 bg-gradient-to-br from-blue-500 to-primary text-white px-3 py-2 rounded-xl shadow-lg"
         initial={{ scale: 0, rotate: -45 }}
         animate={{ scale: 1, rotate: -12 }}
-        transition={{ delay: index * 0.1 + 0.2, type: "spring", stiffness: 200 }}
+        transition={{
+          delay: index * 0.1 + 0.2,
+          type: "spring",
+          stiffness: 200,
+        }}
       >
         <div className="flex flex-col items-center leading-none">
           <span className="text-2xl font-black">{discountPercentage}%</span>
@@ -173,7 +183,7 @@ const DealCard = ({ product, index }) => {
           animate={{ opacity: [0.2, 0.3, 0.2] }}
           transition={{ duration: 4, repeat: Infinity }}
         />
-        
+
         <motion.div
           className="relative w-full h-full z-10"
           whileHover={{ scale: 1.02 }}
@@ -187,7 +197,6 @@ const DealCard = ({ product, index }) => {
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         </motion.div>
-
       </div>
 
       {/* Product Info */}
@@ -234,7 +243,9 @@ const DealCard = ({ product, index }) => {
             <motion.div
               className="h-full bg-gradient-to-r from-blue-400 to-primary"
               initial={{ width: 0 }}
-              animate={{ width: `${Math.min((product.current_stock / 100) * 100, 100)}%` }}
+              animate={{
+                width: `${Math.min((product.current_stock / 100) * 100, 100)}%`,
+              }}
               transition={{ duration: 1, delay: index * 0.1 }}
             />
           </div>
@@ -253,7 +264,7 @@ const DealCard = ({ product, index }) => {
               ৳{product.retails_price.toLocaleString()}
             </span>
           </div>
-          
+
           {/* Savings Amount */}
           <motion.div
             className="flex items-center gap-1 text-primary dark:text-primary text-sm font-semibold"
@@ -263,7 +274,10 @@ const DealCard = ({ product, index }) => {
           >
             <Tag className="h-4 w-4" />
             <span>
-              You save ৳{(product.retails_price - product.discounted_price).toLocaleString()}
+              You save ৳
+              {(
+                product.retails_price - product.discounted_price
+              ).toLocaleString()}
             </span>
           </motion.div>
         </div>
@@ -283,7 +297,14 @@ const DealCard = ({ product, index }) => {
             handleAddToCart();
           }}
           disabled={!isInStock || inCart}
-          whileHover={isInStock && !inCart ? { scale: 1.02, boxShadow: "0 10px 30px rgba(74, 144, 226, 0.3)" } : {}}
+          whileHover={
+            isInStock && !inCart
+              ? {
+                  scale: 1.02,
+                  boxShadow: "0 10px 30px rgba(74, 144, 226, 0.3)",
+                }
+              : {}
+          }
           whileTap={isInStock && !inCart ? { scale: 0.98 } : {}}
         >
           {inCart || addedToCart ? (
@@ -428,7 +449,7 @@ export default function BestDeals() {
             <Zap className="h-4 w-4" />
             <span className="text-sm font-bold">SPECIAL OFFERS</span>
           </motion.div>
-          
+
           <motion.h2
             className="text-4xl md:text-5xl font-black mb-4"
             initial={{ y: 20, opacity: 0 }}
@@ -439,14 +460,15 @@ export default function BestDeals() {
               Best Deals
             </span>
           </motion.h2>
-          
+
           <motion.p
             className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto"
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.3 }}
           >
-            Grab these amazing deals before they&apos;re gone! Limited stock available.
+            Grab these amazing deals before they&apos;re gone! Limited stock
+            available.
           </motion.p>
         </div>
 
@@ -478,4 +500,3 @@ export default function BestDeals() {
     </section>
   );
 }
-

@@ -3,15 +3,32 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { motion, AnimatePresence, useMotionValue, useSpring } from "framer-motion";
-import { Clock, Zap, TrendingUp, ShoppingCart, Heart, Star, Sparkles } from "lucide-react";
+import {
+  motion,
+  AnimatePresence,
+  useMotionValue,
+  useSpring,
+} from "framer-motion";
+import {
+  Clock,
+  Zap,
+  TrendingUp,
+  ShoppingCart,
+  Heart,
+  Star,
+  Sparkles,
+} from "lucide-react";
 import { useCart } from "../context/CartContext";
 import { useFavorites } from "../context/FavoritesContext";
 
 export default function DealOfDay() {
   const sectionRef = useRef(null);
   const cardRef = useRef(null);
-  const [timeLeft, setTimeLeft] = useState({ hours: 12, minutes: 45, seconds: 32 });
+  const [timeLeft, setTimeLeft] = useState({
+    hours: 12,
+    minutes: 45,
+    seconds: 32,
+  });
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
@@ -28,9 +45,11 @@ export default function DealOfDay() {
     const fetchSmartwatch = async () => {
       try {
         // Fetch from Smart Watches category (ID: 6528)
-        const response = await fetch('https://www.outletexpense.xyz/api/public/categorywise-products/6528?page=1&limit=1');
+        const response = await fetch(
+          "https://www.outletexpense.xyz/api/public/categorywise-products/6528?page=1&limit=1"
+        );
         const data = await response.json();
-        
+
         if (data.success && data.data && data.data.length > 0) {
           setProduct(data.data[0]);
         }
@@ -47,7 +66,9 @@ export default function DealOfDay() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     gsap.registerPlugin(ScrollTrigger);
-    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const prefersReduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
     if (!prefersReduced) {
       gsap.from(sectionRef.current, {
         opacity: 0,
@@ -91,7 +112,7 @@ export default function DealOfDay() {
     const centerY = rect.top + rect.height / 2;
     const percentX = (e.clientX - centerX) / (rect.width / 2);
     const percentY = (e.clientY - centerY) / (rect.height / 2);
-    
+
     rotateY.set(percentX * 10);
     rotateX.set(-percentY * 10);
     mouseX.set(e.clientX - rect.left);
@@ -119,7 +140,7 @@ export default function DealOfDay() {
 
   const CounterBox = ({ value, label, prevValue }) => {
     const [displayValue, setDisplayValue] = useState(value);
-    
+
     useEffect(() => {
       setDisplayValue(value);
     }, [value]);
@@ -148,7 +169,7 @@ export default function DealOfDay() {
         <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wider relative z-10 mt-2">
           {label}
         </p>
-        
+
         {/* Pulse ring on hover */}
         <motion.div
           className="absolute inset-0 border-2 border-primary rounded-xl"
@@ -179,7 +200,13 @@ export default function DealOfDay() {
 
   const inCart = isInCart(product.id);
   const isFav = isFavorite(product.id);
-  const discountPercent = product.market_price ? Math.round(((product.market_price - product.retails_price) / product.market_price) * 100) : 43;
+  const discountPercent = product.market_price
+    ? Math.round(
+        ((product.market_price - product.retails_price) /
+          product.market_price) *
+          100
+      )
+    : 43;
 
   return (
     <section
@@ -262,7 +289,9 @@ export default function DealOfDay() {
             transition={{ duration: 2, repeat: Infinity }}
           >
             <Zap className="h-4 w-4 fill-current" />
-            <span className="font-bold uppercase tracking-wider text-xs">HOT DEAL</span>
+            <span className="font-bold uppercase tracking-wider text-xs">
+              HOT DEAL
+            </span>
           </motion.div>
 
           {/* Like button */}
@@ -297,13 +326,21 @@ export default function DealOfDay() {
             </motion.div>
 
             {/* Product Details */}
-            <div className="w-full lg:w-1/2 flex flex-col gap-4 relative" style={{ transform: "translateZ(30px)" }}>
+            <div
+              className="w-full lg:w-1/2 flex flex-col gap-4 relative"
+              style={{ transform: "translateZ(30px)" }}
+            >
               {/* Rating */}
               <div className="flex items-center gap-1">
                 {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                  <Star
+                    key={i}
+                    className="h-4 w-4 fill-yellow-400 text-yellow-400"
+                  />
                 ))}
-                <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">(4.9)</span>
+                <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">
+                  (4.9)
+                </span>
               </div>
 
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white line-clamp-2">
@@ -317,10 +354,14 @@ export default function DealOfDay() {
                   whileHover={{ scale: 1.05 }}
                 >
                   <TrendingUp className="h-4 w-4" />
-                  <span className="font-bold text-sm">{discountPercent}% OFF</span>
+                  <span className="font-bold text-sm">
+                    {discountPercent}% OFF
+                  </span>
                 </motion.div>
                 {product.market_price && (
-                  <span className="text-gray-400 line-through text-lg">৳{product.market_price}</span>
+                  <span className="text-gray-400 line-through text-lg">
+                    ৳{product.market_price}
+                  </span>
                 )}
                 <motion.span
                   className="text-3xl font-black text-primary"
@@ -342,7 +383,11 @@ export default function DealOfDay() {
               <motion.button
                 onClick={handleAddToCart}
                 className="relative flex items-center justify-center gap-2 text-base font-semibold text-white bg-primary/90 hover:bg-primary px-6 py-4 rounded-xl overflow-hidden group/btn disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
-                whileHover={{ scale: inCart ? 1 : 1.02, y: inCart ? 0 : -2, boxShadow: "0 0 30px rgba(74, 144, 226, 0.5)" }}
+                whileHover={{
+                  scale: inCart ? 1 : 1.02,
+                  y: inCart ? 0 : -2,
+                  boxShadow: "0 0 30px rgba(74, 144, 226, 0.5)",
+                }}
                 whileTap={{ scale: 0.98 }}
                 disabled={isAdding || inCart}
               >
@@ -354,7 +399,11 @@ export default function DealOfDay() {
                   >
                     <motion.div
                       animate={{ rotate: 360 }}
-                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      transition={{
+                        duration: 1,
+                        repeat: Infinity,
+                        ease: "linear",
+                      }}
                     >
                       <ShoppingCart className="h-5 w-5" />
                     </motion.div>
@@ -371,7 +420,7 @@ export default function DealOfDay() {
                     <span>Grab Deal Now - Limited Stock!</span>
                   </>
                 )}
-                
+
                 {/* Shine effect */}
                 {!inCart && (
                   <motion.div

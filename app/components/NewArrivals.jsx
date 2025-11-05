@@ -18,7 +18,7 @@ const NewArrivalCard = ({ product, index }) => {
   const { toggleFavorite, isFavorite } = useFavorites();
   const [addedToCart, setAddedToCart] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-  
+
   const isLiked = isFavorite(product.id);
   const inCart = isInCart(product.id);
   const cardRef = useRef(null);
@@ -72,7 +72,8 @@ const NewArrivalCard = ({ product, index }) => {
   };
 
   const handleAddToCart = () => {
-    const isInStock = product.status === "In stock" || product.current_stock > 0;
+    const isInStock =
+      product.status === "In stock" || product.current_stock > 0;
     if (isInStock && !inCart) {
       addToCart(product);
       setAddedToCart(true);
@@ -110,7 +111,11 @@ const NewArrivalCard = ({ product, index }) => {
         className="absolute top-3 left-3 z-20 flex items-center gap-1 bg-gradient-to-r from-blue-500 to-primary text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg"
         initial={{ x: -100, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
-        transition={{ delay: index * 0.12 + 0.2, type: "spring", stiffness: 150 }}
+        transition={{
+          delay: index * 0.12 + 0.2,
+          type: "spring",
+          stiffness: 150,
+        }}
       >
         <Sparkles className="h-3 w-3" />
         <span>NEW</span>
@@ -147,7 +152,7 @@ const NewArrivalCard = ({ product, index }) => {
             }`}
           />
         </motion.button>
-        
+
         <motion.button
           className="p-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur rounded-full shadow-md"
           onClick={(e) => {
@@ -163,7 +168,6 @@ const NewArrivalCard = ({ product, index }) => {
 
       {/* Product Images */}
       <div className="relative w-full aspect-square bg-gray-100 dark:bg-gray-800 overflow-hidden">
-
         {/* Main Image */}
         <motion.div
           className="relative w-full h-full z-10"
@@ -178,7 +182,7 @@ const NewArrivalCard = ({ product, index }) => {
             style={{ opacity: isHovered && product.image_path1 ? 0 : 1 }}
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
-          
+
           {/* Secondary Image on Hover */}
           {product.image_path1 && (
             <Image
@@ -191,7 +195,6 @@ const NewArrivalCard = ({ product, index }) => {
             />
           )}
         </motion.div>
-
 
         {/* Quick Add Overlay on Hover */}
         <motion.div
@@ -222,7 +225,7 @@ const NewArrivalCard = ({ product, index }) => {
               {product.category_name}
             </span>
           )}
-          
+
           {product.brands && product.brands.image_path && (
             <div className="relative w-6 h-6">
               <Image
@@ -443,7 +446,12 @@ export default function NewArrivals() {
           y: [0, -30, 0],
           scale: [1, 1.1, 1],
         }}
-        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+        transition={{
+          duration: 8,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 1,
+        }}
       />
 
       <div className="max-w-7xl mx-auto relative z-10">
@@ -476,7 +484,8 @@ export default function NewArrivals() {
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.3 }}
           >
-            Be the first to discover our latest products with cutting-edge features
+            Be the first to discover our latest products with cutting-edge
+            features
           </motion.p>
         </div>
 
@@ -508,4 +517,3 @@ export default function NewArrivals() {
     </section>
   );
 }
-

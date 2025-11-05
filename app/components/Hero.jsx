@@ -17,23 +17,28 @@ export default function Hero() {
   const images = [
     "https://media.macphun.com/img/uploads/customer/blog/3501/1749749510684b0f06056cb7.96384689.jpg?q=85&w=1680",
     "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=85&w=1680",
-    "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=85&w=1680"
+    "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=85&w=1680",
   ];
 
   useEffect(() => {
     if (typeof window === "undefined") return;
     gsap.registerPlugin(ScrollTrigger);
 
-    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const prefersReduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
     if (!prefersReduced) {
       // Staggered entrance
-      gsap.from([badgeRef.current, h1Ref.current, pRef.current, ctaRef.current], {
-        opacity: 0,
-        y: 20,
-        duration: 0.5,
-        ease: "power2.out",
-        stagger: 0.08,
-      });
+      gsap.from(
+        [badgeRef.current, h1Ref.current, pRef.current, ctaRef.current],
+        {
+          opacity: 0,
+          y: 20,
+          duration: 0.5,
+          ease: "power2.out",
+          stagger: 0.08,
+        }
+      );
     }
   }, []);
 
@@ -47,8 +52,11 @@ export default function Hero() {
   }, [images.length]);
 
   return (
-    <section className="px-4 sm:px-8 lg:px-10 py-12 bg-background-light dark:bg-background-dark transition-colors duration-300">
-      <div ref={containerRef} className="relative w-full @container rounded-[var(--radius-2xl)] overflow-hidden text-white min-h-[580px] flex items-center shadow-[var(--shadow-strong)] group">
+    <section className="px-4 sm:px-8 lg:px-10 pt-5 pb-8 bg-background-light dark:bg-background-dark transition-colors duration-300 -mt-4">
+      <div
+        ref={containerRef}
+        className="relative w-full @container rounded-[var(--radius-2xl)] overflow-hidden text-white min-h-[580px] flex items-center shadow-[var(--shadow-strong)] group"
+      >
         <div className="absolute inset-0">
           <AnimatePresence initial={false}>
             <motion.div
@@ -72,7 +80,7 @@ export default function Hero() {
           </AnimatePresence>
         </div>
         <div className="absolute inset-0 bg-gradient-to-tr from-black/85 via-black/40 to-transparent" />
-        
+
         {/* Floating particles effect (reduced) */}
         <div className="absolute inset-0 opacity-20">
           {[...Array(2)].map((_, i) => (
@@ -101,7 +109,10 @@ export default function Hero() {
             <motion.div
               ref={badgeRef}
               className="inline-flex items-center gap-2 self-start bg-primary/20 backdrop-blur border border-primary/30 px-4 py-2 rounded-full"
-              whileHover={{ scale: 1.05, backgroundColor: "rgba(17, 115, 212, 0.3)" }}
+              whileHover={{
+                scale: 1.05,
+                backgroundColor: "rgba(17, 115, 212, 0.3)",
+              }}
             >
               <Sparkles className="h-4 w-4 text-primary" />
               <span className="text-sm font-semibold text-white uppercase tracking-[0.15em]">
@@ -110,22 +121,34 @@ export default function Hero() {
             </motion.div>
 
             <div className="flex flex-col gap-3">
-              <h1 ref={h1Ref} className="text-5xl @[480px]:text-7xl font-black leading-[1.1] tracking-[-0.04em] text-white drop-shadow-lg">
+              <h1
+                ref={h1Ref}
+                className="text-5xl @[480px]:text-7xl font-black leading-[1.1] tracking-[-0.04em] text-white drop-shadow-lg"
+              >
                 Unleash Your
                 <span className="block bg-gradient-to-r from-primary via-blue-400 to-primary bg-clip-text text-transparent animate-gradient">
                   Potential.
                 </span>
               </h1>
-              <h2 ref={pRef} className="text-lg @[480px]:text-xl text-gray-100/90 leading-relaxed">
+              <h2
+                ref={pRef}
+                className="text-lg @[480px]:text-xl text-gray-100/90 leading-relaxed"
+              >
                 Discover the latest in premium tech. Cutting-edge performance
                 and iconic design, all in one place.
               </h2>
             </div>
 
-            <motion.div ref={ctaRef} className="flex flex-wrap gap-4 items-center">
+            <motion.div
+              ref={ctaRef}
+              className="flex flex-wrap gap-4 items-center"
+            >
               <motion.button
                 className="group relative inline-flex items-center gap-2 overflow-hidden rounded-[0.9rem] h-12 px-6 bg-primary text-white text-base font-semibold leading-normal tracking-[0.015em] shadow-[var(--shadow-soft)]"
-                whileHover={{ scale: 1.05, boxShadow: "0 0 30px rgba(17, 115, 212, 0.4)" }}
+                whileHover={{
+                  scale: 1.05,
+                  boxShadow: "0 0 30px rgba(17, 115, 212, 0.4)",
+                }}
                 whileTap={{ scale: 0.98 }}
               >
                 <span className="relative z-10">Explore Collection</span>
@@ -140,7 +163,10 @@ export default function Hero() {
 
               <motion.button
                 className="inline-flex items-center gap-2 h-12 px-6 border-2 border-white/30 backdrop-blur text-white text-base font-semibold rounded-[0.9rem] hover:bg-white/10 transition-colors"
-                whileHover={{ scale: 1.05, borderColor: "rgba(255,255,255,0.5)" }}
+                whileHover={{
+                  scale: 1.05,
+                  borderColor: "rgba(255,255,255,0.5)",
+                }}
                 whileTap={{ scale: 0.98 }}
               >
                 View Deals
@@ -155,8 +181,13 @@ export default function Hero() {
             <motion.button
               key={i}
               onClick={() => setCurrentSlide(i)}
-              className={`h-2 rounded-full transition-all ${i === currentSlide ? "w-8 bg-white" : "w-2 bg-white/50"}`}
-              whileHover={{ scale: 1.2, backgroundColor: "rgba(255,255,255,1)" }}
+              className={`h-2 rounded-full transition-all ${
+                i === currentSlide ? "w-8 bg-white" : "w-2 bg-white/50"
+              }`}
+              whileHover={{
+                scale: 1.2,
+                backgroundColor: "rgba(255,255,255,1)",
+              }}
               transition={{ duration: 0.2 }}
             />
           ))}

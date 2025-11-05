@@ -33,7 +33,9 @@ export default function Testimonials() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     gsap.registerPlugin(ScrollTrigger);
-    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const prefersReduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
     if (prefersReduced) return;
     gsap.from(sectionRef.current, {
       opacity: 0,
@@ -43,7 +45,10 @@ export default function Testimonials() {
     });
   }, []);
   return (
-    <section ref={sectionRef} className="bg-gray-50 dark:bg-background-dark py-16 overflow-hidden transition-colors duration-300">
+    <section
+      ref={sectionRef}
+      className="bg-gray-50 dark:bg-background-dark py-16 overflow-hidden transition-colors duration-300"
+    >
       <div className="px-4 sm:px-8 lg:px-10">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white transition-colors duration-300">
@@ -65,7 +70,10 @@ export default function Testimonials() {
               >
                 <div className="flex items-center gap-0.5 mb-4">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400" />
+                    <Star
+                      key={i}
+                      className="h-5 w-5 fill-yellow-400 text-yellow-400"
+                    />
                   ))}
                 </div>
                 <blockquote className="text-gray-600 dark:text-gray-300 italic mb-4 transition-colors duration-300">

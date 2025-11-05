@@ -25,11 +25,18 @@ import { useCart } from "../context/CartContext";
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { cart, getCartTotal, getCartCount, updateQuantity, removeFromCart, clearCart } = useCart();
-  
+  const {
+    cart,
+    getCartTotal,
+    getCartCount,
+    updateQuantity,
+    removeFromCart,
+    clearCart,
+  } = useCart();
+
   const [step, setStep] = useState(1); // 1: Cart Review, 2: Shipping, 3: Payment, 4: Confirmation
   const [loading, setLoading] = useState(false);
-  
+
   // Form states
   const [shippingInfo, setShippingInfo] = useState({
     fullName: "",
@@ -40,7 +47,7 @@ export default function CheckoutPage() {
     postalCode: "",
     country: "Bangladesh",
   });
-  
+
   const [paymentMethod, setPaymentMethod] = useState("cod"); // cod, bkash, nagad, card
   const [orderNotes, setOrderNotes] = useState("");
   const [agreedToTerms, setAgreedToTerms] = useState(false);
@@ -74,10 +81,10 @@ export default function CheckoutPage() {
     }
 
     setLoading(true);
-    
+
     // Simulate order processing
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
     // Here you would normally send order to backend API
     const orderData = {
       items: cart,
@@ -87,9 +94,9 @@ export default function CheckoutPage() {
       totals: { subtotal, shippingCost, tax, total },
       timestamp: new Date().toISOString(),
     };
-    
+
     console.log("Order placed:", orderData);
-    
+
     // Clear cart and show confirmation
     clearCart();
     setLoading(false);
@@ -109,7 +116,9 @@ export default function CheckoutPage() {
               animate={{ opacity: 1, y: 0 }}
             >
               <ShoppingBag className="h-24 w-24 mx-auto mb-6 text-gray-300 dark:text-gray-600" />
-              <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Your cart is empty</h2>
+              <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
+                Your cart is empty
+              </h2>
               <p className="text-gray-600 dark:text-gray-400 mb-8">
                 Add some products to your cart before checking out
               </p>
@@ -122,7 +131,6 @@ export default function CheckoutPage() {
             </motion.div>
           </div>
         </div>
-        
       </>
     );
   }
@@ -139,13 +147,17 @@ export default function CheckoutPage() {
             animate={{ opacity: 1, y: 0 }}
           >
             <button
-              onClick={() => step === 1 ? router.push("/products") : setStep(step - 1)}
+              onClick={() =>
+                step === 1 ? router.push("/products") : setStep(step - 1)
+              }
               className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-primary mb-4 transition-colors"
             >
               <ArrowLeft className="h-5 w-5" />
               {step === 1 ? "Continue Shopping" : "Back"}
             </button>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Checkout</h1>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+              Checkout
+            </h1>
           </motion.div>
 
           {/* Progress Steps */}
@@ -172,12 +184,16 @@ export default function CheckoutPage() {
                       >
                         {step > s.num ? <Check className="h-5 w-5" /> : s.num}
                       </div>
-                      <span className="text-xs mt-2 text-gray-600 dark:text-gray-400">{s.label}</span>
+                      <span className="text-xs mt-2 text-gray-600 dark:text-gray-400">
+                        {s.label}
+                      </span>
                     </div>
                     {i < 2 && (
                       <div
                         className={`w-20 h-1 mx-2 transition-colors ${
-                          step > s.num ? "bg-primary" : "bg-gray-200 dark:bg-gray-700"
+                          step > s.num
+                            ? "bg-primary"
+                            : "bg-gray-200 dark:bg-gray-700"
                         }`}
                       />
                     )}
@@ -221,17 +237,25 @@ export default function CheckoutPage() {
                             <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
                               {item.name}
                             </h3>
-                            <p className="text-primary font-bold">৳{item.retails_price}</p>
+                            <p className="text-primary font-bold">
+                              ৳{item.retails_price}
+                            </p>
                             <div className="flex items-center gap-3 mt-2">
                               <button
-                                onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                onClick={() =>
+                                  updateQuantity(item.id, item.quantity - 1)
+                                }
                                 className="w-8 h-8 flex items-center justify-center rounded bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 hover:border-primary"
                               >
                                 <Minus className="h-4 w-4" />
                               </button>
-                              <span className="font-medium w-8 text-center">{item.quantity}</span>
+                              <span className="font-medium w-8 text-center">
+                                {item.quantity}
+                              </span>
                               <button
-                                onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                onClick={() =>
+                                  updateQuantity(item.id, item.quantity + 1)
+                                }
                                 className="w-8 h-8 flex items-center justify-center rounded bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 hover:border-primary"
                               >
                                 <Plus className="h-4 w-4" />
@@ -278,7 +302,12 @@ export default function CheckoutPage() {
                           type="text"
                           required
                           value={shippingInfo.fullName}
-                          onChange={(e) => setShippingInfo({ ...shippingInfo, fullName: e.target.value })}
+                          onChange={(e) =>
+                            setShippingInfo({
+                              ...shippingInfo,
+                              fullName: e.target.value,
+                            })
+                          }
                           className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary"
                           placeholder="John Doe"
                         />
@@ -294,7 +323,12 @@ export default function CheckoutPage() {
                             type="email"
                             required
                             value={shippingInfo.email}
-                            onChange={(e) => setShippingInfo({ ...shippingInfo, email: e.target.value })}
+                            onChange={(e) =>
+                              setShippingInfo({
+                                ...shippingInfo,
+                                email: e.target.value,
+                              })
+                            }
                             className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary"
                             placeholder="john@example.com"
                           />
@@ -308,7 +342,12 @@ export default function CheckoutPage() {
                             type="tel"
                             required
                             value={shippingInfo.phone}
-                            onChange={(e) => setShippingInfo({ ...shippingInfo, phone: e.target.value })}
+                            onChange={(e) =>
+                              setShippingInfo({
+                                ...shippingInfo,
+                                phone: e.target.value,
+                              })
+                            }
                             className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary"
                             placeholder="+880 1234 567890"
                           />
@@ -323,7 +362,12 @@ export default function CheckoutPage() {
                         <textarea
                           required
                           value={shippingInfo.address}
-                          onChange={(e) => setShippingInfo({ ...shippingInfo, address: e.target.value })}
+                          onChange={(e) =>
+                            setShippingInfo({
+                              ...shippingInfo,
+                              address: e.target.value,
+                            })
+                          }
                           className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary"
                           rows="3"
                           placeholder="House/Flat, Street, Area"
@@ -339,7 +383,12 @@ export default function CheckoutPage() {
                             type="text"
                             required
                             value={shippingInfo.city}
-                            onChange={(e) => setShippingInfo({ ...shippingInfo, city: e.target.value })}
+                            onChange={(e) =>
+                              setShippingInfo({
+                                ...shippingInfo,
+                                city: e.target.value,
+                              })
+                            }
                             className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary"
                             placeholder="Dhaka"
                           />
@@ -352,7 +401,12 @@ export default function CheckoutPage() {
                             type="text"
                             required
                             value={shippingInfo.postalCode}
-                            onChange={(e) => setShippingInfo({ ...shippingInfo, postalCode: e.target.value })}
+                            onChange={(e) =>
+                              setShippingInfo({
+                                ...shippingInfo,
+                                postalCode: e.target.value,
+                              })
+                            }
                             className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary"
                             placeholder="1200"
                           />
@@ -392,13 +446,33 @@ export default function CheckoutPage() {
                     <h2 className="text-xl font-bold mb-6 text-gray-900 dark:text-white">
                       Payment Method
                     </h2>
-                    
+
                     <div className="space-y-3 mb-6">
                       {[
-                        { id: "cod", label: "Cash on Delivery", icon: "💵", desc: "Pay when you receive" },
-                        { id: "bkash", label: "bKash", icon: "📱", desc: "Mobile payment" },
-                        { id: "nagad", label: "Nagad", icon: "📱", desc: "Mobile payment" },
-                        { id: "card", label: "Credit/Debit Card", icon: "💳", desc: "Secure payment" },
+                        {
+                          id: "cod",
+                          label: "Cash on Delivery",
+                          icon: "💵",
+                          desc: "Pay when you receive",
+                        },
+                        {
+                          id: "bkash",
+                          label: "bKash",
+                          icon: "📱",
+                          desc: "Mobile payment",
+                        },
+                        {
+                          id: "nagad",
+                          label: "Nagad",
+                          icon: "📱",
+                          desc: "Mobile payment",
+                        },
+                        {
+                          id: "card",
+                          label: "Credit/Debit Card",
+                          icon: "💳",
+                          desc: "Secure payment",
+                        },
                       ].map((method) => (
                         <label
                           key={method.id}
@@ -418,8 +492,12 @@ export default function CheckoutPage() {
                           />
                           <span className="text-2xl">{method.icon}</span>
                           <div className="flex-1">
-                            <div className="font-semibold text-gray-900 dark:text-white">{method.label}</div>
-                            <div className="text-sm text-gray-500 dark:text-gray-400">{method.desc}</div>
+                            <div className="font-semibold text-gray-900 dark:text-white">
+                              {method.label}
+                            </div>
+                            <div className="text-sm text-gray-500 dark:text-gray-400">
+                              {method.desc}
+                            </div>
                           </div>
                         </label>
                       ))}
@@ -447,11 +525,17 @@ export default function CheckoutPage() {
                       />
                       <span className="text-sm text-gray-700 dark:text-gray-300">
                         I agree to the{" "}
-                        <a href="/terms" className="text-primary hover:underline">
+                        <a
+                          href="/terms"
+                          className="text-primary hover:underline"
+                        >
                           Terms & Conditions
                         </a>{" "}
                         and{" "}
-                        <a href="/privacy" className="text-primary hover:underline">
+                        <a
+                          href="/privacy"
+                          className="text-primary hover:underline"
+                        >
                           Privacy Policy
                         </a>
                       </span>
@@ -500,23 +584,37 @@ export default function CheckoutPage() {
                       Thank you for your order, {shippingInfo.fullName}
                     </p>
                     <p className="text-sm text-gray-500 dark:text-gray-500 mb-8">
-                      We've sent a confirmation email to {shippingInfo.email}
+                      We&apos;ve sent a confirmation email to {shippingInfo.email}
                     </p>
-                    
+
                     <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6 mb-6 text-left">
-                      <h3 className="font-semibold mb-4 text-gray-900 dark:text-white">Order Details</h3>
+                      <h3 className="font-semibold mb-4 text-gray-900 dark:text-white">
+                        Order Details
+                      </h3>
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Order Number:</span>
-                          <span className="font-mono text-gray-900 dark:text-white">#APD{Date.now().toString().slice(-8)}</span>
+                          <span className="text-gray-600 dark:text-gray-400">
+                            Order Number:
+                          </span>
+                          <span className="font-mono text-gray-900 dark:text-white">
+                            #APD{new Date().toISOString().slice(-8)}
+                          </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Payment Method:</span>
-                          <span className="text-gray-900 dark:text-white capitalize">{paymentMethod}</span>
+                          <span className="text-gray-600 dark:text-gray-400">
+                            Payment Method:
+                          </span>
+                          <span className="text-gray-900 dark:text-white capitalize">
+                            {paymentMethod}
+                          </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Delivery to:</span>
-                          <span className="text-gray-900 dark:text-white">{shippingInfo.city}</span>
+                          <span className="text-gray-600 dark:text-gray-400">
+                            Delivery to:
+                          </span>
+                          <span className="text-gray-900 dark:text-white">
+                            {shippingInfo.city}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -548,35 +646,55 @@ export default function CheckoutPage() {
                 className="lg:sticky lg:top-24 h-fit"
               >
                 <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-lg p-6">
-                  <h3 className="text-lg font-bold mb-4 text-gray-900 dark:text-white">Order Summary</h3>
-                  
+                  <h3 className="text-lg font-bold mb-4 text-gray-900 dark:text-white">
+                    Order Summary
+                  </h3>
+
                   <div className="space-y-3 mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600 dark:text-gray-400">Subtotal</span>
-                      <span className="font-medium text-gray-900 dark:text-white">৳{subtotal.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600 dark:text-gray-400">Shipping</span>
+                      <span className="text-gray-600 dark:text-gray-400">
+                        Subtotal
+                      </span>
                       <span className="font-medium text-gray-900 dark:text-white">
-                        {shippingCost === 0 ? "FREE" : `৳${shippingCost.toFixed(2)}`}
+                        ৳{subtotal.toFixed(2)}
                       </span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600 dark:text-gray-400">Tax (5%)</span>
-                      <span className="font-medium text-gray-900 dark:text-white">৳{tax.toFixed(2)}</span>
+                      <span className="text-gray-600 dark:text-gray-400">
+                        Shipping
+                      </span>
+                      <span className="font-medium text-gray-900 dark:text-white">
+                        {shippingCost === 0
+                          ? "FREE"
+                          : `৳${shippingCost.toFixed(2)}`}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600 dark:text-gray-400">
+                        Tax (5%)
+                      </span>
+                      <span className="font-medium text-gray-900 dark:text-white">
+                        ৳{tax.toFixed(2)}
+                      </span>
                     </div>
                   </div>
 
                   <div className="flex justify-between items-center mb-6">
-                    <span className="text-lg font-bold text-gray-900 dark:text-white">Total</span>
-                    <span className="text-2xl font-bold text-primary">৳{total.toFixed(2)}</span>
+                    <span className="text-lg font-bold text-gray-900 dark:text-white">
+                      Total
+                    </span>
+                    <span className="text-2xl font-bold text-primary">
+                      ৳{total.toFixed(2)}
+                    </span>
                   </div>
 
                   {shippingCost === 0 && (
                     <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-3 mb-4">
                       <div className="flex items-center gap-2 text-green-700 dark:text-green-400 text-sm">
                         <Truck className="h-4 w-4" />
-                        <span className="font-medium">Free Shipping Applied!</span>
+                        <span className="font-medium">
+                          Free Shipping Applied!
+                        </span>
                       </div>
                     </div>
                   )}
@@ -597,8 +715,6 @@ export default function CheckoutPage() {
           </div>
         </div>
       </div>
-      
     </>
   );
 }
-

@@ -5,7 +5,18 @@ import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "../context/ThemeContext";
 import { useCart } from "../context/CartContext";
 import { useFavorites } from "../context/FavoritesContext";
-import { Moon, Sun, Search, Heart, ShoppingBag, Menu, X, Trash2, Plus, Minus } from "lucide-react";
+import {
+  Moon,
+  Sun,
+  Search,
+  Heart,
+  ShoppingBag,
+  Menu,
+  X,
+  Trash2,
+  Plus,
+  Minus,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getAllCategories } from "../../lib/api";
 import Image from "next/image";
@@ -23,13 +34,20 @@ export default function Navbar() {
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
   const [recentSearches, setRecentSearches] = useState([]);
   const { isDark, toggleTheme } = useTheme();
-  const { cart, getCartCount, getCartTotal, removeFromCart, updateQuantity, addToCart } = useCart();
+  const {
+    cart,
+    getCartCount,
+    getCartTotal,
+    removeFromCart,
+    updateQuantity,
+    addToCart,
+  } = useCart();
   const { favorites, removeFromFavorites, toggleFavorite } = useFavorites();
-  
+
   // Safe cart count getter
   const cartCount = getCartCount ? getCartCount() : 0;
   const favCount = favorites ? favorites.length : 0;
-  
+
   const cartRef = useRef(null);
   const favoritesRef = useRef(null);
   const searchRef = useRef(null);
@@ -39,7 +57,7 @@ export default function Navbar() {
 
   // Check if link is active
   const isActiveLink = (href) => {
-    if (href.startsWith('#')) {
+    if (href.startsWith("#")) {
       return false; // Hash links are handled by scroll position
     }
     return pathname === href;
@@ -60,7 +78,10 @@ export default function Navbar() {
       if (cartRef.current && !cartRef.current.contains(event.target)) {
         setCartOpen(false);
       }
-      if (favoritesRef.current && !favoritesRef.current.contains(event.target)) {
+      if (
+        favoritesRef.current &&
+        !favoritesRef.current.contains(event.target)
+      ) {
         setFavoritesOpen(false);
       }
       if (searchRef.current && !searchRef.current.contains(event.target)) {
@@ -76,7 +97,9 @@ export default function Navbar() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     try {
-      const stored = JSON.parse(localStorage.getItem("recent_searches") || "[]");
+      const stored = JSON.parse(
+        localStorage.getItem("recent_searches") || "[]"
+      );
       if (Array.isArray(stored)) setRecentSearches(stored.slice(0, 5));
     } catch {}
   }, []);
@@ -86,7 +109,10 @@ export default function Navbar() {
     if (!query) return;
     if (typeof window !== "undefined") {
       try {
-        const next = [query, ...recentSearches.filter((s) => s !== query)].slice(0, 5);
+        const next = [
+          query,
+          ...recentSearches.filter((s) => s !== query),
+        ].slice(0, 5);
         setRecentSearches(next);
         localStorage.setItem("recent_searches", JSON.stringify(next));
       } catch {}
@@ -111,7 +137,9 @@ export default function Navbar() {
           const categories = getAllCategories();
           // Limit per category to keep light
           const promises = categories.map((c) =>
-            fetch(`https://www.outletexpense.xyz/api/public/categorywise-products/${c.id}?page=1&limit=100`)
+            fetch(
+              `https://www.outletexpense.xyz/api/public/categorywise-products/${c.id}?page=1&limit=100`
+            )
               .then((r) => r.json())
               .then((d) => (d?.success && Array.isArray(d?.data) ? d.data : []))
               .catch(() => [])
@@ -119,7 +147,9 @@ export default function Navbar() {
           const results = await Promise.all(promises);
           const combined = results.flat();
           // Deduplicate by id
-          const unique = Array.from(new Map(combined.map((p) => [p.id, p])).values());
+          const unique = Array.from(
+            new Map(combined.map((p) => [p.id, p])).values()
+          );
           allProductsRef.current = unique;
         }
         const lower = q.toLowerCase();
@@ -144,11 +174,13 @@ export default function Navbar() {
   ];
 
   return (
-    <header className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 backdrop-blur-lg saturate-150 ${
-      scrolled
-        ? "bg-white/80 dark:bg-background-dark/70 shadow-lg border-b border-gray-200/60 dark:border-gray-800/60"
-        : "bg-white/40 dark:bg-background-dark/40"
-    }`}>
+    <header
+      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 backdrop-blur-lg saturate-150 ${
+        scrolled
+          ? "bg-white/80 dark:bg-background-dark/70 shadow-lg border-b border-gray-200/60 dark:border-gray-800/60"
+          : "bg-white/40 dark:bg-background-dark/40"
+      }`}
+    >
       <div className="flex items-center justify-between whitespace-nowrap px-4 sm:px-8 lg:px-10 py-3">
         {/* Logo */}
         <motion.a
@@ -211,9 +243,9 @@ export default function Navbar() {
                 className="flex w-full min-w-0 flex-1 bg-gray-100/80 dark:bg-background-dark/60 text-gray-900 dark:text-white focus:outline-0 border-none h-full placeholder:text-gray-500 dark:placeholder:text-gray-400 px-4 text-sm"
                 placeholder="Search products..."
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
+                  if (e.key === "Enter") {
                     pushToProducts();
-                  } else if (e.key === 'Escape') {
+                  } else if (e.key === "Escape") {
                     setSearchOpen(false);
                   }
                 }}
@@ -243,7 +275,9 @@ export default function Navbar() {
                 >
                   {!searchQuery && recentSearches.length > 0 && (
                     <div className="p-2">
-                      <div className="px-2 py-1 text-xs uppercase tracking-wide text-gray-500">Recent</div>
+                      <div className="px-2 py-1 text-xs uppercase tracking-wide text-gray-500">
+                        Recent
+                      </div>
                       {recentSearches.map((term) => (
                         <button
                           key={term}
@@ -259,9 +293,13 @@ export default function Navbar() {
                   {searchQuery && (
                     <div className="p-2 max-h-80 overflow-y-auto">
                       {loadingSuggestions ? (
-                        <div className="px-3 py-6 text-center text-sm text-gray-500">Searching…</div>
+                        <div className="px-3 py-6 text-center text-sm text-gray-500">
+                          Searching…
+                        </div>
                       ) : suggestions.length === 0 ? (
-                        <div className="px-3 py-6 text-center text-sm text-gray-500">No matches</div>
+                        <div className="px-3 py-6 text-center text-sm text-gray-500">
+                          No matches
+                        </div>
                       ) : (
                         suggestions.map((p) => (
                           <a
@@ -271,11 +309,20 @@ export default function Navbar() {
                             role="option"
                           >
                             <div className="relative w-8 h-8 rounded bg-gray-100 dark:bg-gray-800 overflow-hidden flex-shrink-0">
-                              <Image src={p.image_path || "/placeholder.png"} alt={p.name} fill className="object-cover" />
+                              <Image
+                                src={p.image_path || "/placeholder.png"}
+                                alt={p.name}
+                                fill
+                                className="object-cover"
+                              />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <div className="text-sm text-gray-900 dark:text-white truncate">{p.name}</div>
-                              <div className="text-xs text-primary font-semibold">৳{p.retails_price}</div>
+                              <div className="text-sm text-gray-900 dark:text-white truncate">
+                                {p.name}
+                              </div>
+                              <div className="text-xs text-primary font-semibold">
+                                ৳{p.retails_price}
+                              </div>
                             </div>
                           </a>
                         ))
@@ -329,7 +376,6 @@ export default function Navbar() {
               </AnimatePresence>
             </motion.button>
 
-
             {/* Wishlist */}
             <div ref={favoritesRef} className="relative hidden sm:block">
               <motion.button
@@ -341,7 +387,13 @@ export default function Navbar() {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
               >
-                <Heart className={`h-5 w-5 ${favCount > 0 ? "fill-rose-500/80 text-rose-500/80 dark:fill-rose-400/80 dark:text-rose-400/80" : ""}`} />
+                <Heart
+                  className={`h-5 w-5 ${
+                    favCount > 0
+                      ? "fill-rose-500/80 text-rose-500/80 dark:fill-rose-400/80 dark:text-rose-400/80"
+                      : ""
+                  }`}
+                />
                 {favCount > 0 && (
                   <motion.span
                     className="absolute -top-1 -right-1 flex items-center justify-center h-5 w-5 text-xs font-bold text-white bg-rose-500/80 dark:bg-rose-400/80 rounded-full"
@@ -353,7 +405,7 @@ export default function Navbar() {
                   </motion.span>
                 )}
               </motion.button>
-              
+
               {/* Favorites Dropdown */}
               <AnimatePresence>
                 {favoritesOpen && (
@@ -366,30 +418,45 @@ export default function Navbar() {
                   >
                     <div className="p-4 border-b border-gray-200 dark:border-gray-700">
                       <h3 className="font-semibold text-lg">Favorites</h3>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">{favCount} items</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        {favCount} items
+                      </p>
                     </div>
-                    
+
                     <div className="max-h-96 overflow-y-auto">
                       {favCount === 0 ? (
                         <div className="p-8 text-center">
                           <Heart className="h-12 w-12 mx-auto mb-3 text-gray-300 dark:text-gray-600" />
-                          <p className="text-gray-500 dark:text-gray-400">No favorites yet</p>
+                          <p className="text-gray-500 dark:text-gray-400">
+                            No favorites yet
+                          </p>
                         </div>
                       ) : (
                         <div className="p-2">
                           {favorites.map((item) => (
-                            <div key={item.id} className="flex gap-3 p-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl transition-colors">
+                            <div
+                              key={item.id}
+                              className="flex gap-3 p-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl transition-colors"
+                            >
                               <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 flex-shrink-0">
                                 <Image
-                                  src={item.image_path || item.images?.[0] || "/placeholder.png"}
+                                  src={
+                                    item.image_path ||
+                                    item.images?.[0] ||
+                                    "/placeholder.png"
+                                  }
                                   alt={item.name}
                                   fill
                                   className="object-cover"
                                 />
                               </div>
                               <div className="flex-1 min-w-0">
-                                <h4 className="font-medium text-sm truncate">{item.name}</h4>
-                                <p className="text-primary font-semibold text-sm">৳{item.retails_price}</p>
+                                <h4 className="font-medium text-sm truncate">
+                                  {item.name}
+                                </h4>
+                                <p className="text-primary font-semibold text-sm">
+                                  ৳{item.retails_price}
+                                </p>
                               </div>
                               <button
                                 onClick={() => removeFromFavorites(item.id)}
@@ -402,12 +469,12 @@ export default function Navbar() {
                         </div>
                       )}
                     </div>
-                    
+
                     {favCount > 0 && (
                       <div className="p-3 border-t border-gray-200 dark:border-gray-700">
                         <button
                           onClick={() => {
-                            router.push('/products');
+                            router.push("/products");
                             setFavoritesOpen(false);
                           }}
                           className="w-full py-2 bg-primary hover:bg-primary/90 text-white rounded-xl font-medium transition-colors"
@@ -444,7 +511,7 @@ export default function Navbar() {
                   </motion.span>
                 )}
               </motion.button>
-              
+
               {/* Cart Dropdown */}
               <AnimatePresence>
                 {cartOpen && (
@@ -457,40 +524,61 @@ export default function Navbar() {
                   >
                     <div className="p-4 border-b border-gray-200 dark:border-gray-700">
                       <h3 className="font-semibold text-lg">Shopping Cart</h3>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">{cartCount} items</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        {cartCount} items
+                      </p>
                     </div>
-                    
+
                     <div className="max-h-96 overflow-y-auto">
                       {!cart || cart.length === 0 ? (
                         <div className="p-8 text-center">
                           <ShoppingBag className="h-12 w-12 mx-auto mb-3 text-gray-300 dark:text-gray-600" />
-                          <p className="text-gray-500 dark:text-gray-400">Your cart is empty</p>
+                          <p className="text-gray-500 dark:text-gray-400">
+                            Your cart is empty
+                          </p>
                         </div>
                       ) : (
                         <div className="p-2">
                           {cart.map((item) => (
-                            <div key={item.id} className="flex gap-3 p-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl transition-colors">
+                            <div
+                              key={item.id}
+                              className="flex gap-3 p-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl transition-colors"
+                            >
                               <div className="relative w-20 h-20 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 flex-shrink-0">
                                 <Image
-                                  src={item.image_path || item.images?.[0] || "/placeholder.png"}
+                                  src={
+                                    item.image_path ||
+                                    item.images?.[0] ||
+                                    "/placeholder.png"
+                                  }
                                   alt={item.name}
                                   fill
                                   className="object-cover"
                                 />
                               </div>
                               <div className="flex-1 min-w-0">
-                                <h4 className="font-medium text-sm truncate">{item.name}</h4>
-                                <p className="text-primary font-semibold text-sm">৳{item.retails_price}</p>
+                                <h4 className="font-medium text-sm truncate">
+                                  {item.name}
+                                </h4>
+                                <p className="text-primary font-semibold text-sm">
+                                  ৳{item.retails_price}
+                                </p>
                                 <div className="flex items-center gap-2 mt-1">
                                   <button
-                                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                    onClick={() =>
+                                      updateQuantity(item.id, item.quantity - 1)
+                                    }
                                     className="h-6 w-6 flex items-center justify-center rounded bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
                                   >
                                     <Minus className="h-3 w-3" />
                                   </button>
-                                  <span className="text-sm font-medium w-8 text-center">{item.quantity}</span>
+                                  <span className="text-sm font-medium w-8 text-center">
+                                    {item.quantity}
+                                  </span>
                                   <button
-                                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                    onClick={() =>
+                                      updateQuantity(item.id, item.quantity + 1)
+                                    }
                                     className="h-6 w-6 flex items-center justify-center rounded bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
                                   >
                                     <Plus className="h-3 w-3" />
@@ -508,16 +596,18 @@ export default function Navbar() {
                         </div>
                       )}
                     </div>
-                    
+
                     {cart && cart.length > 0 && (
                       <div className="p-4 border-t border-gray-200 dark:border-gray-700 space-y-3">
                         <div className="flex justify-between items-center">
                           <span className="font-semibold">Total:</span>
-                          <span className="text-xl font-bold text-primary">৳{getCartTotal ? getCartTotal().toFixed(2) : '0.00'}</span>
+                          <span className="text-xl font-bold text-primary">
+                            ৳{getCartTotal ? getCartTotal().toFixed(2) : "0.00"}
+                          </span>
                         </div>
                         <button
                           onClick={() => {
-                            router.push('/checkout');
+                            router.push("/checkout");
                             setCartOpen(false);
                           }}
                           className="w-full py-2.5 bg-primary hover:bg-primary/90 text-white rounded-xl font-medium transition-colors"
@@ -603,7 +693,7 @@ export default function Navbar() {
                   </motion.a>
                 );
               })}
-              
+
               {/* Mobile Search */}
               <motion.div
                 className="mt-4"
@@ -619,9 +709,12 @@ export default function Navbar() {
                     className="flex-1 bg-gray-100 dark:bg-background-dark/60 text-gray-900 dark:text-white focus:outline-0 border-none h-10 placeholder:text-gray-500 px-4 text-sm"
                     placeholder="Search..."
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
+                      if (e.key === "Enter") {
                         const val = e.currentTarget.value.trim();
-                        if (val) router.push(`/products?search=${encodeURIComponent(val)}`);
+                        if (val)
+                          router.push(
+                            `/products?search=${encodeURIComponent(val)}`
+                          );
                         setMobileMenuOpen(false);
                       }
                     }}

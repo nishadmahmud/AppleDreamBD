@@ -3,10 +3,10 @@
 import { useEffect, useState, useRef, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Search, 
-  SlidersHorizontal, 
-  X, 
+import {
+  Search,
+  SlidersHorizontal,
+  X,
   ChevronDown,
   Grid3x3,
   List,
@@ -16,7 +16,7 @@ import {
   TrendingUp,
   ArrowUpDown,
   Filter,
-  Loader2
+  Loader2,
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -31,7 +31,7 @@ const ProductCard = ({ product, viewMode }) => {
   const { addToCart, isInCart } = useCart();
   const { toggleFavorite, isFavorite } = useFavorites();
   const [addedToCart, setAddedToCart] = useState(false);
-  
+
   const isLiked = isFavorite(product.id);
   const inCart = isInCart(product.id);
   const isInStock = product.status === "In stock" || product.current_stock > 0;
@@ -75,7 +75,10 @@ const ProductCard = ({ product, viewMode }) => {
           />
           {product.discount > 0 && (
             <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-              -{product.discount_type === "percentage" ? `${product.discount}%` : `৳${product.discount}`}
+              -
+              {product.discount_type === "percentage"
+                ? `${product.discount}%`
+                : `৳${product.discount}`}
             </div>
           )}
         </div>
@@ -86,7 +89,7 @@ const ProductCard = ({ product, viewMode }) => {
             <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 line-clamp-2">
               {product.name}
             </h3>
-            
+
             {/* Rating */}
             <div className="flex items-center gap-1 mb-3">
               {[...Array(5)].map((_, i) => (
@@ -99,13 +102,23 @@ const ProductCard = ({ product, viewMode }) => {
                   }`}
                 />
               ))}
-              <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">4.5</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">
+                4.5
+              </span>
             </div>
 
             {/* Stock Status */}
             <div className="mb-3">
-              <span className={`text-sm font-medium ${isInStock ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                {isInStock ? `${product.current_stock} in stock` : 'Out of stock'}
+              <span
+                className={`text-sm font-medium ${
+                  isInStock
+                    ? "text-green-600 dark:text-green-400"
+                    : "text-red-600 dark:text-red-400"
+                }`}
+              >
+                {isInStock
+                  ? `${product.current_stock} in stock`
+                  : "Out of stock"}
               </span>
             </div>
           </div>
@@ -118,9 +131,13 @@ const ProductCard = ({ product, viewMode }) => {
               </span>
               {product.discount > 0 && (
                 <span className="text-sm text-gray-400 line-through">
-                  ৳{(product.retails_price + (product.discount_type === "percentage" 
-                    ? (product.retails_price * product.discount) / 100 
-                    : product.discount)).toLocaleString()}
+                  ৳
+                  {(
+                    product.retails_price +
+                    (product.discount_type === "percentage"
+                      ? (product.retails_price * product.discount) / 100
+                      : product.discount)
+                  ).toLocaleString()}
                 </span>
               )}
             </div>
@@ -133,9 +150,15 @@ const ProductCard = ({ product, viewMode }) => {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
               >
-                <Heart className={`h-5 w-5 ${isLiked ? "fill-red-500 text-red-500" : "text-gray-600 dark:text-gray-400"}`} />
+                <Heart
+                  className={`h-5 w-5 ${
+                    isLiked
+                      ? "fill-red-500 text-red-500"
+                      : "text-gray-600 dark:text-gray-400"
+                  }`}
+                />
               </motion.button>
-              
+
               <motion.button
                 onClick={handleAddToCart}
                 disabled={!isInStock || inCart}
@@ -184,11 +207,14 @@ const ProductCard = ({ product, viewMode }) => {
           className="object-cover group-hover:scale-105 transition-transform duration-300"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
-        
+
         {/* Discount Badge */}
         {product.discount > 0 && (
           <div className="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
-            -{product.discount_type === "percentage" ? `${product.discount}%` : `৳${product.discount}`}
+            -
+            {product.discount_type === "percentage"
+              ? `${product.discount}%`
+              : `৳${product.discount}`}
           </div>
         )}
 
@@ -199,7 +225,13 @@ const ProductCard = ({ product, viewMode }) => {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
         >
-          <Heart className={`h-5 w-5 ${isLiked ? "fill-red-500 text-red-500" : "text-gray-600 dark:text-gray-400"}`} />
+          <Heart
+            className={`h-5 w-5 ${
+              isLiked
+                ? "fill-red-500 text-red-500"
+                : "text-gray-600 dark:text-gray-400"
+            }`}
+          />
         </motion.button>
       </div>
 
@@ -223,13 +255,21 @@ const ProductCard = ({ product, viewMode }) => {
                 }`}
               />
             ))}
-            <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">4.5</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">
+              4.5
+            </span>
           </div>
 
           {/* Stock Status */}
           <div className="text-xs font-medium">
-            <span className={isInStock ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
-              {isInStock ? 'In stock' : 'Out of stock'}
+            <span
+              className={
+                isInStock
+                  ? "text-green-600 dark:text-green-400"
+                  : "text-red-600 dark:text-red-400"
+              }
+            >
+              {isInStock ? "In stock" : "Out of stock"}
             </span>
           </div>
 
@@ -240,9 +280,13 @@ const ProductCard = ({ product, viewMode }) => {
             </span>
             {product.discount > 0 && (
               <span className="text-xs text-gray-400 line-through">
-                ৳{(product.retails_price + (product.discount_type === "percentage" 
-                  ? (product.retails_price * product.discount) / 100 
-                  : product.discount)).toLocaleString()}
+                ৳
+                {(
+                  product.retails_price +
+                  (product.discount_type === "percentage"
+                    ? (product.retails_price * product.discount) / 100
+                    : product.discount)
+                ).toLocaleString()}
               </span>
             )}
           </div>
@@ -283,32 +327,32 @@ function ProductsPageContent() {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   // UI States
   const [viewMode, setViewMode] = useState("grid"); // grid or list
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  
+
   // Filter States
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [priceRange, setPriceRange] = useState([0, 100000]);
   const [sortBy, setSortBy] = useState("featured"); // featured, price-low, price-high, newest
   const [inStockOnly, setInStockOnly] = useState(false);
-  
+
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 20;
-  
+
   const categories = getAllCategories();
 
   // Handle URL params for category selection
   useEffect(() => {
-    const categoryParam = searchParams.get('category');
+    const categoryParam = searchParams.get("category");
     if (categoryParam) {
       setSelectedCategories([categoryParam]);
     }
-    const searchParam = searchParams.get('search');
-    if (typeof searchParam === 'string') {
+    const searchParam = searchParams.get("search");
+    if (typeof searchParam === "string") {
       setSearchQuery(searchParam);
     }
   }, [searchParams]);
@@ -316,7 +360,7 @@ function ProductsPageContent() {
   // Cache for API responses
   const cacheRef = useRef({
     all: null,
-    categories: {}
+    categories: {},
   });
 
   // Fetch products - with caching
@@ -329,16 +373,18 @@ function ProductsPageContent() {
 
         if (selectedCategories.length > 0) {
           const categoryId = selectedCategories[0];
-          
+
           // Check cache first
           if (cacheRef.current.categories[categoryId]) {
             allProducts = cacheRef.current.categories[categoryId];
             setLoading(false);
           } else {
             // Fetch from API
-            const response = await fetch(`https://www.outletexpense.xyz/api/public/categorywise-products/${categoryId}?page=1&limit=200`);
+            const response = await fetch(
+              `https://www.outletexpense.xyz/api/public/categorywise-products/${categoryId}?page=1&limit=200`
+            );
             const data = await response.json();
-            
+
             if (data.success && data.data) {
               allProducts = data.data;
               // Cache it
@@ -352,32 +398,34 @@ function ProductsPageContent() {
             setLoading(false);
           } else {
             // Fetch from all category endpoints
-            const categoryPromises = categories.map(category => 
-              fetch(`https://www.outletexpense.xyz/api/public/categorywise-products/${category.id}?page=1&limit=200`)
-                .then(r => r.json())
-                .then(data => data.success ? data.data : [])
+            const categoryPromises = categories.map((category) =>
+              fetch(
+                `https://www.outletexpense.xyz/api/public/categorywise-products/${category.id}?page=1&limit=200`
+              )
+                .then((r) => r.json())
+                .then((data) => (data.success ? data.data : []))
                 .catch(() => [])
             );
-            
+
             const categoryResults = await Promise.all(categoryPromises);
             allProducts = categoryResults.flat();
-            
+
             // Remove duplicates by product ID
             const uniqueProducts = Array.from(
-              new Map(allProducts.map(p => [p.id, p])).values()
+              new Map(allProducts.map((p) => [p.id, p])).values()
             );
             allProducts = uniqueProducts;
-            
+
             // Cache it
             cacheRef.current.all = allProducts;
           }
         }
 
         setProducts(allProducts);
-        
+
         // Calculate max price
         if (allProducts.length > 0) {
-          const maxPrice = Math.max(...allProducts.map(p => p.retails_price));
+          const maxPrice = Math.max(...allProducts.map((p) => p.retails_price));
           setPriceRange([0, maxPrice]);
         }
       } catch (err) {
@@ -397,20 +445,22 @@ function ProductsPageContent() {
 
     // Search filter
     if (searchQuery) {
-      result = result.filter(product =>
+      result = result.filter((product) =>
         product.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
     // Price range filter
-    result = result.filter(product =>
-      product.retails_price >= priceRange[0] && product.retails_price <= priceRange[1]
+    result = result.filter(
+      (product) =>
+        product.retails_price >= priceRange[0] &&
+        product.retails_price <= priceRange[1]
     );
 
     // Stock filter
     if (inStockOnly) {
-      result = result.filter(product => 
-        product.status === "In stock" || product.current_stock > 0
+      result = result.filter(
+        (product) => product.status === "In stock" || product.current_stock > 0
       );
     }
 
@@ -426,7 +476,9 @@ function ProductsPageContent() {
         result.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
         break;
       case "popular":
-        result.sort((a, b) => (b.total_sales_qty || 0) - (a.total_sales_qty || 0));
+        result.sort(
+          (a, b) => (b.total_sales_qty || 0) - (a.total_sales_qty || 0)
+        );
         break;
       default:
         // featured - keep original order
@@ -440,20 +492,23 @@ function ProductsPageContent() {
   // Pagination
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+  const currentProducts = filteredProducts.slice(
+    indexOfFirstProduct,
+    indexOfLastProduct
+  );
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
 
   const handleCategoryToggle = (categoryId) => {
-    setSelectedCategories(prev =>
+    setSelectedCategories((prev) =>
       prev.includes(categoryId)
-        ? prev.filter(id => id !== categoryId)
+        ? prev.filter((id) => id !== categoryId)
         : [...prev, categoryId]
     );
   };
 
   const clearFilters = () => {
     setSelectedCategories([]);
-    setPriceRange([0, Math.max(...products.map(p => p.retails_price))]);
+    setPriceRange([0, Math.max(...products.map((p) => p.retails_price))]);
     setInStockOnly(false);
     setSearchQuery("");
     setSortBy("featured");
@@ -482,21 +537,28 @@ function ProductsPageContent() {
                 <motion.div
                   className="absolute inset-0 m-auto w-3 h-3 bg-primary rounded-full"
                   animate={{ scale: [1, 1.3, 1], opacity: [1, 0.6, 1] }}
-                  transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
+                  transition={{
+                    duration: 1.2,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
                 />
               </div>
               {/* Loading text */}
               <motion.p
                 className="text-sm font-medium text-gray-600 dark:text-gray-400"
                 animate={{ opacity: [0.5, 1, 0.5] }}
-                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                transition={{
+                  duration: 1.5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
               >
                 Loading products...
               </motion.p>
             </div>
           </div>
         </div>
-        
       </div>
     );
   }
@@ -514,7 +576,6 @@ function ProductsPageContent() {
             </div>
           </div>
         </div>
-        
       </div>
     );
   }
@@ -522,7 +583,7 @@ function ProductsPageContent() {
   return (
     <div className="min-h-screen bg-background-light dark:bg-background-dark transition-colors duration-300">
       <Navbar />
-      
+
       <div className="pt-24 px-4 sm:px-8 lg:px-10 pb-20">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
@@ -536,7 +597,8 @@ function ProductsPageContent() {
               All Products
             </h1>
             <p className="text-gray-600 dark:text-gray-400">
-              Discover our complete collection of {products.length} amazing products
+              Discover our complete collection of {products.length} amazing
+              products
             </p>
           </motion.div>
 
@@ -609,7 +671,11 @@ function ProductsPageContent() {
                     type="text"
                     placeholder={
                       selectedCategories.length > 0
-                        ? `Search in ${categories.find(c => c.id === selectedCategories[0])?.name || 'category'}...`
+                        ? `Search in ${
+                            categories.find(
+                              (c) => c.id === selectedCategories[0]
+                            )?.name || "category"
+                          }...`
                         : "Search products..."
                     }
                     value={searchQuery}
@@ -762,7 +828,12 @@ function ProductsPageContent() {
                       <input
                         type="number"
                         value={priceRange[0]}
-                        onChange={(e) => setPriceRange([parseInt(e.target.value) || 0, priceRange[1]])}
+                        onChange={(e) =>
+                          setPriceRange([
+                            parseInt(e.target.value) || 0,
+                            priceRange[1],
+                          ])
+                        }
                         className="w-32 px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white outline-none focus:border-primary"
                         placeholder="Min"
                       />
@@ -770,7 +841,12 @@ function ProductsPageContent() {
                       <input
                         type="number"
                         value={priceRange[1]}
-                        onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value) || 100000])}
+                        onChange={(e) =>
+                          setPriceRange([
+                            priceRange[0],
+                            parseInt(e.target.value) || 100000,
+                          ])
+                        }
                         className="w-32 px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white outline-none focus:border-primary"
                         placeholder="Max"
                       />
@@ -788,7 +864,9 @@ function ProductsPageContent() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.2 }}
           >
-            Showing {indexOfFirstProduct + 1}-{Math.min(indexOfLastProduct, filteredProducts.length)} of {filteredProducts.length} products
+            Showing {indexOfFirstProduct + 1}-
+            {Math.min(indexOfLastProduct, filteredProducts.length)} of{" "}
+            {filteredProducts.length} products
           </motion.div>
 
           {/* Products Grid/List */}
@@ -819,11 +897,12 @@ function ProductsPageContent() {
               </div>
             </motion.div>
           ) : (
-            <motion.div 
+            <motion.div
               key={viewMode}
-              className={viewMode === "grid" 
-                ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-                : "space-y-4"
+              className={
+                viewMode === "grid"
+                  ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+                  : "space-y-4"
               }
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -849,7 +928,7 @@ function ProductsPageContent() {
               transition={{ delay: 0.3 }}
             >
               <motion.button
-                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
                 disabled={currentPage === 1}
                 className="px-4 py-2 rounded-lg bg-white dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-900 dark:text-white font-medium hover:border-primary transition-all"
                 whileTap={{ scale: currentPage === 1 ? 1 : 0.95 }}
@@ -888,7 +967,9 @@ function ProductsPageContent() {
               </div>
 
               <motion.button
-                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                }
                 disabled={currentPage === totalPages}
                 className="px-4 py-2 rounded-lg bg-white dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-900 dark:text-white font-medium hover:border-primary transition-all"
                 whileTap={{ scale: currentPage === totalPages ? 1 : 0.95 }}
@@ -899,8 +980,6 @@ function ProductsPageContent() {
           )}
         </div>
       </div>
-
-      
     </div>
   );
 }
@@ -908,25 +987,30 @@ function ProductsPageContent() {
 // Wrap with Suspense for useSearchParams
 export default function ProductsPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-background-light dark:bg-background-dark flex items-center justify-center">
-        <div className="relative w-20 h-20">
-          <div className="absolute inset-0 border-4 border-primary/20 rounded-full" />
-          <motion.div
-            className="absolute inset-0 border-4 border-transparent border-t-primary border-r-primary rounded-full"
-            animate={{ rotate: [0, 360] }}
-            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-          />
-          <motion.div
-            className="absolute inset-0 m-auto w-3 h-3 bg-primary rounded-full"
-            animate={{ scale: [1, 1.3, 1], opacity: [1, 0.6, 1] }}
-            transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
-          />
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-background-light dark:bg-background-dark flex items-center justify-center">
+          <div className="relative w-20 h-20">
+            <div className="absolute inset-0 border-4 border-primary/20 rounded-full" />
+            <motion.div
+              className="absolute inset-0 border-4 border-transparent border-t-primary border-r-primary rounded-full"
+              animate={{ rotate: [0, 360] }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            />
+            <motion.div
+              className="absolute inset-0 m-auto w-3 h-3 bg-primary rounded-full"
+              animate={{ scale: [1, 1.3, 1], opacity: [1, 0.6, 1] }}
+              transition={{
+                duration: 1.2,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
+          </div>
         </div>
-      </div>
-    }>
+      }
+    >
       <ProductsPageContent />
     </Suspense>
   );
 }
-

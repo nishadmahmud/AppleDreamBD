@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 
 const faqs = [
@@ -62,8 +63,12 @@ function FAQItem({ item, idx, openIdx, setOpenIdx }) {
         onClick={() => setOpenIdx(isOpen ? -1 : idx)}
         aria-expanded={isOpen}
       >
-        <span className="text-left text-base md:text-lg font-semibold text-gray-900 dark:text-white">{item.q}</span>
-        <span className="text-gray-500 dark:text-gray-400">{isOpen ? "−" : "+"}</span>
+        <span className="text-left text-base md:text-lg font-semibold text-gray-900 dark:text-white">
+          {item.q}
+        </span>
+        <span className="text-gray-500 dark:text-gray-400">
+          {isOpen ? "−" : "+"}
+        </span>
       </button>
       {isOpen && (
         <div className="px-5 pb-5 pt-0 text-gray-700 dark:text-gray-300">
@@ -83,7 +88,9 @@ export default function FAQPage() {
         {/* Breadcrumbs */}
         <div className="mb-6">
           <nav className="text-sm text-gray-500 dark:text-gray-400">
-            <a href="/" className="hover:text-primary">Home</a>
+            <Link href="/" className="hover:text-primary">
+              Home
+            </Link>
             <span className="mx-2">/</span>
             <span className="text-gray-700 dark:text-gray-300">FAQ</span>
           </nav>
@@ -93,8 +100,13 @@ export default function FAQPage() {
         <div className="relative overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-background-dark/60 mb-10">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent" />
           <div className="relative p-6 md:p-10">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-3">Frequently Asked Questions</h1>
-            <p className="text-gray-600 dark:text-gray-400 max-w-3xl">Answers to common questions about shipping, returns, warranty, payments, and more.</p>
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-3">
+              Frequently Asked Questions
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400 max-w-3xl">
+              Answers to common questions about shipping, returns, warranty,
+              payments, and more.
+            </p>
           </div>
         </div>
 
@@ -102,16 +114,31 @@ export default function FAQPage() {
           {/* Sidebar CTA */}
           <aside className="lg:col-span-1 order-last lg:order-first">
             <div className="sticky top-24 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-background-dark/60 p-5">
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Still need help?</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Get in touch with our support team.</p>
-              <a href="/contact" className="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/90">Contact Us</a>
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">
+                Still need help?
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                Get in touch with our support team.
+              </p>
+              <Link
+                href="/contact"
+                className="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/90"
+              >
+                Contact Us
+              </Link>
             </div>
           </aside>
 
           {/* FAQ list */}
           <div className="lg:col-span-3 space-y-4">
             {faqs.map((item, idx) => (
-              <FAQItem key={idx} item={item} idx={idx} openIdx={openIdx} setOpenIdx={setOpenIdx} />
+              <FAQItem
+                key={idx}
+                item={item}
+                idx={idx}
+                openIdx={openIdx}
+                setOpenIdx={setOpenIdx}
+              />
             ))}
           </div>
         </div>
@@ -119,5 +146,3 @@ export default function FAQPage() {
     </section>
   );
 }
-
-

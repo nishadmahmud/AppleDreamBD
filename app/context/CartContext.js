@@ -10,26 +10,32 @@ export function CartProvider({ children }) {
 
   // Load cart from localStorage on mount
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const savedCart = localStorage.getItem("cart");
       if (savedCart) {
         try {
           const parsedCart = JSON.parse(savedCart);
           console.log("Loaded cart from localStorage:", parsedCart);
-          setCart(parsedCart);
+          setTimeout(() => {
+            setCart(parsedCart);
+          }, 0);
         } catch (error) {
           console.error("Failed to parse cart:", error);
         }
       }
     }
-    setIsLoading(false);
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 0);
   }, []);
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {
-    if (!isLoading && typeof window !== 'undefined') {
+    if (!isLoading && typeof window !== "undefined") {
       console.log("Saving cart to localStorage:", cart);
-      localStorage.setItem("cart", JSON.stringify(cart));
+      setTimeout(() => {
+        localStorage.setItem("cart", JSON.stringify(cart));
+      }, 0);
     }
   }, [cart, isLoading]);
 
@@ -38,11 +44,11 @@ export function CartProvider({ children }) {
     console.log("Product:", product);
     console.log("Quantity:", quantity);
     console.log("Current cart:", cart);
-    
+
     setCart((prevCart) => {
       console.log("Previous cart:", prevCart);
       const existingItem = prevCart.find((item) => item.id === product.id);
-      
+
       if (existingItem) {
         console.log("✅ Item exists, updating quantity");
         const newCart = prevCart.map((item) =>
@@ -70,7 +76,7 @@ export function CartProvider({ children }) {
       removeFromCart(productId);
       return;
     }
-    
+
     setCart((prevCart) =>
       prevCart.map((item) =>
         item.id === productId ? { ...item, quantity } : item
@@ -123,4 +129,3 @@ export function useCart() {
   }
   return context;
 }
-

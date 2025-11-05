@@ -10,43 +10,49 @@ export function FavoritesProvider({ children }) {
 
   // Load favorites from localStorage on mount
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const savedFavorites = localStorage.getItem("favorites");
       if (savedFavorites) {
         try {
           const parsedFavorites = JSON.parse(savedFavorites);
-          console.log("Loaded favorites from localStorage:", parsedFavorites);
-          setFavorites(parsedFavorites);
+          // console.log("Loaded favorites from localStorage:", parsedFavorites);
+          setTimeout(() => {
+            setFavorites(parsedFavorites);
+          }, 0);
         } catch (error) {
-          console.error("Failed to parse favorites:", error);
+          // console.error("Failed to parse favorites:", error);
         }
       }
     }
-    setIsLoading(false);
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 0);
   }, []);
 
   // Save favorites to localStorage whenever they change
   useEffect(() => {
-    if (!isLoading && typeof window !== 'undefined') {
-      console.log("Saving favorites to localStorage:", favorites);
-      localStorage.setItem("favorites", JSON.stringify(favorites));
+    if (!isLoading && typeof window !== "undefined") {
+      // console.log("Saving favorites to localStorage:", favorites);
+      setTimeout(() => {
+        localStorage.setItem("favorites", JSON.stringify(favorites));
+      }, 0);
     }
   }, [favorites, isLoading]);
 
   const addToFavorites = (product) => {
-    console.log("❤️ ADD TO FAVORITES CALLED");
-    console.log("Product:", product);
-    console.log("Current favorites:", favorites);
-    
+    // console.log("❤️ ADD TO FAVORITES CALLED");
+    // console.log("Product:", product);
+    // console.log("Current favorites:", favorites);
+
     setFavorites((prevFavorites) => {
-      console.log("Previous favorites:", prevFavorites);
+      // console.log("Previous favorites:", prevFavorites);
       const exists = prevFavorites.find((item) => item.id === product.id);
       if (exists) {
-        console.log("⚠️ Already in favorites");
+        // console.log("⚠️ Already in favorites");
         return prevFavorites;
       }
       const newFavorites = [...prevFavorites, product];
-      console.log("✅ New favorites after add:", newFavorites);
+      // console.log("✅ New favorites after add:", newFavorites);
       return newFavorites;
     });
   };
@@ -58,15 +64,15 @@ export function FavoritesProvider({ children }) {
   };
 
   const toggleFavorite = (product) => {
-    console.log("🔄 TOGGLE FAVORITE CALLED");
-    console.log("Product:", product);
-    console.log("Is favorite?", isFavorite(product.id));
-    
+    // console.log("🔄 TOGGLE FAVORITE CALLED");
+    // console.log("Product:", product);
+    // console.log("Is favorite?", isFavorite(product.id));
+
     if (isFavorite(product.id)) {
-      console.log("➖ Removing from favorites");
+      // console.log("➖ Removing from favorites");
       removeFromFavorites(product.id);
     } else {
-      console.log("➕ Adding to favorites");
+      // console.log("➕ Adding to favorites");
       addToFavorites(product);
     }
   };
@@ -103,4 +109,3 @@ export function useFavorites() {
   }
   return context;
 }
-

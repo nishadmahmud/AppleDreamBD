@@ -5,7 +5,14 @@ import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { Calendar, Clock, ArrowLeft, BookOpen, Share2, User } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  ArrowLeft,
+  BookOpen,
+  Share2,
+  User,
+} from "lucide-react";
 import Navbar from "../../components/Navbar";
 import { fetchBlogs } from "../../../lib/api";
 
@@ -13,7 +20,7 @@ export default function BlogPostPage() {
   const params = useParams();
   const router = useRouter();
   const blogId = params?.id || params?.slug;
-  
+
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -26,10 +33,10 @@ export default function BlogPostPage() {
       try {
         setLoading(true);
         const response = await fetchBlogs();
-        
+
         // Handle different response structures
         const blogList = response?.data || response?.blogs || response || [];
-        
+
         if (!Array.isArray(blogList)) {
           setError("Invalid blog data format");
           return;
@@ -37,26 +44,30 @@ export default function BlogPostPage() {
 
         // Find the blog by ID or slug
         const foundBlog = blogList.find(
-          (b) => 
-            b.id?.toString() === blogId?.toString() || 
+          (b) =>
+            b.id?.toString() === blogId?.toString() ||
             b.slug === blogId ||
             b.url?.includes(blogId)
         );
 
         if (foundBlog) {
           setBlog(foundBlog);
-          
+
           // Get related blogs (exclude current, limit to 3)
           const related = blogList
-            .filter((b) => 
-              b.id !== foundBlog.id && 
-              (b.category === foundBlog.category || b.tags?.some(tag => foundBlog.tags?.includes(tag)))
+            .filter(
+              (b) =>
+                b.id !== foundBlog.id &&
+                (b.category === foundBlog.category ||
+                  b.tags?.some((tag) => foundBlog.tags?.includes(tag)))
             )
             .slice(0, 3);
-          
+
           // If no related by category/tags, just get other blogs
           if (related.length === 0) {
-            setRelatedBlogs(blogList.filter((b) => b.id !== foundBlog.id).slice(0, 3));
+            setRelatedBlogs(
+              blogList.filter((b) => b.id !== foundBlog.id).slice(0, 3)
+            );
           } else {
             setRelatedBlogs(related);
           }
@@ -100,11 +111,12 @@ export default function BlogPostPage() {
           <div className="max-w-4xl mx-auto">
             <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
               <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Loading blog post...</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Loading blog post...
+              </p>
             </div>
           </div>
         </div>
-        
       </div>
     );
   }
@@ -124,7 +136,9 @@ export default function BlogPostPage() {
               <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
                 Blog Post Not Found
               </h1>
-              <p className="text-gray-600 dark:text-gray-400 mb-8">{error || "The blog post you're looking for doesn't exist."}</p>
+              <p className="text-gray-600 dark:text-gray-400 mb-8">
+                {error || "The blog post you're looking for doesn't exist."}
+              </p>
               <Link
                 href="/blog"
                 className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white font-semibold rounded-full hover:bg-primary/90 transition-colors"
@@ -135,7 +149,6 @@ export default function BlogPostPage() {
             </motion.div>
           </div>
         </div>
-        
       </div>
     );
   }
@@ -143,7 +156,7 @@ export default function BlogPostPage() {
   return (
     <div className="min-h-screen bg-background-light dark:bg-background-dark transition-colors duration-300">
       <Navbar />
-      
+
       {/* Back button */}
       <div className="pt-20 pb-6 px-4 sm:px-8 lg:px-10">
         <div className="max-w-4xl mx-auto">
@@ -195,11 +208,16 @@ export default function BlogPostPage() {
                     {blog.category}
                   </span>
                 )}
-                {blog.tags && Array.isArray(blog.tags) && blog.tags.slice(0, 3).map((tag, i) => (
-                  <span key={i} className="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 text-xs font-medium rounded-full">
-                    {tag}
-                  </span>
-                ))}
+                {blog.tags &&
+                  Array.isArray(blog.tags) &&
+                  blog.tags.slice(0, 3).map((tag, i) => (
+                    <span
+                      key={i}
+                      className="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 text-xs font-medium rounded-full"
+                    >
+                      {tag}
+                    </span>
+                  ))}
               </div>
             )}
 
@@ -220,7 +238,9 @@ export default function BlogPostPage() {
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4" />
                   <span>
-                    {new Date(blog.date || blog.created_at || blog.published_at).toLocaleDateString("en-US", {
+                    {new Date(
+                      blog.date || blog.created_at || blog.published_at
+                    ).toLocaleDateString("en-US", {
                       year: "numeric",
                       month: "long",
                       day: "numeric",
@@ -252,7 +272,7 @@ export default function BlogPostPage() {
             transition={{ delay: 0.4 }}
           >
             {blog.content ? (
-              <div 
+              <div
                 className="blog-content text-gray-700 dark:text-gray-300 leading-relaxed space-y-6"
                 dangerouslySetInnerHTML={{ __html: blog.content }}
               />
@@ -265,7 +285,9 @@ export default function BlogPostPage() {
                 {blog.excerpt}
               </div>
             ) : (
-              <p className="text-gray-500 dark:text-gray-400 italic">No content available for this post.</p>
+              <p className="text-gray-500 dark:text-gray-400 italic">
+                No content available for this post.
+              </p>
             )}
           </motion.div>
 
@@ -320,7 +342,9 @@ export default function BlogPostPage() {
                       {relatedBlog.image || relatedBlog.featured_image ? (
                         <div className="relative w-full aspect-video bg-gray-100 dark:bg-gray-800 overflow-hidden">
                           <Image
-                            src={relatedBlog.image || relatedBlog.featured_image}
+                            src={
+                              relatedBlog.image || relatedBlog.featured_image
+                            }
                             alt={relatedBlog.title || relatedBlog.name}
                             fill
                             className="object-cover group-hover:scale-105 transition-transform duration-300"
@@ -346,9 +370,6 @@ export default function BlogPostPage() {
           )}
         </div>
       </article>
-
-      
     </div>
   );
 }
-

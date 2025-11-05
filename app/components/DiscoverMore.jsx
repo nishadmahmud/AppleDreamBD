@@ -13,7 +13,9 @@ function CategoryTile({ title, description, img, delay = 0, categoryId }) {
 
   useEffect(() => {
     if (!imgRef.current) return;
-    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const prefersReduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
     if (prefersReduced) return;
 
     if (isHovered) {
@@ -44,99 +46,99 @@ function CategoryTile({ title, description, img, delay = 0, categoryId }) {
         onMouseLeave={() => setIsHovered(false)}
         whileHover={{ y: -8 }}
       >
-      <Image
-        ref={imgRef}
-        unoptimized
-        className="w-full h-full object-cover"
-        alt={title}
-        src={img}
-        width={1000}
-        height={1000}
-      />
-      
-      {/* Gradient overlays */}
-      <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/40 to-transparent" />
-      <motion.div
-        className="absolute inset-0 bg-gradient-to-br from-primary/40 to-transparent"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: isHovered ? 1 : 0 }}
-        transition={{ duration: 0.3 }}
-      />
+        <Image
+          ref={imgRef}
+          unoptimized
+          className="w-full h-full object-cover"
+          alt={title}
+          src={img}
+          width={1000}
+          height={1000}
+        />
 
-      {/* Content */}
-      <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-8">
+        {/* Gradient overlays */}
+        <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/40 to-transparent" />
         <motion.div
-          initial={{ y: 0 }}
-          animate={{ y: isHovered ? -10 : 0 }}
+          className="absolute inset-0 bg-gradient-to-br from-primary/40 to-transparent"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: isHovered ? 1 : 0 }}
+          transition={{ duration: 0.3 }}
+        />
+
+        {/* Content */}
+        <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-8">
+          <motion.div
+            initial={{ y: 0 }}
+            animate={{ y: isHovered ? -10 : 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <h3 className="text-3xl md:text-4xl font-black text-white mb-2 drop-shadow-lg">
+              {title}
+            </h3>
+            <motion.p
+              className="text-gray-100 mb-4 text-base leading-relaxed"
+              initial={{ opacity: 0.7 }}
+              animate={{ opacity: isHovered ? 1 : 0.7 }}
+            >
+              {description}
+            </motion.p>
+
+            <motion.button
+              className="inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 backdrop-blur text-white px-5 py-2.5 rounded-lg font-semibold transition-colors"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{
+                opacity: isHovered ? 1 : 0,
+                x: isHovered ? 0 : -20,
+              }}
+              transition={{ duration: 0.3 }}
+              whileHover={{ scale: 1.05, x: 5 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <span>Explore</span>
+              <ArrowRight className="h-4 w-4" />
+            </motion.button>
+          </motion.div>
+        </div>
+
+        {/* Video play icon */}
+        <motion.div
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{
+            opacity: isHovered ? 1 : 0,
+            scale: isHovered ? 1 : 0.5,
+          }}
           transition={{ duration: 0.3 }}
         >
-          <h3 className="text-3xl md:text-4xl font-black text-white mb-2 drop-shadow-lg">
-            {title}
-          </h3>
-          <motion.p
-            className="text-gray-100 mb-4 text-base leading-relaxed"
-            initial={{ opacity: 0.7 }}
-            animate={{ opacity: isHovered ? 1 : 0.7 }}
-          >
-            {description}
-          </motion.p>
-          
-          <motion.button
-            className="inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 backdrop-blur text-white px-5 py-2.5 rounded-lg font-semibold transition-colors"
-            initial={{ opacity: 0, x: -20 }}
+          <motion.div
+            className="flex items-center justify-center w-16 h-16 bg-white/30 backdrop-blur rounded-full border-2 border-white/50"
+            whileHover={{ scale: 1.2 }}
             animate={{
-              opacity: isHovered ? 1 : 0,
-              x: isHovered ? 0 : -20,
+              boxShadow: isHovered
+                ? [
+                    "0 0 0 0 rgba(255,255,255,0.7)",
+                    "0 0 0 20px rgba(255,255,255,0)",
+                  ]
+                : "0 0 0 0 rgba(255,255,255,0)",
             }}
-            transition={{ duration: 0.3 }}
-            whileHover={{ scale: 1.05, x: 5 }}
-            whileTap={{ scale: 0.95 }}
+            transition={{ duration: 1.5, repeat: isHovered ? Infinity : 0 }}
           >
-            <span>Explore</span>
-            <ArrowRight className="h-4 w-4" />
-          </motion.button>
+            <Play className="h-6 w-6 text-white fill-white ml-1" />
+          </motion.div>
         </motion.div>
-      </div>
 
-      {/* Video play icon */}
-      <motion.div
-        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-        initial={{ opacity: 0, scale: 0.5 }}
-        animate={{
-          opacity: isHovered ? 1 : 0,
-          scale: isHovered ? 1 : 0.5,
-        }}
-        transition={{ duration: 0.3 }}
-      >
+        {/* Corner accent */}
         <motion.div
-          className="flex items-center justify-center w-16 h-16 bg-white/30 backdrop-blur rounded-full border-2 border-white/50"
-          whileHover={{ scale: 1.2 }}
+          className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/50 to-transparent"
+          initial={{ opacity: 0, scale: 0 }}
           animate={{
-            boxShadow: isHovered
-              ? [
-                  "0 0 0 0 rgba(255,255,255,0.7)",
-                  "0 0 0 20px rgba(255,255,255,0)",
-                ]
-              : "0 0 0 0 rgba(255,255,255,0)",
+            opacity: isHovered ? 1 : 0,
+            scale: isHovered ? 1 : 0,
           }}
-          transition={{ duration: 1.5, repeat: isHovered ? Infinity : 0 }}
-        >
-          <Play className="h-6 w-6 text-white fill-white ml-1" />
-        </motion.div>
+          transition={{ duration: 0.4 }}
+          style={{ transformOrigin: "top right" }}
+        />
       </motion.div>
-
-      {/* Corner accent */}
-      <motion.div
-        className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/50 to-transparent"
-        initial={{ opacity: 0, scale: 0 }}
-        animate={{
-          opacity: isHovered ? 1 : 0,
-          scale: isHovered ? 1 : 0,
-        }}
-        transition={{ duration: 0.4 }}
-        style={{ transformOrigin: "top right" }}
-      />
-    </motion.div>
     </Link>
   );
 }

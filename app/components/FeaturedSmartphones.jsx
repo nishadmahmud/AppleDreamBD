@@ -13,7 +13,7 @@ function SmartphoneCard({ product, delay = 0, badge = null }) {
   const { toggleFavorite, isFavorite } = useFavorites();
   const [isAdding, setIsAdding] = useState(false);
   const cardRef = useRef(null);
-  
+
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const rotateX = useSpring(useMotionValue(0), { stiffness: 300, damping: 30 });
@@ -26,7 +26,7 @@ function SmartphoneCard({ product, delay = 0, badge = null }) {
     const centerY = rect.top + rect.height / 2;
     const percentX = (e.clientX - centerX) / (rect.width / 2);
     const percentY = (e.clientY - centerY) / (rect.height / 2);
-    
+
     rotateY.set(percentX * 5);
     rotateX.set(-percentY * 5);
     mouseX.set(e.clientX - rect.left);
@@ -108,9 +108,7 @@ function SmartphoneCard({ product, delay = 0, badge = null }) {
         </motion.div>
       )}
 
-      <div
-        className="relative w-full bg-white dark:bg-background-dark/60 rounded-[calc(var(--radius-xl)-0.5rem)] overflow-hidden aspect-square"
-      >
+      <div className="relative w-full bg-white dark:bg-background-dark/60 rounded-[calc(var(--radius-xl)-0.5rem)] overflow-hidden aspect-square">
         <Image
           unoptimized
           alt={product.name}
@@ -121,13 +119,18 @@ function SmartphoneCard({ product, delay = 0, badge = null }) {
         />
       </div>
 
-      <div className="flex flex-col gap-2 relative" style={{ transform: "translateZ(30px)" }}>
+      <div
+        className="flex flex-col gap-2 relative"
+        style={{ transform: "translateZ(30px)" }}
+      >
         {/* Rating */}
         <div className="flex items-center gap-1">
           {[...Array(5)].map((_, i) => (
             <Star key={i} className="h-3 w-3 fill-yellow-400 text-yellow-400" />
           ))}
-          <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">(4.8)</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">
+            (4.8)
+          </span>
         </div>
 
         <p className="text-base font-semibold text-gray-900 dark:text-white line-clamp-2">
@@ -142,9 +145,12 @@ function SmartphoneCard({ product, delay = 0, badge = null }) {
           >
             ৳{product.retails_price}
           </motion.p>
-          {product.market_price && product.market_price > product.retails_price && (
-            <span className="text-sm text-gray-400 line-through">৳{product.market_price}</span>
-          )}
+          {product.market_price &&
+            product.market_price > product.retails_price && (
+              <span className="text-sm text-gray-400 line-through">
+                ৳{product.market_price}
+              </span>
+            )}
         </div>
 
         <motion.button
@@ -179,7 +185,7 @@ function SmartphoneCard({ product, delay = 0, badge = null }) {
               <span>Add to Cart</span>
             </>
           )}
-          
+
           {/* Shine effect */}
           {!inCart && (
             <motion.div
@@ -223,9 +229,11 @@ export default function FeaturedSmartphones() {
     const fetchSmartphones = async () => {
       try {
         // Fetch from Official Phone category (ID: 6530)
-        const response = await fetch('https://www.outletexpense.xyz/api/public/categorywise-products/6530?page=1&limit=2');
+        const response = await fetch(
+          "https://www.outletexpense.xyz/api/public/categorywise-products/6530?page=1&limit=2"
+        );
         const data = await response.json();
-        
+
         if (data.success && data.data) {
           setProducts(data.data.slice(0, 2));
         }
@@ -250,7 +258,10 @@ export default function FeaturedSmartphones() {
   }
 
   return (
-    <section ref={sectionRef} className="px-4 sm:px-8 lg:px-10 py-16 bg-background-light dark:bg-background-dark transition-colors duration-300">
+    <section
+      ref={sectionRef}
+      className="px-4 sm:px-8 lg:px-10 py-16 bg-background-light dark:bg-background-dark transition-colors duration-300"
+    >
       <div className="flex flex-col w-full">
         <motion.div
           className="text-center mb-12"
@@ -280,10 +291,10 @@ export default function FeaturedSmartphones() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
           {products.map((product, i) => (
-            <SmartphoneCard 
-              key={product.id} 
-              product={product} 
-              delay={i * 0.1} 
+            <SmartphoneCard
+              key={product.id}
+              product={product}
+              delay={i * 0.1}
               badge={i === 0 ? "HOT" : null}
             />
           ))}

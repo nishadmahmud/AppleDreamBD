@@ -1,6 +1,15 @@
 "use client";
 import Image from "next/image";
-import { Facebook, Instagram, Twitter, Youtube, Mail, Phone, MapPin, ArrowRight } from "lucide-react";
+import {
+  Facebook,
+  Instagram,
+  Twitter,
+  Youtube,
+  Mail,
+  Phone,
+  MapPin,
+  ArrowRight,
+} from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 
@@ -20,9 +29,24 @@ export default function Footer() {
   };
 
   const socialLinks = [
-    { icon: Facebook, href: "#", label: "Facebook", color: "hover:text-blue-600" },
-    { icon: Instagram, href: "#", label: "Instagram", color: "hover:text-pink-600" },
-    { icon: Twitter, href: "#", label: "Twitter", color: "hover:text-blue-400" },
+    {
+      icon: Facebook,
+      href: "#",
+      label: "Facebook",
+      color: "hover:text-blue-600",
+    },
+    {
+      icon: Instagram,
+      href: "#",
+      label: "Instagram",
+      color: "hover:text-pink-600",
+    },
+    {
+      icon: Twitter,
+      href: "#",
+      label: "Twitter",
+      color: "hover:text-blue-400",
+    },
     { icon: Youtube, href: "#", label: "YouTube", color: "hover:text-red-600" },
   ];
 
@@ -94,9 +118,10 @@ export default function Footer() {
               </span>
             </motion.a>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
-              Your premium destination for the latest tech. Quality products, exceptional service, unbeatable prices.
+              Your premium destination for the latest tech. Quality products,
+              exceptional service, unbeatable prices.
             </p>
-            
+
             {/* Contact Info */}
             <div className="flex flex-col gap-3">
               <motion.a
@@ -273,7 +298,8 @@ export default function Footer() {
               </span>
             </motion.a>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
-              Your premium destination for the latest tech. Quality products, exceptional service, unbeatable prices.
+              Your premium destination for the latest tech. Quality products,
+              exceptional service, unbeatable prices.
             </p>
             <div className="flex flex-col gap-3">
               <motion.a
@@ -438,7 +464,10 @@ export default function Footer() {
             viewport={{ once: true }}
           >
             © 2024{" "}
-            <a href="#" className="font-semibold hover:text-primary transition-colors">
+            <a
+              href="#"
+              className="font-semibold hover:text-primary transition-colors"
+            >
               Apple Dream BD™
             </a>
             . All Rights Reserved.
@@ -478,10 +507,18 @@ export default function Footer() {
           viewport={{ once: true }}
         >
           <div className="flex flex-wrap justify-center gap-8 items-center opacity-60">
-            <span className="text-xs font-semibold uppercase tracking-wider">Secure Payment</span>
-            <span className="text-xs font-semibold uppercase tracking-wider">Free Shipping</span>
-            <span className="text-xs font-semibold uppercase tracking-wider">24/7 Support</span>
-            <span className="text-xs font-semibold uppercase tracking-wider">Money Back Guarantee</span>
+            <span className="text-xs font-semibold uppercase tracking-wider">
+              Secure Payment
+            </span>
+            <span className="text-xs font-semibold uppercase tracking-wider">
+              Free Shipping
+            </span>
+            <span className="text-xs font-semibold uppercase tracking-wider">
+              24/7 Support
+            </span>
+            <span className="text-xs font-semibold uppercase tracking-wider">
+              Money Back Guarantee
+            </span>
           </div>
         </motion.div>
       </div>
