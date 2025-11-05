@@ -21,7 +21,6 @@ import {
   AlertCircle,
 } from "lucide-react";
 import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 import { useCart } from "../context/CartContext";
 
 export default function CheckoutPage() {
@@ -123,7 +122,7 @@ export default function CheckoutPage() {
             </motion.div>
           </div>
         </div>
-        <Footer />
+        
       </>
     );
   }
@@ -598,7 +597,7 @@ export default function CheckoutPage() {
           </div>
         </div>
       </div>
-      <Footer />
+      
     </>
   );
 }

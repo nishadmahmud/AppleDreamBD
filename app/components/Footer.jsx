@@ -27,17 +27,17 @@ export default function Footer() {
   ];
 
   const quickLinks = [
-    { title: "About Us", href: "#" },
-    { title: "Contact", href: "#" },
-    { title: "Careers", href: "#" },
-    { title: "FAQ", href: "#" },
+    { title: "Products", href: "/products" },
+    { title: "Blog", href: "/blog" },
+    { title: "FAQ", href: "/faq" },
+    { title: "Contact", href: "/contact" },
   ];
 
   const supportLinks = [
-    { title: "Shipping & Returns", href: "#" },
-    { title: "Terms of Service", href: "#" },
-    { title: "Privacy Policy", href: "#" },
-    { title: "Warranty", href: "#" },
+    { title: "Shipping & Returns", href: "/shipping-returns" },
+    { title: "Terms of Service", href: "/terms" },
+    { title: "Privacy Policy", href: "/privacy" },
+    { title: "Warranty", href: "/warranty" },
   ];
 
   return (
@@ -67,8 +67,8 @@ export default function Footer() {
       </div>
 
       <div className="relative z-10 w-full mx-auto px-4 py-12 sm:px-8 lg:px-10">
-        {/* Top Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+        {/* Top Section - Mobile layout */}
+        <div className="lg:hidden flex flex-col gap-12 mb-12">
           {/* Brand Column */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -98,6 +98,183 @@ export default function Footer() {
             </p>
             
             {/* Contact Info */}
+            <div className="flex flex-col gap-3">
+              <motion.a
+                href="tel:+1234567890"
+                className="flex items-center gap-2 text-sm hover:text-primary transition-colors"
+                whileHover={{ x: 5 }}
+              >
+                <Phone className="h-4 w-4" />
+                <span>+1 (234) 567-890</span>
+              </motion.a>
+              <motion.a
+                href="mailto:info@appledream.com"
+                className="flex items-center gap-2 text-sm hover:text-primary transition-colors"
+                whileHover={{ x: 5 }}
+              >
+                <Mail className="h-4 w-4" />
+                <span>info@appledream.com</span>
+              </motion.a>
+              <motion.div
+                className="flex items-start gap-2 text-sm"
+                whileHover={{ x: 5 }}
+              >
+                <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                <span>123 Tech Street, Dhaka, Bangladesh</span>
+              </motion.div>
+            </div>
+          </motion.div>
+
+          {/* Quick + Support two-column on mobile */}
+          <div className="grid grid-cols-2 gap-8">
+            {/* Quick Links */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
+              <h3 className="mb-4 text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">
+                Quick Links
+              </h3>
+              <ul className="flex flex-col gap-3">
+                {quickLinks.map((link, i) => (
+                  <motion.li
+                    key={link.title}
+                    initial={{ opacity: 0, x: -10 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.05 }}
+                  >
+                    <a
+                      href={link.href}
+                      className="group flex items-center gap-2 text-sm hover:text-primary transition-colors"
+                    >
+                      <ArrowRight className="h-3 w-3 opacity-0 group-hover:opacity-100 -ml-5 group-hover:ml-0 transition-all" />
+                      <span>{link.title}</span>
+                    </a>
+                  </motion.li>
+                ))}
+              </ul>
+            </motion.div>
+
+            {/* Support */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <h3 className="mb-4 text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">
+                Support
+              </h3>
+              <ul className="flex flex-col gap-3">
+                {supportLinks.map((link, i) => (
+                  <motion.li
+                    key={link.title}
+                    initial={{ opacity: 0, x: -10 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.05 }}
+                  >
+                    <a
+                      href={link.href}
+                      className="group flex items-center gap-2 text-sm hover:text-primary transition-colors"
+                    >
+                      <ArrowRight className="h-3 w-3 opacity-0 group-hover:opacity-100 -ml-5 group-hover:ml-0 transition-all" />
+                      <span>{link.title}</span>
+                    </a>
+                  </motion.li>
+                ))}
+              </ul>
+            </motion.div>
+          </div>
+
+          {/* Newsletter */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            <h3 className="mb-6 text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">
+              Newsletter
+            </h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              Subscribe for exclusive deals and updates!
+            </p>
+            <form onSubmit={handleSubscribe} className="flex flex-col gap-3">
+              <div className="relative">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Your email address"
+                  className="w-full bg-white dark:bg-background-dark/60 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white placeholder:text-gray-500 focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+                  required
+                />
+                <Mail className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              </div>
+              <motion.button
+                type="submit"
+                className="relative overflow-hidden bg-primary text-white font-semibold py-3 px-6 rounded-xl text-sm hover:bg-primary/90 transition-colors group"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                disabled={isSubscribed}
+              >
+                {isSubscribed ? (
+                  <motion.span
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                  >
+                    ✓ Subscribed!
+                  </motion.span>
+                ) : (
+                  <>
+                    Subscribe
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-blue-600 to-primary"
+                      initial={{ x: "-100%" }}
+                      whileHover={{ x: 0 }}
+                      transition={{ duration: 0.3 }}
+                    />
+                    <span className="relative z-10">Subscribe</span>
+                  </>
+                )}
+              </motion.button>
+            </form>
+          </motion.div>
+        </div>
+
+        {/* Top Section - Desktop/Tablet layout */}
+        <div className="hidden lg:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+          {/* Brand Column */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <motion.a
+              href="#"
+              className="flex items-center gap-3 mb-6"
+              whileHover={{ scale: 1.05 }}
+            >
+              <Image
+                unoptimized
+                src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg"
+                alt="Apple Dream BD"
+                width={28}
+                height={20}
+                className="dark:invert"
+              />
+              <span className="text-2xl font-bold text-primary">
+                Apple Dream BD
+              </span>
+            </motion.a>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
+              Your premium destination for the latest tech. Quality products, exceptional service, unbeatable prices.
+            </p>
             <div className="flex flex-col gap-3">
               <motion.a
                 href="tel:+1234567890"

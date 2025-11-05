@@ -6,7 +6,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { Calendar, Clock, ArrowRight, BookOpen } from "lucide-react";
 import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 import { fetchBlogs } from "../../lib/api";
 
 export default function BlogPage() {
@@ -51,7 +50,7 @@ export default function BlogPage() {
             </div>
           </div>
         </div>
-        <Footer />
+        
       </div>
     );
   }
@@ -66,7 +65,7 @@ export default function BlogPage() {
             <p className="text-gray-600 dark:text-gray-400">{error}</p>
           </div>
         </div>
-        <Footer />
+        
       </div>
     );
   }
@@ -184,7 +183,7 @@ export default function BlogPage() {
         </div>
       </div>
 
-      <Footer />
+      
     </div>
   );
 }

@@ -9,7 +9,6 @@ import NewArrivals from "./components/NewArrivals";
 import TopAccessories from "./components/TopAccessories";
 import DiscoverMore from "./components/DiscoverMore";
 import Testimonials from "./components/Testimonials";
-import Footer from "./components/Footer";
 
 export default function Home() {
   return (
@@ -20,15 +19,21 @@ export default function Home() {
           <Hero />
           <Categories />
           <FeaturedSmartphones />
-          <BestSellers />
-          <BestDeals />
+          <section id="best-sellers">
+            <BestSellers />
+          </section>
+          <section id="deals">
+            <BestDeals />
+          </section>
           <DealOfDay />
-          <NewArrivals />
+          <section id="new-arrivals">
+            <NewArrivals />
+          </section>
           <TopAccessories />
           <DiscoverMore />
           <Testimonials />
         </main>
-        <Footer />
+        
       </div>
     </div>
   );

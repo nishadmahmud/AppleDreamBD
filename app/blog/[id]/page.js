@@ -7,7 +7,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { Calendar, Clock, ArrowLeft, BookOpen, Share2, User } from "lucide-react";
 import Navbar from "../../components/Navbar";
-import Footer from "../../components/Footer";
 import { fetchBlogs } from "../../../lib/api";
 
 export default function BlogPostPage() {
@@ -105,7 +104,7 @@ export default function BlogPostPage() {
             </div>
           </div>
         </div>
-        <Footer />
+        
       </div>
     );
   }
@@ -136,7 +135,7 @@ export default function BlogPostPage() {
             </motion.div>
           </div>
         </div>
-        <Footer />
+        
       </div>
     );
   }
@@ -348,7 +347,7 @@ export default function BlogPostPage() {
         </div>
       </article>
 
-      <Footer />
+      
     </div>
   );
 }

@@ -20,7 +20,6 @@ import {
 } from "lucide-react";
 import { fetchProductDetail, getAllCategories } from "../../../lib/api";
 import Navbar from "../../components/Navbar";
-import Footer from "../../components/Footer";
 import { useCart } from "../../context/CartContext";
 import { useFavorites } from "../../context/FavoritesContext";
 
@@ -153,7 +152,7 @@ export default function ProductDetailPage() {
             </div>
           </div>
         </div>
-        <Footer />
+        
       </div>
     );
   }
@@ -183,7 +182,7 @@ export default function ProductDetailPage() {
             </motion.div>
           </div>
         </div>
-        <Footer />
+        
       </div>
     );
   }
@@ -576,7 +575,7 @@ export default function ProductDetailPage() {
         </div>
       )}
 
-      <Footer />
+      
     </div>
   );
 }

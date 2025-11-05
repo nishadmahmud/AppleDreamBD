@@ -137,9 +137,9 @@ export default function Navbar() {
   const navLinks = [
     { name: "Home", href: "/" },
     { name: "All Products", href: "/products" },
-    { name: "Best Sellers", href: "#best-sellers" },
-    { name: "New Arrivals", href: "#new-arrivals" },
-    { name: "Deals", href: "#deals" },
+    { name: "Best Sellers", href: "/#best-sellers" },
+    { name: "New Arrivals", href: "/#new-arrivals" },
+    { name: "Deals", href: "/#deals" },
     { name: "Blog", href: "/blog" },
   ];
 

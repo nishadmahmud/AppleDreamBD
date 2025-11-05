@@ -21,7 +21,6 @@ import {
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 import { fetchAllProducts, getAllCategories } from "../../lib/api";
 import { useCart } from "../context/CartContext";
 import { useFavorites } from "../context/FavoritesContext";
@@ -497,7 +496,7 @@ function ProductsPageContent() {
             </div>
           </div>
         </div>
-        <Footer />
+        
       </div>
     );
   }
@@ -515,7 +514,7 @@ function ProductsPageContent() {
             </div>
           </div>
         </div>
-        <Footer />
+        
       </div>
     );
   }
@@ -901,7 +900,7 @@ function ProductsPageContent() {
         </div>
       </div>
 
-      <Footer />
+      
     </div>
   );
 }
