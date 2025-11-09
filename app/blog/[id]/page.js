@@ -158,7 +158,7 @@ export default function BlogPostPage() {
       <Navbar />
 
       {/* Back button */}
-      <div className="pt-20 pb-6 px-4 sm:px-8 lg:px-10">
+      <div className="pt-6 pb-6 px-4 sm:px-8 lg:px-10">
         <div className="max-w-4xl mx-auto">
           <motion.button
             onClick={() => router.back()}

@@ -108,7 +108,7 @@ export default function CheckoutPage() {
     return (
       <>
         <Navbar />
-        <div className="min-h-screen bg-background-light dark:bg-background-dark pt-24 pb-12">
+        <div className="min-h-screen bg-background-light dark:bg-background-dark pt-6 pb-12">
           <div className="container mx-auto px-4">
             <motion.div
               className="max-w-md mx-auto text-center py-16"
@@ -138,7 +138,7 @@ export default function CheckoutPage() {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-background-light dark:bg-background-dark pt-24 pb-12">
+      <div className="min-h-screen bg-background-light dark:bg-background-dark pt-6 pb-12">
         <div className="container mx-auto px-4 max-w-7xl">
           {/* Header */}
           <motion.div

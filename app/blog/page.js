@@ -76,7 +76,7 @@ export default function BlogPage() {
     <div className="min-h-screen bg-background-light dark:bg-background-dark transition-colors duration-300">
       <Navbar />
 
-      <div className="pt-24 pb-20 px-4 sm:px-8 lg:px-10">
+      <div className="pt-6 pb-20 px-4 sm:px-8 lg:px-10">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <motion.div

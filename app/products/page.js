@@ -65,13 +65,13 @@ const ProductCard = ({ product, viewMode }) => {
         transition={{ duration: 0.2 }}
       >
         {/* Image */}
-        <div className="relative w-48 h-48 flex-shrink-0 bg-gray-100 dark:bg-gray-800">
+        <div className="relative w-32 h-32 flex-shrink-0 bg-gray-100 dark:bg-gray-800">
           <Image
             src={product.image_path}
             alt={product.name}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-300"
-            sizes="192px"
+            sizes="128px"
           />
           {product.discount > 0 && (
             <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
@@ -84,14 +84,14 @@ const ProductCard = ({ product, viewMode }) => {
         </div>
 
         {/* Content */}
-        <div className="flex-1 p-6 flex flex-col justify-between">
+        <div className="flex-1 pl-3 pr-4 py-4 flex flex-col justify-between">
           <div>
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 line-clamp-2">
+            <h3 className="text-base font-bold text-gray-900 dark:text-white mb-1 line-clamp-2">
               {product.name}
             </h3>
 
             {/* Rating */}
-            <div className="flex items-center gap-1 mb-3">
+            <div className="flex items-center gap-1 mb-2">
               {[...Array(5)].map((_, i) => (
                 <Star
                   key={i}
@@ -108,9 +108,9 @@ const ProductCard = ({ product, viewMode }) => {
             </div>
 
             {/* Stock Status */}
-            <div className="mb-3">
+            <div className="mb-2">
               <span
-                className={`text-sm font-medium ${
+                className={`text-xs font-medium ${
                   isInStock
                     ? "text-green-600 dark:text-green-400"
                     : "text-red-600 dark:text-red-400"
@@ -123,10 +123,10 @@ const ProductCard = ({ product, viewMode }) => {
             </div>
           </div>
 
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-3">
             {/* Price */}
             <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-bold text-primary">
+              <span className="text-xl font-bold text-primary">
                 ৳{product.retails_price.toLocaleString()}
               </span>
               {product.discount > 0 && (
@@ -143,15 +143,15 @@ const ProductCard = ({ product, viewMode }) => {
             </div>
 
             {/* Actions */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               <motion.button
                 onClick={handleToggleFavorite}
-                className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                className="p-1.5 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
               >
                 <Heart
-                  className={`h-5 w-5 ${
+                  className={`h-4 w-4 ${
                     isLiked
                       ? "fill-red-500 text-red-500"
                       : "text-gray-600 dark:text-gray-400"
@@ -162,7 +162,7 @@ const ProductCard = ({ product, viewMode }) => {
               <motion.button
                 onClick={handleAddToCart}
                 disabled={!isInStock || inCart}
-                className={`px-6 py-2 rounded-xl font-semibold flex items-center gap-2 transition-all ${
+                className={`px-4 py-1.5 rounded-lg text-sm font-semibold flex items-center gap-1.5 transition-all ${
                   isInStock
                     ? inCart || addedToCart
                       ? "bg-green-500 text-white"
@@ -584,7 +584,7 @@ function ProductsPageContent() {
     <div className="min-h-screen bg-background-light dark:bg-background-dark transition-colors duration-300">
       <Navbar />
 
-      <div className="pt-24 px-4 sm:px-8 lg:px-10 pb-20">
+      <div className="pt-6 px-4 sm:px-8 lg:px-10 pb-20">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <motion.div
@@ -901,7 +901,7 @@ function ProductsPageContent() {
               key={viewMode}
               className={
                 viewMode === "grid"
-                  ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+                  ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
                   : "space-y-4"
               }
               initial={{ opacity: 0 }}

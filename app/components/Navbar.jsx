@@ -54,6 +54,7 @@ export default function Navbar() {
   const abortRef = useRef(null);
   const cacheRef = useRef({});
   const allProductsRef = useRef(null);
+  const isFetchingProductsRef = useRef(false);
 
   // Check if link is active
   const isActiveLink = (href) => {
@@ -121,7 +122,39 @@ export default function Navbar() {
     setSearchOpen(false);
   };
 
-  // Debounced suggestions (fetch all category pages once, then filter client-side)
+  // Pre-fetch products when search is first opened (lazy loading)
+  const fetchAllProductsForSearch = async () => {
+    if (allProductsRef.current || isFetchingProductsRef.current) {
+      return; // Already cached or currently fetching
+    }
+
+    try {
+      isFetchingProductsRef.current = true;
+      const categories = getAllCategories();
+      // Reduced limit per category for faster loading (20 products per category is enough for search)
+      const promises = categories.map((c) =>
+        fetch(
+          `https://www.outletexpense.xyz/api/public/categorywise-products/${c.id}?page=1&limit=20`
+        )
+          .then((r) => r.json())
+          .then((d) => (d?.success && Array.isArray(d?.data) ? d.data : []))
+          .catch(() => [])
+      );
+      const results = await Promise.all(promises);
+      const combined = results.flat();
+      // Deduplicate by id
+      const unique = Array.from(
+        new Map(combined.map((p) => [p.id, p])).values()
+      );
+      allProductsRef.current = unique;
+    } catch (error) {
+      console.error("Error fetching products for search:", error);
+    } finally {
+      isFetchingProductsRef.current = false;
+    }
+  };
+
+  // Debounced suggestions (filter from cached products)
   useEffect(() => {
     const q = searchQuery.trim();
     if (!q) {
@@ -129,38 +162,44 @@ export default function Navbar() {
       setLoadingSuggestions(false);
       return;
     }
+
     const handler = setTimeout(async () => {
       try {
         setLoadingSuggestions(true);
-        // If we already have the full list cached, just filter
-        if (!allProductsRef.current) {
-          const categories = getAllCategories();
-          // Limit per category to keep light
-          const promises = categories.map((c) =>
-            fetch(
-              `https://www.outletexpense.xyz/api/public/categorywise-products/${c.id}?page=1&limit=100`
-            )
-              .then((r) => r.json())
-              .then((d) => (d?.success && Array.isArray(d?.data) ? d.data : []))
-              .catch(() => [])
-          );
-          const results = await Promise.all(promises);
-          const combined = results.flat();
-          // Deduplicate by id
-          const unique = Array.from(
-            new Map(combined.map((p) => [p.id, p])).values()
-          );
-          allProductsRef.current = unique;
+        
+        // If products not cached yet, fetch them first
+        if (!allProductsRef.current && !isFetchingProductsRef.current) {
+          await fetchAllProductsForSearch();
         }
-        const lower = q.toLowerCase();
-        const filtered = allProductsRef.current
-          .filter((p) => (p?.name || "").toLowerCase().includes(lower))
-          .slice(0, 5);
-        setSuggestions(filtered);
+        
+        // Wait a bit if still fetching
+        if (isFetchingProductsRef.current) {
+          // Poll until fetch is complete (max 5 seconds)
+          let attempts = 0;
+          while (isFetchingProductsRef.current && attempts < 50) {
+            await new Promise((resolve) => setTimeout(resolve, 100));
+            attempts++;
+          }
+        }
+
+        // Now filter from cached products
+        if (allProductsRef.current && allProductsRef.current.length > 0) {
+          const lower = q.toLowerCase();
+          const filtered = allProductsRef.current
+            .filter((p) => (p?.name || "").toLowerCase().includes(lower))
+            .slice(0, 5);
+          setSuggestions(filtered);
+        } else {
+          setSuggestions([]);
+        }
+      } catch (error) {
+        console.error("Error filtering suggestions:", error);
+        setSuggestions([]);
       } finally {
         setLoadingSuggestions(false);
       }
-    }, 300);
+    }, 200); // Reduced debounce from 300ms to 200ms for faster response
+
     return () => clearTimeout(handler);
   }, [searchQuery]);
 
@@ -249,7 +288,13 @@ export default function Navbar() {
                     setSearchOpen(false);
                   }
                 }}
-                onFocus={() => setSearchOpen(true)}
+                onFocus={() => {
+                  setSearchOpen(true);
+                  // Pre-fetch products when search is first opened (lazy loading)
+                  if (!allProductsRef.current && !isFetchingProductsRef.current) {
+                    fetchAllProductsForSearch();
+                  }
+                }}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
