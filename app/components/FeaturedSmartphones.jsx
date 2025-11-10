@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -7,6 +8,8 @@ import { motion, useMotionValue, useSpring } from "framer-motion";
 import { ShoppingCart, Heart, Star, Sparkles } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import { useFavorites } from "../context/FavoritesContext";
+
+const MotionLink = motion(Link);
 
 function SmartphoneCard({ product, delay = 0, badge = null }) {
   const { addToCart, isInCart } = useCart();
@@ -38,13 +41,17 @@ function SmartphoneCard({ product, delay = 0, badge = null }) {
     rotateY.set(0);
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
     addToCart(product, 1);
     setIsAdding(true);
     setTimeout(() => setIsAdding(false), 1500);
   };
 
-  const handleToggleFavorite = () => {
+  const handleToggleFavorite = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
     toggleFavorite(product);
   };
 
@@ -52,10 +59,11 @@ function SmartphoneCard({ product, delay = 0, badge = null }) {
   const isFav = isFavorite(product.id);
 
   return (
-    <motion.div
+    <MotionLink
+      href={`/product/${product.id}`}
       ref={cardRef}
       data-phone
-      className="group relative flex flex-col gap-4 rounded-[var(--radius-xl)] bg-gray-50 dark:bg-background-dark/50 border border-gray-200 dark:border-gray-800 shadow-[var(--shadow-soft)] p-5 overflow-hidden"
+      className="group relative flex flex-col gap-4 rounded-[var(--radius-xl)] bg-gray-50 dark:bg-background-dark/50 border border-gray-200 dark:border-gray-800 shadow-[var(--shadow-soft)] p-5 overflow-hidden cursor-pointer"
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
@@ -216,7 +224,7 @@ function SmartphoneCard({ product, delay = 0, badge = null }) {
           </motion.div>
         </motion.div>
       )}
-    </motion.div>
+    </MotionLink>
   );
 }
 

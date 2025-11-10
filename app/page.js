@@ -3,6 +3,8 @@ import Categories from "./components/Categories";
 import FeaturedSmartphones from "./components/FeaturedSmartphones";
 import BestSellers from "./components/BestSellers";
 import BestDeals from "./components/BestDeals";
+import PromoBanners from "./components/PromoBanners";
+import PromoBannerSingle from "./components/PromoBannerSingle";
 import DealOfDay from "./components/DealOfDay";
 import NewArrivals from "./components/NewArrivals";
 import TopAccessories from "./components/TopAccessories";
@@ -20,9 +22,11 @@ export default function Home() {
           <section id="best-sellers">
             <BestSellers />
           </section>
+          <PromoBanners />
           <section id="deals">
             <BestDeals />
           </section>
+          <PromoBannerSingle />
           <DealOfDay />
           <section id="new-arrivals">
             <NewArrivals />
