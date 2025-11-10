@@ -44,6 +44,11 @@ export default function ProductDetailPage() {
   const [addedToCart, setAddedToCart] = useState(false);
   const [recentlyViewed, setRecentlyViewed] = useState([]);
   const [similar, setSimilar] = useState([]);
+  
+  // Variant state
+  const [selectedColor, setSelectedColor] = useState(null);
+  const [selectedStorage, setSelectedStorage] = useState(null);
+  const [selectedVariant, setSelectedVariant] = useState(null);
 
   useEffect(() => {
     if (!productId) return;
@@ -54,7 +59,22 @@ export default function ProductDetailPage() {
         const response = await fetchProductDetail(productId);
 
         if (response.success && response.data) {
-          setProduct(response.data);
+          const productData = response.data;
+          setProduct(productData);
+          
+          // Initialize variants if available
+          if (productData.imeis && productData.imeis.length > 0) {
+            const variants = productData.imeis.filter(v => v.in_stock === 1);
+            if (variants.length > 0) {
+              // Get unique colors and storages
+              const colors = [...new Set(variants.map(v => v.color).filter(Boolean))];
+              const storages = [...new Set(variants.map(v => v.storage).filter(Boolean))];
+              
+              // Set initial selections (region will be auto-determined)
+              if (colors.length > 0) setSelectedColor(colors[0]);
+              if (storages.length > 0) setSelectedStorage(storages[0]);
+            }
+          }
         } else {
           setError("Product not found");
         }
@@ -68,6 +88,54 @@ export default function ProductDetailPage() {
 
     loadProduct();
   }, [productId]);
+
+  // Update selected variant when selections change
+  // Price is based on STORAGE only, color is just for display
+  useEffect(() => {
+    if (!product || !product.imeis || product.imeis.length === 0) return;
+    
+    // Find variant matching BOTH color and storage (for display purposes)
+    const exactMatch = product.imeis.find(v => 
+      v.in_stock === 1 &&
+      (!selectedColor || v.color === selectedColor) &&
+      (!selectedStorage || v.storage === selectedStorage)
+    );
+    
+    // Find variant matching STORAGE only (for price)
+    const storageMatch = product.imeis.find(v => 
+      v.in_stock === 1 &&
+      (!selectedStorage || v.storage === selectedStorage)
+    );
+    
+    // Use exact match if available, otherwise use storage match for price
+    const finalVariant = exactMatch || storageMatch || product.imeis.find(v => v.in_stock === 1);
+    
+    console.log('🔍 Variant Selection Debug:', {
+      productId: product.id,
+      selectedColor,
+      selectedStorage,
+      exactMatch: exactMatch ? {
+        color: exactMatch.color,
+        storage: exactMatch.storage,
+        price: exactMatch.sale_price,
+        region: exactMatch.region
+      } : 'none',
+      storageMatch: storageMatch ? {
+        color: storageMatch.color,
+        storage: storageMatch.storage,
+        price: storageMatch.sale_price,
+        region: storageMatch.region
+      } : 'none',
+      finalVariant: finalVariant ? {
+        color: finalVariant.color,
+        storage: finalVariant.storage,
+        price: finalVariant.sale_price,
+        region: finalVariant.region
+      } : 'none'
+    });
+    
+    setSelectedVariant(finalVariant);
+  }, [product, selectedColor, selectedStorage]);
 
   // Persist recently viewed and fetch similar
   useEffect(() => {
@@ -127,22 +195,68 @@ export default function ProductDetailPage() {
       ? product.images.filter(Boolean)
       : [];
 
-  const isInStock =
-    product?.status === "In Stock" || product?.current_stock > 0;
+  // Get available variants
+  const availableVariants = product?.imeis?.filter(v => v.in_stock === 1) || [];
+  const hasVariants = availableVariants.length > 0;
+  
+  // Get unique options from variants
+  const availableColors = hasVariants 
+    ? [...new Set(availableVariants.map(v => v.color).filter(Boolean))]
+    : [];
+  const availableStorages = hasVariants 
+    ? [...new Set(availableVariants.map(v => v.storage).filter(Boolean))]
+    : [];
+  
+  // Region is auto-determined from selected variant
+  const currentRegion = selectedVariant?.region || null;
+
+  // Use variant price if available, otherwise use product price
+  const currentPrice = selectedVariant?.sale_price || product?.retails_price;
+  const isInStock = hasVariants 
+    ? selectedVariant?.in_stock === 1
+    : product?.status === "In Stock" || product?.current_stock > 0;
+  
+  // Debug price calculation
+  console.log('💰 Price Debug:', {
+    productId: product?.id,
+    selectedVariantPrice: selectedVariant?.sale_price,
+    productRetailsPrice: product?.retails_price,
+    currentPrice,
+    hasVariants,
+    selectedVariantInfo: selectedVariant ? {
+      id: selectedVariant.id,
+      color: selectedVariant.color,
+      storage: selectedVariant.storage,
+      price: selectedVariant.sale_price
+    } : 'none'
+  });
   const hasDiscount = product?.discount > 0 && product?.discount_type !== "0";
   const discountedPrice =
     hasDiscount && product?.discounted_price
       ? parseFloat(product.discounted_price)
       : hasDiscount && product?.discount_type === "Percentage"
-      ? product.retails_price - (product.retails_price * product.discount) / 100
+      ? currentPrice - (currentPrice * product.discount) / 100
       : hasDiscount && product?.discount_type === "Fixed"
-      ? product.retails_price - product.discount
-      : product?.retails_price;
-  const originalPrice = product?.retails_price;
+      ? currentPrice - product.discount
+      : currentPrice;
+  const originalPrice = currentPrice;
 
   const handleAddToCart = () => {
     if (product && isInStock && !isInCart(product.id)) {
-      addToCart(product, quantity);
+      // Create a product object with variant info
+      const productToAdd = {
+        ...product,
+        selectedVariant: selectedVariant ? {
+          color: selectedColor,
+          storage: selectedStorage,
+          region: currentRegion,
+          price: selectedVariant.sale_price,
+          variantId: selectedVariant.id
+        } : null,
+        // Use variant price if available
+        retails_price: currentPrice
+      };
+      addToCart(productToAdd, quantity);
       setAddedToCart(true);
       setTimeout(() => setAddedToCart(false), 2000);
     }
@@ -370,6 +484,87 @@ export default function ProductDetailPage() {
                 </span>
               </motion.div>
 
+              {/* Color Selection */}
+              {availableColors.length > 0 && (
+                <motion.div
+                  className="space-y-2"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.35 }}
+                >
+                  <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">
+                    Color:
+                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    {availableColors.map((color) => (
+                      <button
+                        key={color}
+                        onClick={() => setSelectedColor(color)}
+                        className={`px-4 py-2 rounded-lg text-xs font-semibold border-2 transition-all ${
+                          selectedColor === color
+                            ? "border-primary bg-primary text-white"
+                            : "border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:border-primary/50"
+                        }`}
+                      >
+                        {color}
+                      </button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Storage Selection */}
+              {availableStorages.length > 0 && (
+                <motion.div
+                  className="space-y-2"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.36 }}
+                >
+                  <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">
+                    Storage:
+                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    {availableStorages.map((storage) => {
+                      // Format storage display (handle "256" -> "256GB", "1TB" -> "1TB")
+                      const displayStorage = storage.includes('TB') || storage.includes('GB') 
+                        ? storage 
+                        : `${storage}GB`;
+                      return (
+                        <button
+                          key={storage}
+                          onClick={() => setSelectedStorage(storage)}
+                          className={`px-4 py-2 rounded-lg text-xs font-semibold border-2 transition-all ${
+                            selectedStorage === storage
+                              ? "border-primary bg-primary text-white"
+                              : "border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:border-primary/50"
+                          }`}
+                        >
+                          {displayStorage}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Region Display (Auto-determined) */}
+              {currentRegion && (
+                <motion.div
+                  className="flex items-center gap-2 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.37 }}
+                >
+                  <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">
+                    Region:
+                  </span>
+                  <span className="text-xs text-gray-600 dark:text-gray-400">
+                    {currentRegion}
+                  </span>
+                </motion.div>
+              )}
+
               {/* Price */}
               <motion.div
                 className="space-y-1"
@@ -528,6 +723,24 @@ export default function ProductDetailPage() {
               </motion.div>
             </div>
           </div>
+
+          {/* Product Description */}
+          {product.description && (
+            <motion.div
+              className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+                Product Description
+              </h2>
+              <div 
+                className="prose prose-sm dark:prose-invert max-w-none text-gray-700 dark:text-gray-300"
+                dangerouslySetInnerHTML={{ __html: product.description }}
+              />
+            </motion.div>
+          )}
 
           {/* Specifications */}
           {product.specifications && product.specifications.length > 0 && (
