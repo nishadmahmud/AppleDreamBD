@@ -228,6 +228,14 @@ export default function Navbar() {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
+          <Image
+            unoptimized
+            src="/logo.png"
+            alt="Apple Dream BD"
+            width={32}
+            height={32}
+            className="object-contain"
+          />
           <h2 className="text-xl font-bold leading-tight tracking-[-0.015em] text-primary">
             Apple Dream BD
           </h2>

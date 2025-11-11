@@ -44,7 +44,7 @@ export default function ContactPage() {
               Contact Us
             </h1>
             <p className="text-gray-600 dark:text-gray-400 max-w-3xl">
-              Questions, feedback, or support requests — we&apos;re here to help.
+              Questions, feedback, or support requests? We&apos;re here to help.
             </p>
           </div>
         </div>
@@ -54,17 +54,40 @@ export default function ContactPage() {
           <aside className="space-y-4">
             <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-background-dark/60 p-6">
               <h3 className="text-lg font-semibold mb-2">Support</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Email: info@appledream.com
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                Email:{" "}
+                <a
+                  href="mailto:appledream2509@gmail.com"
+                  className="text-primary hover:underline"
+                >
+                  appledream2509@gmail.com
+                </a>
+              </p>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                Phone:{" "}
+                <a
+                  href="tel:+8801320878981"
+                  className="text-primary hover:underline"
+                >
+                  01320-878981
+                </a>
               </p>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Phone: +880 1717 1717 1717
+                WhatsApp:{" "}
+                <a
+                  href="https://wa.me/8801320878981"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline"
+                >
+                  +880 1320-878981
+                </a>
               </p>
             </div>
             <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-background-dark/60 p-6">
               <h3 className="text-lg font-semibold mb-2">Address</h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                123 Tech Street, Dhaka, Bangladesh
+                Level #4, Block #A Shop# 41C, Dhaka, Bangladesh
               </p>
             </div>
             <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-background-dark/60 p-6">

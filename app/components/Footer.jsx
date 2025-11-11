@@ -9,29 +9,15 @@ import {
   Phone,
   MapPin,
   ArrowRight,
+  MessageCircle,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { useState } from "react";
 
 export default function Footer() {
-  const [email, setEmail] = useState("");
-  const [isSubscribed, setIsSubscribed] = useState(false);
-
-  const handleSubscribe = (e) => {
-    e.preventDefault();
-    if (email) {
-      setIsSubscribed(true);
-      setTimeout(() => {
-        setIsSubscribed(false);
-        setEmail("");
-      }, 3000);
-    }
-  };
-
   const socialLinks = [
     {
       icon: Facebook,
-      href: "#",
+      href: "https://www.facebook.com/people/Apple-Dream/61552855422966/",
       label: "Facebook",
       color: "hover:text-blue-600",
     },
@@ -107,11 +93,11 @@ export default function Footer() {
             >
               <Image
                 unoptimized
-                src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg"
+                src="/logo.png"
                 alt="Apple Dream BD"
                 width={28}
-                height={20}
-                className="dark:invert"
+                height={28}
+                className="object-contain"
               />
               <span className="text-2xl font-bold text-primary">
                 Apple Dream BD
@@ -124,28 +110,12 @@ export default function Footer() {
 
             {/* Contact Info */}
             <div className="flex flex-col gap-3">
-              <motion.a
-                href="tel:+1234567890"
-                className="flex items-center gap-2 text-sm hover:text-primary transition-colors"
-                whileHover={{ x: 5 }}
-              >
-                <Phone className="h-4 w-4" />
-                <span>+1 (234) 567-890</span>
-              </motion.a>
-              <motion.a
-                href="mailto:info@appledream.com"
-                className="flex items-center gap-2 text-sm hover:text-primary transition-colors"
-                whileHover={{ x: 5 }}
-              >
-                <Mail className="h-4 w-4" />
-                <span>info@appledream.com</span>
-              </motion.a>
               <motion.div
                 className="flex items-start gap-2 text-sm"
                 whileHover={{ x: 5 }}
               >
                 <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                <span>123 Tech Street, Dhaka, Bangladesh</span>
+                <span>Level #4, Block #A Shop# 41C, Dhaka, Bangladesh</span>
               </motion.div>
             </div>
           </motion.div>
@@ -215,7 +185,7 @@ export default function Footer() {
             </motion.div>
           </div>
 
-          {/* Newsletter */}
+          {/* Contact */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -223,51 +193,43 @@ export default function Footer() {
             transition={{ duration: 0.5, delay: 0.3 }}
           >
             <h3 className="mb-6 text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">
-              Newsletter
+              Contact
             </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-              Subscribe for exclusive deals and updates!
-            </p>
-            <form onSubmit={handleSubscribe} className="flex flex-col gap-3">
-              <div className="relative">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Your email address"
-                  className="w-full bg-white dark:bg-background-dark/60 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white placeholder:text-gray-500 focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
-                  required
-                />
-                <Mail className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              </div>
-              <motion.button
-                type="submit"
-                className="relative overflow-hidden bg-primary text-white font-semibold py-3 px-6 rounded-xl text-sm hover:bg-primary/90 transition-colors group"
+            <div className="flex flex-col gap-3">
+              <motion.a
+                href="mailto:appledream2509@gmail.com"
+                className="w-full flex items-center gap-3 bg-white dark:bg-background-dark/60 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white hover:bg-primary hover:text-white hover:border-primary transition-all"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                disabled={isSubscribed}
               >
-                {isSubscribed ? (
-                  <motion.span
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                  >
-                    ✓ Subscribed!
-                  </motion.span>
-                ) : (
-                  <>
-                    Subscribe
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-blue-600 to-primary"
-                      initial={{ x: "-100%" }}
-                      whileHover={{ x: 0 }}
-                      transition={{ duration: 0.3 }}
-                    />
-                    <span className="relative z-10">Subscribe</span>
-                  </>
-                )}
-              </motion.button>
-            </form>
+                <Mail className="h-5 w-5 flex-shrink-0" />
+                <span className="flex-1 text-left">
+                  appledream2509@gmail.com
+                </span>
+              </motion.a>
+              <motion.a
+                href="https://wa.me/8801320878981"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full flex items-center gap-3 bg-white dark:bg-background-dark/60 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white hover:bg-green-500 hover:text-white hover:border-green-500 transition-all"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <MessageCircle className="h-5 w-5 flex-shrink-0" />
+                <span className="flex-1 text-left">+880 1320-878981</span>
+              </motion.a>
+              <motion.a
+                href="https://www.facebook.com/people/Apple-Dream/61552855422966/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full flex items-center gap-3 bg-white dark:bg-background-dark/60 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Facebook className="h-5 w-5 flex-shrink-0" />
+                <span className="flex-1 text-left">Facebook</span>
+              </motion.a>
+            </div>
           </motion.div>
         </div>
 
@@ -287,11 +249,11 @@ export default function Footer() {
             >
               <Image
                 unoptimized
-                src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg"
+                src="/logo.png"
                 alt="Apple Dream BD"
                 width={28}
-                height={20}
-                className="dark:invert"
+                height={28}
+                className="object-contain"
               />
               <span className="text-2xl font-bold text-primary">
                 Apple Dream BD
@@ -302,28 +264,12 @@ export default function Footer() {
               exceptional service, unbeatable prices.
             </p>
             <div className="flex flex-col gap-3">
-              <motion.a
-                href="tel:+1234567890"
-                className="flex items-center gap-2 text-sm hover:text-primary transition-colors"
-                whileHover={{ x: 5 }}
-              >
-                <Phone className="h-4 w-4" />
-                <span>+1 (234) 567-890</span>
-              </motion.a>
-              <motion.a
-                href="mailto:info@appledream.com"
-                className="flex items-center gap-2 text-sm hover:text-primary transition-colors"
-                whileHover={{ x: 5 }}
-              >
-                <Mail className="h-4 w-4" />
-                <span>info@appledream.com</span>
-              </motion.a>
               <motion.div
                 className="flex items-start gap-2 text-sm"
                 whileHover={{ x: 5 }}
               >
                 <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                <span>123 Tech Street, Dhaka, Bangladesh</span>
+                <span>Level #4, Block #A Shop# 41C, Dhaka, Bangladesh</span>
               </motion.div>
             </div>
           </motion.div>
@@ -390,7 +336,7 @@ export default function Footer() {
             </ul>
           </motion.div>
 
-          {/* Newsletter */}
+          {/* Contact */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -398,51 +344,43 @@ export default function Footer() {
             transition={{ duration: 0.5, delay: 0.3 }}
           >
             <h3 className="mb-6 text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">
-              Newsletter
+              Contact
             </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-              Subscribe for exclusive deals and updates!
-            </p>
-            <form onSubmit={handleSubscribe} className="flex flex-col gap-3">
-              <div className="relative">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Your email address"
-                  className="w-full bg-white dark:bg-background-dark/60 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white placeholder:text-gray-500 focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
-                  required
-                />
-                <Mail className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              </div>
-              <motion.button
-                type="submit"
-                className="relative overflow-hidden bg-primary text-white font-semibold py-3 px-6 rounded-xl text-sm hover:bg-primary/90 transition-colors group"
+            <div className="flex flex-col gap-3">
+              <motion.a
+                href="mailto:appledream2509@gmail.com"
+                className="w-full flex items-center gap-3 bg-white dark:bg-background-dark/60 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white hover:bg-primary hover:text-white hover:border-primary transition-all"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                disabled={isSubscribed}
               >
-                {isSubscribed ? (
-                  <motion.span
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                  >
-                    ✓ Subscribed!
-                  </motion.span>
-                ) : (
-                  <>
-                    Subscribe
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-blue-600 to-primary"
-                      initial={{ x: "-100%" }}
-                      whileHover={{ x: 0 }}
-                      transition={{ duration: 0.3 }}
-                    />
-                    <span className="relative z-10">Subscribe</span>
-                  </>
-                )}
-              </motion.button>
-            </form>
+                <Mail className="h-5 w-5 flex-shrink-0" />
+                <span className="flex-1 text-left">
+                  appledream2509@gmail.com
+                </span>
+              </motion.a>
+              <motion.a
+                href="https://wa.me/8801320878981"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full flex items-center gap-3 bg-white dark:bg-background-dark/60 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white hover:bg-green-500 hover:text-white hover:border-green-500 transition-all"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <MessageCircle className="h-5 w-5 flex-shrink-0" />
+                <span className="flex-1 text-left">+880 1320-878981</span>
+              </motion.a>
+              <motion.a
+                href="https://www.facebook.com/people/Apple-Dream/61552855422966/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full flex items-center gap-3 bg-white dark:bg-background-dark/60 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Facebook className="h-5 w-5 flex-shrink-0" />
+                <span className="flex-1 text-left">Facebook</span>
+              </motion.a>
+            </div>
           </motion.div>
         </div>
 
@@ -472,31 +410,6 @@ export default function Footer() {
             </a>
             . All Rights Reserved.
           </motion.p>
-
-          {/* Social Links */}
-          <motion.div
-            className="flex justify-center md:justify-end gap-4"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-          >
-            {socialLinks.map((social, i) => (
-              <motion.a
-                key={social.label}
-                href={social.href}
-                className={`flex items-center justify-center w-10 h-10 rounded-xl bg-gray-100 dark:bg-background-dark/60 text-gray-600 dark:text-gray-400 ${social.color} border border-gray-200 dark:border-gray-700 transition-all`}
-                whileHover={{ scale: 1.1, y: -3 }}
-                whileTap={{ scale: 0.9 }}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-              >
-                <social.icon className="h-5 w-5" />
-                <span className="sr-only">{social.label}</span>
-              </motion.a>
-            ))}
-          </motion.div>
         </div>
 
         {/* Trust Badges */}
