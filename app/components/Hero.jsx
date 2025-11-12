@@ -30,8 +30,8 @@ export default function Hero() {
   return (
     <section className="px-4 sm:px-8 lg:px-10 pt-8 lg:pt-8 pb-6 bg-background-light dark:bg-background-dark transition-colors duration-300 -mt-4">
       <div className="w-full">
-        <div className="grid lg:grid-cols-3 gap-4 lg:gap-6 items-stretch">
-          {/* Left: Big slider */}
+        {/* Main slider - full width on mobile, 2/3 on desktop */}
+        <div className="grid lg:grid-cols-3 gap-2 lg:gap-6">
           <div className="lg:col-span-2 relative rounded-sm overflow-hidden aspect-[1280/682] shadow-[var(--shadow-strong)] bg-gray-100 dark:bg-gray-800">
             <div className="absolute inset-0">
               <AnimatePresence initial={false}>
@@ -69,12 +69,12 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* Right: Two small stacked banners */}
-          <div className="grid gap-4">
+          {/* Small banners - side by side on mobile, stacked on desktop */}
+          <div className="grid grid-cols-2 lg:grid-cols-1 gap-2 lg:gap-4">
             {smallImages.map((src, idx) => (
               <div
                 key={idx}
-                className="relative rounded-2xl overflow-hidden aspect-[1280/682] shadow-[var(--shadow-strong)] bg-gray-100 dark:bg-gray-800"
+                className="relative rounded-sm overflow-hidden aspect-[1280/682] shadow-[var(--shadow-strong)] bg-gray-100 dark:bg-gray-800"
               >
                 <Image
                   unoptimized
