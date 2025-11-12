@@ -32,7 +32,7 @@ export default function Hero() {
       <div className="w-full">
         <div className="grid lg:grid-cols-3 gap-4 lg:gap-6 items-stretch">
           {/* Left: Big slider */}
-          <div className="lg:col-span-2 relative rounded-xl overflow-hidden aspect-[1280/682] shadow-[var(--shadow-strong)] bg-gray-100 dark:bg-gray-800">
+          <div className="lg:col-span-2 relative rounded-sm overflow-hidden aspect-[1280/682] shadow-[var(--shadow-strong)] bg-gray-100 dark:bg-gray-800">
             <div className="absolute inset-0">
               <AnimatePresence initial={false}>
                 <motion.div
