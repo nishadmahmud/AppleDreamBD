@@ -230,7 +230,7 @@ export default function Navbar() {
         >
           <Image
             unoptimized
-            src="/logo.png"
+            src={isDark ? "/inverted_logo.png" : "/logo.png"}
             alt="Apple Dream BD"
             width={120}
             height={100}

@@ -12,8 +12,10 @@ import {
   MessageCircle,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useTheme } from "../context/ThemeContext";
 
 export default function Footer() {
+  const { isDark } = useTheme();
   const socialLinks = [
     {
       icon: Facebook,
@@ -93,7 +95,7 @@ export default function Footer() {
             >
               <Image
                 unoptimized
-                src="/logo.png"
+                src={isDark ? "/inverted_logo.png" : "/logo.png"}
                 alt="Apple Dream BD"
                 width={28}
                 height={28}
@@ -249,7 +251,7 @@ export default function Footer() {
             >
               <Image
                 unoptimized
-                src="/logo.png"
+                src={isDark ? "/inverted_logo.png" : "/logo.png"}
                 alt="Apple Dream BD"
                 width={28}
                 height={28}

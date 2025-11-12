@@ -32,7 +32,7 @@ export default function Hero() {
       <div className="w-full">
         {/* Main slider - full width on mobile, 2/3 on desktop */}
         <div className="grid lg:grid-cols-3 gap-2 lg:gap-6">
-          <div className="lg:col-span-2 relative rounded-sm overflow-hidden aspect-[1280/682] shadow-[var(--shadow-strong)] bg-gray-100 dark:bg-gray-800">
+          <div className="lg:col-span-2 relative rounded-sm overflow-hidden aspect-[4/3] lg:aspect-[1280/682] shadow-[var(--shadow-strong)] bg-gray-100 dark:bg-gray-800">
             <div className="absolute inset-0">
               <AnimatePresence initial={false}>
                 <motion.div
@@ -47,7 +47,7 @@ export default function Hero() {
                     unoptimized
                     src={bigImages[currentSlide]}
                     alt="Hero main banner"
-                    className="w-full h-full object-contain"
+                    className="w-full h-full object-cover lg:object-contain"
                     width={1600}
                     height={900}
                     priority={currentSlide === 0}
@@ -74,13 +74,13 @@ export default function Hero() {
             {smallImages.map((src, idx) => (
               <div
                 key={idx}
-                className="relative rounded-sm overflow-hidden aspect-[1280/682] shadow-[var(--shadow-strong)] bg-gray-100 dark:bg-gray-800"
+                className="relative rounded-sm overflow-hidden aspect-[4/3] lg:aspect-[1280/682] shadow-[var(--shadow-strong)] bg-gray-100 dark:bg-gray-800"
               >
                 <Image
                   unoptimized
                   src={src}
                   alt={`Hero side banner ${idx + 1}`}
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-cover lg:object-contain"
                   width={800}
                   height={500}
                 />
