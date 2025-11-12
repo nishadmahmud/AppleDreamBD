@@ -28,11 +28,11 @@ export default function Hero() {
   }, [bigImages.length]);
 
   return (
-    <section className="px-4 sm:px-8 lg:px-10 pt-4 pb-6 bg-background-light dark:bg-background-dark transition-colors duration-300 -mt-4">
-      <div className="w-full rounded-[var(--radius-2xl)] overflow-hidden">
-        <div className="grid lg:grid-cols-3 gap-4 items-stretch">
+    <section className="px-4 sm:px-8 lg:px-10 pt-8 lg:pt-8 pb-6 bg-background-light dark:bg-background-dark transition-colors duration-300 -mt-4">
+      <div className="w-full">
+        <div className="grid lg:grid-cols-3 gap-4 lg:gap-6 items-stretch">
           {/* Left: Big slider */}
-          <div className="lg:col-span-2 relative rounded-2xl overflow-hidden min-h-[360px] lg:min-h-[480px] shadow-[var(--shadow-strong)]">
+          <div className="lg:col-span-2 relative rounded-xl overflow-hidden aspect-[1280/682] shadow-[var(--shadow-strong)] bg-gray-100 dark:bg-gray-800">
             <div className="absolute inset-0">
               <AnimatePresence initial={false}>
                 <motion.div
@@ -47,7 +47,7 @@ export default function Hero() {
                     unoptimized
                     src={bigImages[currentSlide]}
                     alt="Hero main banner"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain"
                     width={1600}
                     height={900}
                     priority={currentSlide === 0}
@@ -74,13 +74,13 @@ export default function Hero() {
             {smallImages.map((src, idx) => (
               <div
                 key={idx}
-                className="relative rounded-2xl overflow-hidden min-h-[160px] lg:min-h-[220px] shadow-[var(--shadow-strong)]"
+                className="relative rounded-2xl overflow-hidden aspect-[1280/682] shadow-[var(--shadow-strong)] bg-gray-100 dark:bg-gray-800"
               >
                 <Image
                   unoptimized
                   src={src}
                   alt={`Hero side banner ${idx + 1}`}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                   width={800}
                   height={500}
                 />
