@@ -14,7 +14,7 @@ import { useFavorites } from "../context/FavoritesContext";
 // Example: Redmi has ID 1682 (from your API response)
 const BRANDS = [
   { id: 0, name: "All", slug: "all" },
-  { id: 2229, name: "OnePlus", slug: "oneplus" }, // Update this ID
+  { id: 2918, name: "iPhone", slug: "iPhone" }, // Update this ID
   { id: 2118, name: "Pixel", slug: "pixel" }, // Update this ID
   { id: 1672, name: "Samsung", slug: "samsung" }, // Update this ID
   { id: 1682, name: "Xiaomi", slug: "xiaomi" }, // Confirmed from API: Redmi/Xiaomi = 1682
@@ -108,7 +108,7 @@ export default function TopBrandsPicks() {
 
         {/* Products Grid */}
         {loading ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {[...Array(12)].map((_, i) => (
               <div
                 key={i}
@@ -117,7 +117,7 @@ export default function TopBrandsPicks() {
             ))}
           </div>
         ) : products.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {products.map((product) => (
               <motion.div
                 key={product.id}
@@ -154,7 +154,7 @@ export default function TopBrandsPicks() {
                       src={product.image_path}
                       alt={product.name}
                       fill
-                      className="object-contain p-4 group-hover:scale-105 transition-transform duration-300"
+                      className="object-contain p-2 group-hover:scale-105 transition-transform duration-300"
                       sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 16vw"
                       unoptimized
                     />
@@ -162,17 +162,17 @@ export default function TopBrandsPicks() {
 
                   {/* Product Info */}
                   <div className="p-4">
-                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2 min-h-[40px]">
+                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2 ">
                       {product.name}
                     </h3>
-                    <p className="text-lg font-bold text-red-600 dark:text-red-400 mb-3">
+                    <p className="text-lg font-bold text-red-600 dark:text-red-400 mb-2">
                       {product.retails_price} ৳
                     </p>
                   </div>
                 </Link>
 
                 {/* Action Buttons */}
-                <div className="px-4 pb-4 flex gap-2">
+                <div className="px-4 pb-4 flex flex-col gap-2">
                   <Link
                     href={`/product/${product.id}`}
                     className="flex-1 bg-gray-900 dark:bg-white text-white dark:text-gray-900 py-2 px-3 rounded-lg text-xs font-medium hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors text-center"
