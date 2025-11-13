@@ -18,7 +18,7 @@ import {
   Minus,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { getAllCategories } from "../../lib/api";
+import { fetchCategories } from "../../lib/api";
 import Image from "next/image";
 
 export default function Navbar() {
@@ -130,7 +130,18 @@ export default function Navbar() {
 
     try {
       isFetchingProductsRef.current = true;
-      const categories = getAllCategories();
+      
+      // Fetch categories from API first
+      const categoriesResponse = await fetchCategories();
+      if (!categoriesResponse?.success || !categoriesResponse?.data) {
+        console.warn("Failed to fetch categories for search");
+        return;
+      }
+
+      const categories = categoriesResponse.data
+        .filter((cat) => cat.product_count > 0)
+        .map((cat) => ({ id: cat.category_id.toString() }));
+
       // Reduced limit per category for faster loading (20 products per category is enough for search)
       const promises = categories.map((c) =>
         fetch(

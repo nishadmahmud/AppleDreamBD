@@ -21,7 +21,7 @@ import {
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Navbar from "../components/Navbar";
-import { fetchAllProducts, getAllCategories } from "../../lib/api";
+import { fetchAllProducts, fetchCategories } from "../../lib/api";
 import { useCart } from "../context/CartContext";
 import { useFavorites } from "../context/FavoritesContext";
 
@@ -343,7 +343,39 @@ function ProductsPageContent() {
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 20;
 
-  const categories = getAllCategories();
+  // Categories from API
+  const [categories, setCategories] = useState([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+
+  // Fetch categories from API
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        setCategoriesLoading(true);
+        const response = await fetchCategories();
+        
+        if (response?.success && response?.data) {
+          // Map API categories to the format used by the products page
+          const mappedCategories = response.data
+            .filter((cat) => cat.product_count > 0) // Only show categories with products
+            .map((cat) => ({
+              id: cat.category_id.toString(),
+              name: cat.name,
+              slug: cat.name.toLowerCase().replace(/\s+/g, "-").replace(/\//g, "-"),
+              productCount: cat.product_count,
+            }));
+          setCategories(mappedCategories);
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+        setCategories([]);
+      } finally {
+        setCategoriesLoading(false);
+      }
+    };
+
+    loadCategories();
+  }, []);
 
   // Handle URL params for category selection
   useEffect(() => {
@@ -393,6 +425,19 @@ function ProductsPageContent() {
           }
         } else {
           // "All Products" - fetch from ALL categories and combine
+          // Wait for categories to load first
+          if (categoriesLoading) {
+            setLoading(false);
+            return; // Wait for categories to load
+          }
+
+          if (categories.length === 0) {
+            console.warn("No categories available");
+            setProducts([]);
+            setLoading(false);
+            return;
+          }
+
           if (cacheRef.current.all) {
             allProducts = cacheRef.current.all;
             setLoading(false);
@@ -437,7 +482,7 @@ function ProductsPageContent() {
     };
 
     loadProducts();
-  }, [selectedCategories]);
+  }, [selectedCategories, categories, categoriesLoading]);
 
   // Apply filters and search (category filter now handled in fetch)
   useEffect(() => {
@@ -627,27 +672,37 @@ function ProductsPageContent() {
                   </motion.button>
 
                   {/* Category Cards */}
-                  {categories.map((category) => (
-                    <motion.button
-                      key={category.id}
-                      onClick={() => {
-                        if (selectedCategories.includes(category.id)) {
-                          setSelectedCategories([]);
-                        } else {
-                          setSelectedCategories([category.id]);
-                        }
-                      }}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap ${
-                        selectedCategories.includes(category.id)
-                          ? "bg-primary hover:bg-primary/90 text-white shadow-md"
-                          : "bg-white dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-primary"
-                      }`}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      {category.name}
-                    </motion.button>
-                  ))}
+                  {categoriesLoading ? (
+                    // Loading skeleton
+                    [...Array(6)].map((_, i) => (
+                      <div
+                        key={i}
+                        className="w-24 h-8 bg-gray-200 dark:bg-gray-800 rounded-lg animate-pulse"
+                      />
+                    ))
+                  ) : (
+                    categories.map((category) => (
+                      <motion.button
+                        key={category.id}
+                        onClick={() => {
+                          if (selectedCategories.includes(category.id)) {
+                            setSelectedCategories([]);
+                          } else {
+                            setSelectedCategories([category.id]);
+                          }
+                        }}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap ${
+                          selectedCategories.includes(category.id)
+                            ? "bg-primary hover:bg-primary/90 text-white shadow-md"
+                            : "bg-white dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-primary"
+                        }`}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        {category.name}
+                      </motion.button>
+                    ))
+                  )}
                 </div>
               </div>
               {/* Gradient fade */}
