@@ -8,26 +8,81 @@ import { fetchBrandProducts } from "../../lib/api";
 import { useCart } from "../context/CartContext";
 import { useFavorites } from "../context/FavoritesContext";
 
-// Brand configuration - Update these brand IDs based on your store
-// To find brand IDs: Check the API response from /brandwise-products/0/188
-// Each product has a "brands" object with the brand ID
-// Example: Redmi has ID 1682 (from your API response)
-const BRANDS = [
-  { id: 0, name: "All", slug: "all" },
-  { id: 2918, name: "iPhone", slug: "iPhone" }, // Update this ID
-  { id: 2118, name: "Pixel", slug: "pixel" }, // Update this ID
-  { id: 1672, name: "Samsung", slug: "samsung" }, // Update this ID
-  { id: 1682, name: "Xiaomi", slug: "xiaomi" }, // Confirmed from API: Redmi/Xiaomi = 1682
-];
-
 export default function TopBrandsPicks() {
-  const [selectedBrand, setSelectedBrand] = useState(BRANDS[0]);
+  const [brands, setBrands] = useState([{ id: 0, name: "All", slug: "all" }]);
+  const [selectedBrand, setSelectedBrand] = useState({ id: 0, name: "All", slug: "all" });
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [brandsLoading, setBrandsLoading] = useState(true);
   const { addToCart } = useCart();
   const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
 
+  // Fetch brands dynamically from API
   useEffect(() => {
+    const loadBrands = async () => {
+      try {
+        setBrandsLoading(true);
+        // Fetch all products (brand ID 0) to get all available brands
+        const response = await fetchBrandProducts(0, 1);
+        
+        if (response?.success && response?.data?.data) {
+          // Extract unique brands from products
+          const brandsMap = new Map();
+          
+          // Add "All" as first option
+          brandsMap.set(0, { id: 0, name: "All", slug: "all" });
+          
+          // Extract unique brands from products
+          response.data.data.forEach((product) => {
+            if (product.brands && product.brands.id) {
+              const brandId = product.brands.id;
+              if (!brandsMap.has(brandId)) {
+                // Create slug from brand name
+                const slug = product.brands.name
+                  .toLowerCase()
+                  .replace(/\s+/g, "-")
+                  .replace(/[^a-z0-9-]/g, "");
+                
+                brandsMap.set(brandId, {
+                  id: brandId,
+                  name: product.brands.name,
+                  slug: slug,
+                  image: product.brands.image_path,
+                });
+              }
+            }
+          });
+          
+          // Convert map to array and sort by name (keeping "All" first)
+          const brandsArray = Array.from(brandsMap.values());
+          const allBrand = brandsArray.find((b) => b.id === 0);
+          const otherBrands = brandsArray
+            .filter((b) => b.id !== 0)
+            .sort((a, b) => a.name.localeCompare(b.name));
+          
+          const sortedBrands = allBrand ? [allBrand, ...otherBrands] : otherBrands;
+          setBrands(sortedBrands);
+          
+          // Set selected brand to "All" if it exists
+          if (allBrand) {
+            setSelectedBrand(allBrand);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching brands:", error);
+        // Keep default "All" brand on error
+      } finally {
+        setBrandsLoading(false);
+      }
+    };
+
+    loadBrands();
+  }, []);
+
+  useEffect(() => {
+    // Don't load products until brands are loaded
+    if (brandsLoading) return;
+    
     const loadProducts = async () => {
       try {
         setLoading(true);
@@ -49,7 +104,7 @@ export default function TopBrandsPicks() {
     };
 
     loadProducts();
-  }, [selectedBrand]);
+  }, [selectedBrand, brandsLoading]);
 
   const handleAddToCart = (product) => {
     addToCart({
@@ -90,19 +145,29 @@ export default function TopBrandsPicks() {
         {/* Brand Tabs */}
         <div className="mb-8 overflow-x-auto scrollbar-hide">
           <div className="flex gap-3 min-w-max pb-2">
-            {BRANDS.map((brand) => (
-              <button
-                key={brand.id}
-                onClick={() => setSelectedBrand(brand)}
-                className={`px-6 py-2.5 rounded-lg font-medium transition-all duration-300 whitespace-nowrap ${
-                  selectedBrand.id === brand.id
-                    ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 shadow-lg"
-                    : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
-                }`}
-              >
-                {brand.name}
-              </button>
-            ))}
+            {brandsLoading ? (
+              // Loading skeleton for brand tabs
+              [...Array(5)].map((_, i) => (
+                <div
+                  key={i}
+                  className="h-10 w-24 bg-gray-200 dark:bg-gray-800 rounded-lg animate-pulse"
+                />
+              ))
+            ) : (
+              brands.map((brand) => (
+                <button
+                  key={brand.id}
+                  onClick={() => setSelectedBrand(brand)}
+                  className={`px-6 py-2.5 rounded-lg font-medium transition-all duration-300 whitespace-nowrap ${
+                    selectedBrand.id === brand.id
+                      ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 shadow-lg"
+                      : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+                  }`}
+                >
+                  {brand.name}
+                </button>
+              ))
+            )}
           </div>
         </div>
 
@@ -117,7 +182,7 @@ export default function TopBrandsPicks() {
             ))}
           </div>
         ) : products.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
             {products.map((product) => (
               <motion.div
                 key={product.id}

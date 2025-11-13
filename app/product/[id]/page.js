@@ -712,43 +712,82 @@ export default function ProductDetailPage() {
                 </motion.div>
               )}
 
-              {/* Add to Cart Button */}
-              <motion.button
-                className={`w-full py-2.5 rounded-lg font-semibold flex items-center justify-center gap-2 text-sm transition-all ${
-                  isInStock
-                    ? (product && isInCart(product.id)) || addedToCart
-                      ? "bg-green-500 text-white"
-                      : "bg-primary hover:bg-primary/90 text-white"
-                    : "bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
-                }`}
-                onClick={handleAddToCart}
-                disabled={!isInStock || (product && isInCart(product.id))}
+              {/* Action Buttons */}
+              <motion.div
+                className="flex gap-3"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7 }}
-                whileHover={
-                  isInStock && !(product && isInCart(product.id))
-                    ? { scale: 1.02 }
-                    : {}
-                }
-                whileTap={
-                  isInStock && !(product && isInCart(product.id))
-                    ? { scale: 0.98 }
-                    : {}
-                }
               >
-                {(product && isInCart(product.id)) || addedToCart ? (
-                  <>
-                    <Check className="w-4 h-4" />
-                    {addedToCart ? "Added to Cart!" : "In Cart"}
-                  </>
-                ) : (
-                  <>
-                    <ShoppingCart className="w-4 h-4" />
-                    {isInStock ? "Add to Cart" : "Out of Stock"}
-                  </>
-                )}
-              </motion.button>
+                {/* Buy Now Button */}
+                <motion.button
+                  className={`flex-1 py-2.5 rounded-lg font-semibold flex items-center justify-center gap-2 text-sm transition-all ${
+                    isInStock
+                      ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100"
+                      : "bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
+                  }`}
+                  onClick={() => {
+                    if (product && isInStock) {
+                      // Create a product object with variant info
+                      const productToAdd = {
+                        ...product,
+                        selectedVariant: selectedVariant ? {
+                          color: selectedColor,
+                          storage: selectedStorage,
+                          region: selectedRegion || currentRegion,
+                          price: selectedVariant.sale_price,
+                          variantId: selectedVariant.id
+                        } : null,
+                        // Use variant price if available
+                        retails_price: currentPrice
+                      };
+                      addToCart(productToAdd, quantity);
+                      // Redirect to checkout
+                      router.push("/checkout");
+                    }
+                  }}
+                  disabled={!isInStock}
+                  whileHover={isInStock ? { scale: 1.02 } : {}}
+                  whileTap={isInStock ? { scale: 0.98 } : {}}
+                >
+                  {isInStock ? "Buy Now" : "Out of Stock"}
+                </motion.button>
+
+                {/* Add to Cart Button */}
+                <motion.button
+                  className={`flex-1 py-2.5 rounded-lg font-semibold flex items-center justify-center gap-2 text-sm transition-all ${
+                    isInStock
+                      ? (product && isInCart(product.id)) || addedToCart
+                        ? "bg-green-500 text-white"
+                        : "bg-primary hover:bg-primary/90 text-white"
+                      : "bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
+                  }`}
+                  onClick={handleAddToCart}
+                  disabled={!isInStock || (product && isInCart(product.id))}
+                  whileHover={
+                    isInStock && !(product && isInCart(product.id))
+                      ? { scale: 1.02 }
+                      : {}
+                  }
+                  whileTap={
+                    isInStock && !(product && isInCart(product.id))
+                      ? { scale: 0.98 }
+                      : {}
+                  }
+                >
+                  {(product && isInCart(product.id)) || addedToCart ? (
+                    <>
+                      <Check className="w-4 h-4" />
+                      {addedToCart ? "Added!" : "In Cart"}
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingCart className="w-4 h-4" />
+                      {isInStock ? "Add to Cart" : "Out of Stock"}
+                    </>
+                  )}
+                </motion.button>
+              </motion.div>
 
               {/* Features */}
               <motion.div
