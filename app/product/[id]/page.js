@@ -48,6 +48,7 @@ export default function ProductDetailPage() {
   // Variant state
   const [selectedColor, setSelectedColor] = useState(null);
   const [selectedStorage, setSelectedStorage] = useState(null);
+  const [selectedRegion, setSelectedRegion] = useState(null);
   const [selectedVariant, setSelectedVariant] = useState(null);
 
   useEffect(() => {
@@ -66,13 +67,15 @@ export default function ProductDetailPage() {
           if (productData.imeis && productData.imeis.length > 0) {
             const variants = productData.imeis.filter(v => v.in_stock === 1);
             if (variants.length > 0) {
-              // Get unique colors and storages
+              // Get unique colors, storages, and regions
               const colors = [...new Set(variants.map(v => v.color).filter(Boolean))];
               const storages = [...new Set(variants.map(v => v.storage).filter(Boolean))];
+              const regions = [...new Set(variants.map(v => v.region).filter(Boolean))];
               
-              // Set initial selections (region will be auto-determined)
+              // Set initial selections
               if (colors.length > 0) setSelectedColor(colors[0]);
               if (storages.length > 0) setSelectedStorage(storages[0]);
+              if (regions.length > 0) setSelectedRegion(regions[0]);
             }
           }
         } else {
@@ -90,52 +93,61 @@ export default function ProductDetailPage() {
   }, [productId]);
 
   // Update selected variant when selections change
-  // Price is based on STORAGE only, color is just for display
+  // Now considers color, storage, AND region
   useEffect(() => {
     if (!product || !product.imeis || product.imeis.length === 0) return;
     
-    // Find variant matching BOTH color and storage (for display purposes)
+    // Find variant matching ALL selected options (color, storage, region)
     const exactMatch = product.imeis.find(v => 
       v.in_stock === 1 &&
       (!selectedColor || v.color === selectedColor) &&
-      (!selectedStorage || v.storage === selectedStorage)
+      (!selectedStorage || v.storage === selectedStorage) &&
+      (!selectedRegion || v.region === selectedRegion)
     );
     
-    // Find variant matching STORAGE only (for price)
+    // Find variant matching storage and region (for price)
+    const storageRegionMatch = product.imeis.find(v => 
+      v.in_stock === 1 &&
+      (!selectedStorage || v.storage === selectedStorage) &&
+      (!selectedRegion || v.region === selectedRegion)
+    );
+    
+    // Find variant matching storage only (fallback)
     const storageMatch = product.imeis.find(v => 
       v.in_stock === 1 &&
       (!selectedStorage || v.storage === selectedStorage)
     );
     
-    // Use exact match if available, otherwise use storage match for price
-    const finalVariant = exactMatch || storageMatch || product.imeis.find(v => v.in_stock === 1);
+    // Use exact match if available, otherwise use storage+region match, then storage match
+    const finalVariant = exactMatch || storageRegionMatch || storageMatch || product.imeis.find(v => v.in_stock === 1);
     
     console.log('🔍 Variant Selection Debug:', {
       productId: product.id,
       selectedColor,
       selectedStorage,
+      selectedRegion,
       exactMatch: exactMatch ? {
         color: exactMatch.color,
         storage: exactMatch.storage,
-        price: exactMatch.sale_price,
-        region: exactMatch.region
+        region: exactMatch.region,
+        price: exactMatch.sale_price
       } : 'none',
-      storageMatch: storageMatch ? {
-        color: storageMatch.color,
-        storage: storageMatch.storage,
-        price: storageMatch.sale_price,
-        region: storageMatch.region
+      storageRegionMatch: storageRegionMatch ? {
+        color: storageRegionMatch.color,
+        storage: storageRegionMatch.storage,
+        region: storageRegionMatch.region,
+        price: storageRegionMatch.sale_price
       } : 'none',
       finalVariant: finalVariant ? {
         color: finalVariant.color,
         storage: finalVariant.storage,
-        price: finalVariant.sale_price,
-        region: finalVariant.region
+        region: finalVariant.region,
+        price: finalVariant.sale_price
       } : 'none'
     });
     
     setSelectedVariant(finalVariant);
-  }, [product, selectedColor, selectedStorage]);
+  }, [product, selectedColor, selectedStorage, selectedRegion]);
 
   // Persist recently viewed and fetch similar
   useEffect(() => {
@@ -206,9 +218,12 @@ export default function ProductDetailPage() {
   const availableStorages = hasVariants 
     ? [...new Set(availableVariants.map(v => v.storage).filter(Boolean))]
     : [];
+  const availableRegions = hasVariants 
+    ? [...new Set(availableVariants.map(v => v.region).filter(Boolean))]
+    : [];
   
-  // Region is auto-determined from selected variant
-  const currentRegion = selectedVariant?.region || null;
+  // Current region from selection
+  const currentRegion = selectedRegion || selectedVariant?.region || null;
 
   // Use variant price if available, otherwise use product price
   const currentPrice = selectedVariant?.sale_price || product?.retails_price;
@@ -249,7 +264,7 @@ export default function ProductDetailPage() {
         selectedVariant: selectedVariant ? {
           color: selectedColor,
           storage: selectedStorage,
-          region: currentRegion,
+          region: selectedRegion || currentRegion,
           price: selectedVariant.sale_price,
           variantId: selectedVariant.id
         } : null,
@@ -548,10 +563,10 @@ export default function ProductDetailPage() {
                 </motion.div>
               )}
 
-              {/* Region Display (Auto-determined) */}
-              {currentRegion && (
+              {/* Region Selection */}
+              {availableRegions.length > 0 && (
                 <motion.div
-                  className="flex items-center gap-2 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg"
+                  className="space-y-2"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.37 }}
@@ -559,9 +574,21 @@ export default function ProductDetailPage() {
                   <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">
                     Region:
                   </span>
-                  <span className="text-xs text-gray-600 dark:text-gray-400">
-                    {currentRegion}
-                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    {availableRegions.map((region) => (
+                      <button
+                        key={region}
+                        onClick={() => setSelectedRegion(region)}
+                        className={`px-4 py-2 rounded-lg text-xs font-semibold border-2 transition-all ${
+                          selectedRegion === region
+                            ? "border-primary bg-primary text-white"
+                            : "border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:border-primary/50"
+                        }`}
+                      >
+                        {region}
+                      </button>
+                    ))}
+                  </div>
                 </motion.div>
               )}
 

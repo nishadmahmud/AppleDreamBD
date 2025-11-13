@@ -17,9 +17,11 @@ import {
   Heart,
   Star,
   Sparkles,
+  Package,
 } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import { useFavorites } from "../context/FavoritesContext";
+import { fetchBestDeals } from "../../lib/api";
 
 export default function DealOfDay() {
   const sectionRef = useRef(null);
@@ -42,25 +44,49 @@ export default function DealOfDay() {
   const rotateY = useSpring(useMotionValue(0), { stiffness: 300, damping: 30 });
 
   useEffect(() => {
-    const fetchSmartwatch = async () => {
+    const fetchDealOfDay = async () => {
       try {
-        // Fetch from Smart Watches category (ID: 6528)
-        const response = await fetch(
-          "https://www.outletexpense.xyz/api/public/categorywise-products/6528?page=1&limit=1"
-        );
-        const data = await response.json();
+        setLoading(true);
+        const response = await fetchBestDeals();
 
-        if (data.success && data.data && data.data.length > 0) {
-          setProduct(data.data[0]);
+        if (response?.success && response?.data) {
+          // Handle both array and object responses
+          let products = [];
+          
+          if (Array.isArray(response.data)) {
+            products = response.data;
+          } else if (response.data?.data && Array.isArray(response.data.data)) {
+            products = response.data.data;
+          } else if (response.data?.products && Array.isArray(response.data.products)) {
+            products = response.data.products;
+          }
+
+          // Get the top product (first one with highest discount or first available)
+          if (products.length > 0) {
+            // Sort by discount percentage if available, otherwise take first
+            const sortedProducts = products
+              .filter((p) => p.current_stock > 0) // Only in-stock products
+              .sort((a, b) => {
+                const discountA = a.market_price && a.retails_price
+                  ? ((a.market_price - a.retails_price) / a.market_price) * 100
+                  : 0;
+                const discountB = b.market_price && b.retails_price
+                  ? ((b.market_price - b.retails_price) / b.market_price) * 100
+                  : 0;
+                return discountB - discountA; // Highest discount first
+              });
+
+            setProduct(sortedProducts.length > 0 ? sortedProducts[0] : products[0]);
+          }
         }
       } catch (error) {
-        console.error("Failed to fetch smartwatch:", error);
+        console.error("Failed to fetch best deals:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchSmartwatch();
+    fetchDealOfDay();
   }, []);
 
   useEffect(() => {
@@ -194,19 +220,15 @@ export default function DealOfDay() {
     );
   }
 
-  if (!product) {
-    return null;
-  }
-
-  const inCart = isInCart(product.id);
-  const isFav = isFavorite(product.id);
-  const discountPercent = product.market_price
+  const inCart = product ? isInCart(product.id) : false;
+  const isFav = product ? isFavorite(product.id) : false;
+  const discountPercent = product?.market_price && product?.retails_price
     ? Math.round(
         ((product.market_price - product.retails_price) /
           product.market_price) *
           100
       )
-    : 43;
+    : 0;
 
   return (
     <section
@@ -247,7 +269,7 @@ export default function DealOfDay() {
           Deal of the Day
         </h2>
         <p className="text-gray-600 dark:text-gray-400 text-lg">
-          Limited time offer on premium smartwatch
+          Limited time offer - Don't miss out!
         </p>
       </motion.div>
 
@@ -281,32 +303,36 @@ export default function DealOfDay() {
           />
 
           {/* Deal Badge */}
-          <motion.div
-            className="absolute top-4 left-4 z-10 flex items-center gap-2 bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 px-3 py-1.5 rounded-full"
-            animate={{
-              scale: [1, 1.05, 1],
-            }}
-            transition={{ duration: 2, repeat: Infinity }}
-          >
-            <Zap className="h-4 w-4 fill-current" />
-            <span className="font-bold uppercase tracking-wider text-xs">
-              HOT DEAL
-            </span>
-          </motion.div>
+          {product && (
+            <motion.div
+              className="absolute top-4 left-4 z-10 flex items-center gap-2 bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 px-3 py-1.5 rounded-full"
+              animate={{
+                scale: [1, 1.05, 1],
+              }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              <Zap className="h-4 w-4 fill-current" />
+              <span className="font-bold uppercase tracking-wider text-xs">
+                HOT DEAL
+              </span>
+            </motion.div>
+          )}
 
           {/* Like button */}
-          <motion.button
-            className="absolute top-4 right-4 z-10 p-2 bg-white/80 dark:bg-background-dark/80 backdrop-blur rounded-full shadow-md"
-            onClick={handleToggleFavorite}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-          >
-            <Heart
-              className={`h-5 w-5 transition-colors ${
-                isFav ? "fill-red-500 text-red-500" : "text-gray-400"
-              }`}
-            />
-          </motion.button>
+          {product && (
+            <motion.button
+              className="absolute top-4 right-4 z-10 p-2 bg-white/80 dark:bg-background-dark/80 backdrop-blur rounded-full shadow-md"
+              onClick={handleToggleFavorite}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              <Heart
+                className={`h-5 w-5 transition-colors ${
+                  isFav ? "fill-red-500 text-red-500" : "text-gray-400"
+                }`}
+              />
+            </motion.button>
+          )}
 
           <div className="flex flex-col lg:flex-row gap-6 items-center">
             {/* Product Image */}
@@ -315,14 +341,25 @@ export default function DealOfDay() {
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.3 }}
             >
-              <Image
-                unoptimized
-                alt={product.name}
-                src={product.image_path || "/placeholder.png"}
-                className="w-full h-full object-contain p-8 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3"
-                width={1000}
-                height={1000}
-              />
+              {product ? (
+                <Image
+                  unoptimized
+                  alt={product.name}
+                  src={product.image_path || "/placeholder.png"}
+                  className="w-full h-full object-contain p-8 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3"
+                  width={1000}
+                  height={1000}
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center p-8">
+                  <div className="text-center">
+                    <Package className="h-16 w-16 mx-auto text-gray-300 dark:text-gray-600 mb-4" />
+                    <p className="text-gray-500 dark:text-gray-400 text-sm">
+                      No deal available
+                    </p>
+                  </div>
+                </div>
+              )}
             </motion.div>
 
             {/* Product Details */}
@@ -330,107 +367,154 @@ export default function DealOfDay() {
               className="w-full lg:w-1/2 flex flex-col gap-4 relative"
               style={{ transform: "translateZ(30px)" }}
             >
-              {/* Rating */}
-              <div className="flex items-center gap-1">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className="h-4 w-4 fill-yellow-400 text-yellow-400"
-                  />
-                ))}
-                <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">
-                  (4.9)
-                </span>
-              </div>
+              {product ? (
+                <>
+                  {/* Rating */}
+                  <div className="flex items-center gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className="h-4 w-4 fill-yellow-400 text-yellow-400"
+                      />
+                    ))}
+                    <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">
+                      (4.9)
+                    </span>
+                  </div>
 
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white line-clamp-2">
-                {product.name}
-              </h3>
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white line-clamp-2">
+                    {product.name}
+                  </h3>
 
-              {/* Price & Discount */}
-              <div className="flex items-center gap-3 flex-wrap">
-                <motion.div
-                  className="flex items-center gap-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-3 py-1.5 rounded-full"
-                  whileHover={{ scale: 1.05 }}
-                >
-                  <TrendingUp className="h-4 w-4" />
-                  <span className="font-bold text-sm">
-                    {discountPercent}% OFF
-                  </span>
-                </motion.div>
-                {product.market_price && (
-                  <span className="text-gray-400 line-through text-lg">
-                    ৳{product.market_price}
-                  </span>
-                )}
-                <motion.span
-                  className="text-3xl font-black text-primary"
-                  initial={{ scale: 1 }}
-                  whileHover={{ scale: 1.1 }}
-                >
-                  ৳{product.retails_price}
-                </motion.span>
-              </div>
-
-              {/* Countdown Timer */}
-              <div className="flex gap-2 flex-wrap">
-                <CounterBox value={timeLeft.hours} label="Hours" />
-                <CounterBox value={timeLeft.minutes} label="Mins" />
-                <CounterBox value={timeLeft.seconds} label="Secs" />
-              </div>
-
-              {/* Add to Cart Button */}
-              <motion.button
-                onClick={handleAddToCart}
-                className="relative flex items-center justify-center gap-2 text-base font-semibold text-white bg-primary/90 hover:bg-primary px-6 py-4 rounded-xl overflow-hidden group/btn disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
-                whileHover={{
-                  scale: inCart ? 1 : 1.02,
-                  y: inCart ? 0 : -2,
-                  boxShadow: "0 0 30px rgba(74, 144, 226, 0.5)",
-                }}
-                whileTap={{ scale: 0.98 }}
-                disabled={isAdding || inCart}
-              >
-                {isAdding ? (
-                  <motion.div
-                    className="flex items-center gap-2"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                  >
-                    <motion.div
-                      animate={{ rotate: 360 }}
-                      transition={{
-                        duration: 1,
-                        repeat: Infinity,
-                        ease: "linear",
-                      }}
+                  {/* Price & Discount */}
+                  <div className="flex items-center gap-3 flex-wrap">
+                    {discountPercent > 0 && (
+                      <motion.div
+                        className="flex items-center gap-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-3 py-1.5 rounded-full"
+                        whileHover={{ scale: 1.05 }}
+                      >
+                        <TrendingUp className="h-4 w-4" />
+                        <span className="font-bold text-sm">
+                          {discountPercent}% OFF
+                        </span>
+                      </motion.div>
+                    )}
+                    {product.market_price && (
+                      <span className="text-gray-400 line-through text-lg">
+                        ৳{product.market_price}
+                      </span>
+                    )}
+                    <motion.span
+                      className="text-3xl font-black text-primary"
+                      initial={{ scale: 1 }}
+                      whileHover={{ scale: 1.1 }}
                     >
-                      <ShoppingCart className="h-5 w-5" />
-                    </motion.div>
-                    <span>Adding...</span>
-                  </motion.div>
-                ) : inCart ? (
-                  <>
-                    <ShoppingCart className="h-5 w-5 fill-current" />
-                    <span>In Cart</span>
-                  </>
-                ) : (
-                  <>
-                    <Clock className="h-5 w-5 group-hover/btn:scale-110 transition-transform" />
-                    <span>Grab Deal Now - Limited Stock!</span>
-                  </>
-                )}
+                      ৳{product.retails_price}
+                    </motion.span>
+                  </div>
 
-                {/* Shine effect */}
-                {!inCart && (
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                    initial={{ x: "-100%" }}
-                    whileHover={{ x: "100%" }}
-                    transition={{ duration: 0.6 }}
-                  />
-                )}
-              </motion.button>
+                  {/* Countdown Timer */}
+                  <div className="flex gap-2 flex-wrap">
+                    <CounterBox value={timeLeft.hours} label="Hours" />
+                    <CounterBox value={timeLeft.minutes} label="Mins" />
+                    <CounterBox value={timeLeft.seconds} label="Secs" />
+                  </div>
+
+                  {/* Add to Cart Button */}
+                  <motion.button
+                    onClick={handleAddToCart}
+                    className="relative flex items-center justify-center gap-2 text-base font-semibold text-white bg-primary/90 hover:bg-primary px-6 py-4 rounded-xl overflow-hidden group/btn disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                    whileHover={{
+                      scale: inCart ? 1 : 1.02,
+                      y: inCart ? 0 : -2,
+                      boxShadow: "0 0 30px rgba(74, 144, 226, 0.5)",
+                    }}
+                    whileTap={{ scale: 0.98 }}
+                    disabled={isAdding || inCart}
+                  >
+                    {isAdding ? (
+                      <motion.div
+                        className="flex items-center gap-2"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                      >
+                        <motion.div
+                          animate={{ rotate: 360 }}
+                          transition={{
+                            duration: 1,
+                            repeat: Infinity,
+                            ease: "linear",
+                          }}
+                        >
+                          <ShoppingCart className="h-5 w-5" />
+                        </motion.div>
+                        <span>Adding...</span>
+                      </motion.div>
+                    ) : inCart ? (
+                      <>
+                        <ShoppingCart className="h-5 w-5 fill-current" />
+                        <span>In Cart</span>
+                      </>
+                    ) : (
+                      <>
+                        <Clock className="h-5 w-5 group-hover/btn:scale-110 transition-transform" />
+                        <span>Grab Deal Now - Limited Stock!</span>
+                      </>
+                    )}
+
+                    {/* Shine effect */}
+                    {!inCart && (
+                      <motion.div
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                        initial={{ x: "-100%" }}
+                        whileHover={{ x: "100%" }}
+                        transition={{ duration: 0.6 }}
+                      />
+                    )}
+                  </motion.button>
+                </>
+              ) : (
+                <div className="space-y-4">
+                  {/* Empty state */}
+                  <div className="flex items-center gap-1 opacity-50">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className="h-4 w-4 text-gray-300 dark:text-gray-600"
+                      />
+                    ))}
+                    <span className="text-sm text-gray-400 dark:text-gray-500 ml-2">
+                      (No rating)
+                    </span>
+                  </div>
+
+                  <h3 className="text-2xl font-bold text-gray-400 dark:text-gray-500">
+                    No product available
+                  </h3>
+
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <span className="text-gray-400 dark:text-gray-500 text-lg">
+                      Check back soon for deals!
+                    </span>
+                  </div>
+
+                  {/* Countdown Timer - still shows */}
+                  <div className="flex gap-2 flex-wrap">
+                    <CounterBox value={timeLeft.hours} label="Hours" />
+                    <CounterBox value={timeLeft.minutes} label="Mins" />
+                    <CounterBox value={timeLeft.seconds} label="Secs" />
+                  </div>
+
+                  {/* Disabled button */}
+                  <motion.button
+                    className="relative flex items-center justify-center gap-2 text-base font-semibold text-white bg-gray-400 dark:bg-gray-600 px-6 py-4 rounded-xl overflow-hidden cursor-not-allowed shadow-lg"
+                    disabled
+                  >
+                    <Clock className="h-5 w-5" />
+                    <span>No Deal Available</span>
+                  </motion.button>
+                </div>
+              )}
             </div>
           </div>
 
