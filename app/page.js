@@ -8,6 +8,7 @@ import PromoBannerSingle from "./components/PromoBannerSingle";
 import DealOfDay from "./components/DealOfDay";
 import NewArrivals from "./components/NewArrivals";
 import TopAccessories from "./components/TopAccessories";
+import TopBrandsPicks from "./components/TopBrandsPicks";
 import DiscoverMore from "./components/DiscoverMore";
 import Testimonials from "./components/Testimonials";
 
@@ -32,6 +33,7 @@ export default function Home() {
             <NewArrivals />
           </section>
           <TopAccessories />
+          <TopBrandsPicks />
           <DiscoverMore />
           <Testimonials />
         </main>
