@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingCart, Heart } from "lucide-react";
 import { fetchBrandProducts } from "../../lib/api";
@@ -9,6 +10,7 @@ import { useCart } from "../context/CartContext";
 import { useFavorites } from "../context/FavoritesContext";
 
 export default function TopBrandsPicks() {
+  const router = useRouter();
   const [brands, setBrands] = useState([{ id: 0, name: "All", slug: "all" }]);
   const [selectedBrand, setSelectedBrand] = useState({ id: 0, name: "All", slug: "all" });
   const [products, setProducts] = useState([]);
@@ -107,13 +109,14 @@ export default function TopBrandsPicks() {
   }, [selectedBrand, brandsLoading]);
 
   const handleAddToCart = (product) => {
-    addToCart({
-      id: product.id,
-      name: product.name,
-      price: product.retails_price,
-      image: product.image_path,
-      quantity: 1,
-    });
+    addToCart(product, 1);
+  };
+
+  const handleBuyNow = (product) => {
+    if (product.current_stock > 0) {
+      addToCart(product, 1);
+      router.push("/checkout");
+    }
   };
 
   const handleToggleFavorite = (product) => {
@@ -238,12 +241,17 @@ export default function TopBrandsPicks() {
 
                 {/* Action Buttons */}
                 <div className="px-4 pb-4 flex flex-col gap-2">
-                  <Link
-                    href={`/product/${product.id}`}
-                    className="flex-1 bg-gray-900 dark:bg-white text-white dark:text-gray-900 py-2 px-3 rounded-lg text-xs font-medium hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors text-center"
+                  <button
+                    onClick={() => handleBuyNow(product)}
+                    disabled={product.current_stock === 0}
+                    className={`flex-1 bg-gray-900 dark:bg-white text-white dark:text-gray-900 py-2 px-3 rounded-lg text-xs font-medium hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors text-center ${
+                      product.current_stock === 0
+                        ? "opacity-50 cursor-not-allowed"
+                        : ""
+                    }`}
                   >
                     Buy Now
-                  </Link>
+                  </button>
                   <button
                     onClick={() => handleAddToCart(product)}
                     disabled={product.current_stock === 0}
