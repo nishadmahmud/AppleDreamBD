@@ -2,58 +2,76 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { fetchSliders } from "../../lib/api";
+import { fetchSliders, fetchBanners } from "../../lib/api";
 
 export default function Hero() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [bigImages, setBigImages] = useState([]);
+  const [smallImages, setSmallImages] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Small banners (right) - keeping these as fallback for now
-  const smallImages = [
-    "https://www.gadgetboddaa.com/_next/image?url=https%3A%2F%2Fwww.outletexpense.xyz%2Fuploads%2F188-MD.-Alamin%2F1757580673.jpg&w=1920&q=75&dpl=dpl_6WN3M3DvNUSRMDgWoGLnzs95CDYS",
-    "https://www.gadgetboddaa.com/_next/image?url=https%3A%2F%2Fwww.outletexpense.xyz%2Fuploads%2F188-MD.-Alamin%2F1746470901.jpg&w=1920&q=75&dpl=dpl_6WN3M3DvNUSRMDgWoGLnzs95CDYS",
-  ];
-
-  // Fetch sliders from API
+  // Fetch sliders and banners from API
   useEffect(() => {
-    const loadSliders = async () => {
+    const loadData = async () => {
       try {
         setLoading(true);
-        const response = await fetchSliders();
         
-        if (response?.success && response?.data && response.data.length > 0) {
-          // Get the first slider's image_path array
-          const firstSlider = response.data[0];
+        // Fetch sliders for main slider
+        const slidersResponse = await fetchSliders();
+        if (slidersResponse?.success && slidersResponse?.data && slidersResponse.data.length > 0) {
+          const firstSlider = slidersResponse.data[0];
           if (firstSlider?.image_path && Array.isArray(firstSlider.image_path) && firstSlider.image_path.length > 0) {
             setBigImages(firstSlider.image_path);
           } else {
             console.warn("Slider data found but no image_path array");
-            // Fallback to default images if no images found
             setBigImages([
               "https://www.gadgetboddaa.com/_next/image?url=https%3A%2F%2Fwww.outletexpense.xyz%2Fuploads%2F188-MD.-Alamin%2F1757580565.jpg&w=1920&q=75&dpl=dpl_6WN3M3DvNUSRMDgWoGLnzs95CDYS",
             ]);
           }
         } else {
           console.warn("No slider data received from API");
-          // Fallback to default images if API fails
           setBigImages([
             "https://www.gadgetboddaa.com/_next/image?url=https%3A%2F%2Fwww.outletexpense.xyz%2Fuploads%2F188-MD.-Alamin%2F1757580565.jpg&w=1920&q=75&dpl=dpl_6WN3M3DvNUSRMDgWoGLnzs95CDYS",
           ]);
         }
+
+        // Fetch banners for side banners (1st and 2nd)
+        const bannersResponse = await fetchBanners();
+        if (bannersResponse?.success && bannersResponse?.data && bannersResponse.data.length >= 2) {
+          const banner1 = bannersResponse.data[0]?.image_path;
+          const banner2 = bannersResponse.data[1]?.image_path;
+          if (banner1 && banner2) {
+            setSmallImages([banner1, banner2]);
+          } else {
+            console.warn("Banner data incomplete, using fallback");
+            setSmallImages([
+              "https://www.gadgetboddaa.com/_next/image?url=https%3A%2F%2Fwww.outletexpense.xyz%2Fuploads%2F188-MD.-Alamin%2F1757580673.jpg&w=1920&q=75&dpl=dpl_6WN3M3DvNUSRMDgWoGLnzs95CDYS",
+              "https://www.gadgetboddaa.com/_next/image?url=https%3A%2F%2Fwww.outletexpense.xyz%2Fuploads%2F188-MD.-Alamin%2F1746470901.jpg&w=1920&q=75&dpl=dpl_6WN3M3DvNUSRMDgWoGLnzs95CDYS",
+            ]);
+          }
+        } else {
+          console.warn("No banner data received from API, using fallback");
+          setSmallImages([
+            "https://www.gadgetboddaa.com/_next/image?url=https%3A%2F%2Fwww.outletexpense.xyz%2Fuploads%2F188-MD.-Alamin%2F1757580673.jpg&w=1920&q=75&dpl=dpl_6WN3M3DvNUSRMDgWoGLnzs95CDYS",
+            "https://www.gadgetboddaa.com/_next/image?url=https%3A%2F%2Fwww.outletexpense.xyz%2Fuploads%2F188-MD.-Alamin%2F1746470901.jpg&w=1920&q=75&dpl=dpl_6WN3M3DvNUSRMDgWoGLnzs95CDYS",
+          ]);
+        }
       } catch (error) {
-        console.error("Error fetching sliders:", error);
-        console.error("Error details:", error.message);
+        console.error("Error fetching data:", error);
         // Fallback to default images on error
         setBigImages([
           "https://www.gadgetboddaa.com/_next/image?url=https%3A%2F%2Fwww.outletexpense.xyz%2Fuploads%2F188-MD.-Alamin%2F1757580565.jpg&w=1920&q=75&dpl=dpl_6WN3M3DvNUSRMDgWoGLnzs95CDYS",
+        ]);
+        setSmallImages([
+          "https://www.gadgetboddaa.com/_next/image?url=https%3A%2F%2Fwww.outletexpense.xyz%2Fuploads%2F188-MD.-Alamin%2F1757580673.jpg&w=1920&q=75&dpl=dpl_6WN3M3DvNUSRMDgWoGLnzs95CDYS",
+          "https://www.gadgetboddaa.com/_next/image?url=https%3A%2F%2Fwww.outletexpense.xyz%2Fuploads%2F188-MD.-Alamin%2F1746470901.jpg&w=1920&q=75&dpl=dpl_6WN3M3DvNUSRMDgWoGLnzs95CDYS",
         ]);
       } finally {
         setLoading(false);
       }
     };
 
-    loadSliders();
+    loadData();
   }, []);
 
   // Auto-slide effect
@@ -71,7 +89,7 @@ export default function Hero() {
       <div className="w-full">
         {/* Main slider - full width on mobile, 2/3 on desktop */}
         <div className="grid lg:grid-cols-3 gap-2 lg:gap-6">
-          <div className="lg:col-span-2 relative rounded-sm overflow-hidden aspect-[4/3] lg:aspect-[1280/682] shadow-[var(--shadow-strong)] bg-gray-100 dark:bg-gray-800">
+          <div className="lg:col-span-2 relative rounded-sm overflow-hidden aspect-[6/3] lg:aspect-[1280/682] shadow-[var(--shadow-strong)] bg-gray-100 dark:bg-gray-800">
             {loading ? (
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-gray-500 dark:text-gray-400">Loading...</div>
@@ -92,7 +110,7 @@ export default function Hero() {
                         unoptimized
                         src={bigImages[currentSlide]}
                         alt="Hero main banner"
-                        className="w-full h-full object-cover lg:object-contain"
+                        className="w-full h-full  object-fit"
                         width={1600}
                         height={900}
                         priority={currentSlide === 0}
