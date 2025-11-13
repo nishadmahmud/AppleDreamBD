@@ -211,10 +211,21 @@ export default function ProductDetailPage() {
   const availableVariants = product?.imeis?.filter(v => v.in_stock === 1) || [];
   const hasVariants = availableVariants.length > 0;
   
-  // Get unique options from variants
+  // Get unique options from variants with color codes
   const availableColors = hasVariants 
     ? [...new Set(availableVariants.map(v => v.color).filter(Boolean))]
     : [];
+  
+  // Create color name to color code mapping
+  const colorCodeMap = {};
+  if (hasVariants) {
+    availableVariants.forEach(v => {
+      if (v.color && v.color_code) {
+        colorCodeMap[v.color] = v.color_code;
+      }
+    });
+  }
+  
   const availableStorages = hasVariants 
     ? [...new Set(availableVariants.map(v => v.storage).filter(Boolean))]
     : [];
@@ -511,19 +522,46 @@ export default function ProductDetailPage() {
                     Color:
                   </span>
                   <div className="flex flex-wrap gap-2">
-                    {availableColors.map((color) => (
-                      <button
-                        key={color}
-                        onClick={() => setSelectedColor(color)}
-                        className={`px-4 py-2 rounded-lg text-xs font-semibold border-2 transition-all ${
-                          selectedColor === color
-                            ? "border-primary bg-primary text-white"
-                            : "border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:border-primary/50"
-                        }`}
-                      >
-                        {color}
-                      </button>
-                    ))}
+                    {availableColors.map((color) => {
+                      const colorCode = colorCodeMap[color];
+                      const isSelected = selectedColor === color;
+                      return (
+                        <button
+                          key={color}
+                          onClick={() => setSelectedColor(color)}
+                          className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold border-2 transition-all ${
+                            isSelected
+                              ? "border-primary bg-primary/10 dark:bg-primary/20"
+                              : "border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:border-primary/50"
+                          }`}
+                        >
+                          {/* Color Swatch */}
+                          {colorCode && (
+                            <div
+                              className={`w-5 h-5 rounded-full border-2 flex-shrink-0 ${
+                                isSelected
+                                  ? "border-primary shadow-md ring-2 ring-primary/30"
+                                  : "border-gray-300 dark:border-gray-500"
+                              }`}
+                              style={{
+                                backgroundColor: colorCode,
+                              }}
+                              title={color}
+                            />
+                          )}
+                          {/* Color Name */}
+                          <span
+                            className={
+                              isSelected
+                                ? "text-primary font-bold"
+                                : "text-gray-700 dark:text-gray-300"
+                            }
+                          >
+                            {color}
+                          </span>
+                        </button>
+                      );
+                    })}
                   </div>
                 </motion.div>
               )}

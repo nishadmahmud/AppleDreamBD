@@ -8,6 +8,7 @@ import { motion, useMotionValue, useSpring } from "framer-motion";
 import { ShoppingCart, Heart, Star, Sparkles } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import { useFavorites } from "../context/FavoritesContext";
+import { fetchCategoryProducts } from "../../lib/api";
 
 const MotionLink = motion(Link);
 
@@ -63,7 +64,7 @@ function SmartphoneCard({ product, delay = 0, badge = null }) {
       href={`/product/${product.id}`}
       ref={cardRef}
       data-phone
-      className="group relative flex flex-col gap-4 rounded-[var(--radius-xl)] bg-gray-50 dark:bg-background-dark/50 border border-gray-200 dark:border-gray-800 shadow-[var(--shadow-soft)] p-5 overflow-hidden cursor-pointer"
+      className="group relative flex flex-col gap-3 rounded-[var(--radius-xl)] bg-gray-50 dark:bg-background-dark/50 border border-gray-200 dark:border-gray-800 shadow-[var(--shadow-soft)] p-4 overflow-hidden cursor-pointer"
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
@@ -121,7 +122,7 @@ function SmartphoneCard({ product, delay = 0, badge = null }) {
           unoptimized
           alt={product.name}
           src={product.image_path || "/placeholder.png"}
-          className="w-full h-full object-contain p-6"
+          className="w-full h-full object-contain p-4"
           width={1000}
           height={1000}
         />
@@ -141,13 +142,13 @@ function SmartphoneCard({ product, delay = 0, badge = null }) {
           </span>
         </div>
 
-        <p className="text-base font-semibold text-gray-900 dark:text-white line-clamp-2">
+        <p className="text-sm font-semibold text-gray-900 dark:text-white line-clamp-2">
           {product.name}
         </p>
 
         <div className="flex items-center gap-2">
           <motion.p
-            className="text-2xl font-black text-primary"
+            className="text-xl font-black text-primary"
             initial={{ scale: 1 }}
             whileHover={{ scale: 1.1 }}
           >
@@ -236,14 +237,15 @@ export default function FeaturedSmartphones() {
   useEffect(() => {
     const fetchSmartphones = async () => {
       try {
-        // Fetch from Official Phone category (ID: 6530)
-        const response = await fetch(
-          "https://www.outletexpense.xyz/api/public/categorywise-products/6530?page=1&limit=2"
-        );
-        const data = await response.json();
+        // Fetch from Unofficial Phone category (ID: 7762)
+        const categoryId = 7762;
+        const data = await fetchCategoryProducts(categoryId, 1, 2);
 
-        if (data.success && data.data) {
-          setProducts(data.data.slice(0, 2));
+        if (data?.success && data?.data) {
+          const productsList = Array.isArray(data.data) ? data.data : [];
+          if (productsList.length > 0) {
+            setProducts(productsList.slice(0, 2));
+          }
         }
       } catch (error) {
         console.error("Failed to fetch smartphones:", error);
@@ -258,8 +260,10 @@ export default function FeaturedSmartphones() {
   if (loading) {
     return (
       <section className="px-4 sm:px-8 lg:px-10 py-16 bg-background-light dark:bg-background-dark transition-colors duration-300">
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
+        <div className="max-w-7xl mx-auto">
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
+          </div>
         </div>
       </section>
     );
@@ -270,7 +274,7 @@ export default function FeaturedSmartphones() {
       ref={sectionRef}
       className="px-4 sm:px-8 lg:px-10 py-16 bg-background-light dark:bg-background-dark transition-colors duration-300"
     >
-      <div className="flex flex-col w-full">
+      <div className="max-w-7xl mx-auto">
         <motion.div
           className="text-center mb-12"
           initial={{ opacity: 0, y: 20 }}
@@ -297,16 +301,24 @@ export default function FeaturedSmartphones() {
           </motion.p>
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
-          {products.map((product, i) => (
-            <SmartphoneCard
-              key={product.id}
-              product={product}
-              delay={i * 0.1}
-              badge={i === 0 ? "HOT" : null}
-            />
-          ))}
-        </div>
+        {products.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 max-w-4xl mx-auto">
+            {products.map((product, i) => (
+              <SmartphoneCard
+                key={product.id}
+                product={product}
+                delay={i * 0.1}
+                badge={i === 0 ? "HOT" : null}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-gray-500 dark:text-gray-400">
+              No products available at the moment.
+            </p>
+          </div>
+        )}
       </div>
     </section>
   );

@@ -33,8 +33,7 @@ export default function Home() {
           <section id="new-arrivals">
             <NewArrivals />
           </section>
-          <TopAccessories />
-          <DiscoverMore />
+          {/* <DiscoverMore /> */}
           <Testimonials />
         </main>
       </div>
