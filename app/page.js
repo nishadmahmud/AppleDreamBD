@@ -24,6 +24,7 @@ export default function Home() {
             <BestSellers />
           </section>
           <PromoBanners />
+          <TopBrandsPicks />
           <section id="deals">
             <BestDeals />
           </section>
@@ -33,7 +34,6 @@ export default function Home() {
             <NewArrivals />
           </section>
           <TopAccessories />
-          <TopBrandsPicks />
           <DiscoverMore />
           <Testimonials />
         </main>

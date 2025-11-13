@@ -88,7 +88,7 @@ export default function Hero() {
     <section className="px-4 sm:px-8 lg:px-10 pt-8 lg:pt-8 pb-6 bg-background-light dark:bg-background-dark transition-colors duration-300 -mt-4">
       <div className="w-full">
         {/* Main slider - full width on mobile, 2/3 on desktop */}
-        <div className="grid lg:grid-cols-3 gap-2 lg:gap-6">
+        <div className="grid lg:grid-cols-3 gap-2 lg:gap-4">
           <div className="lg:col-span-2 relative rounded-sm overflow-hidden aspect-[6/3] lg:aspect-[1280/682] shadow-[var(--shadow-strong)] bg-gray-100 dark:bg-gray-800">
             {loading ? (
               <div className="absolute inset-0 flex items-center justify-center">
@@ -141,7 +141,7 @@ export default function Hero() {
           </div>
 
           {/* Small banners - side by side on mobile, stacked on desktop */}
-          <div className="grid grid-cols-2 lg:grid-cols-1 gap-2 lg:gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-1 gap-2">
             {smallImages.map((src, idx) => (
               <div
                 key={idx}
@@ -151,7 +151,7 @@ export default function Hero() {
                   unoptimized
                   src={src}
                   alt={`Hero side banner ${idx + 1}`}
-                  className="w-full h-full object-cover lg:object-contain"
+                  className="w-full h-full object-fit"
                   width={800}
                   height={500}
                 />
