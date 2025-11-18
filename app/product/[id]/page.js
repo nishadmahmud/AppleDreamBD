@@ -1,15 +1,3 @@
-import ProductDetailClient from "./ProductDetailClient.jsx";
-
-export const metadata = {
-  title: "Product Details",
-  description:
-    "Compare specs, pricing, colors, storage, and region options for every Apple Dream BD device.",
-};
-
-export default function ProductDetailPage() {
-  return <ProductDetailClient />;
-}
-
 "use client";
 
 import { useEffect, useState } from "react";

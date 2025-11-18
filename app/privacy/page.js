@@ -1,11 +1,4 @@
 import Link from "next/link";
-
-export const metadata = {
-  title: "Privacy Policy",
-  description:
-    "Review how Apple Dream BD collects, uses, and protects your personal information across shopping experiences.",
-};
-
 export default function PrivacyPage() {
   return (
     <section className="px-4 sm:px-8 lg:px-10 py-16 bg-background-light dark:bg-background-dark transition-colors duration-300">

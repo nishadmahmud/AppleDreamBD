@@ -12,12 +12,6 @@ import TopBrandsPicks from "./components/TopBrandsPicks";
 import DiscoverMore from "./components/DiscoverMore";
 import Testimonials from "./components/Testimonials";
 
-export const metadata = {
-  title: "Home",
-  description:
-    "Apple Dream BD is Bangladesh’s trusted destination for premium smartphones, wearables, and accessories with official warranty and express delivery.",
-};
-
 export default function Home() {
   return (
     <div className="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden bg-background-light dark:bg-background-dark transition-colors duration-300">

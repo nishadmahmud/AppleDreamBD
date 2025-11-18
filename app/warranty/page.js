@@ -1,11 +1,4 @@
 import Link from "next/link";
-
-export const metadata = {
-  title: "Warranty",
-  description:
-    "Understand Apple Dream BD warranty coverage, exclusions, and how to submit a support request for eligible devices.",
-};
-
 export default function WarrantyPage() {
   return (
     <section className="px-4 sm:px-8 lg:px-10 py-16 bg-background-light dark:bg-background-dark transition-colors duration-300">

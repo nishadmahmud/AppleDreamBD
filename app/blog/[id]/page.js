@@ -1,15 +1,3 @@
-import BlogPostPageClient from "./BlogPostPageClient.jsx";
-
-export const metadata = {
-  title: "Blog Details",
-  description:
-    "Dive into in-depth reviews, comparisons, and buying guides from the Apple Dream BD editorial team.",
-};
-
-export default function BlogPostPage() {
-  return <BlogPostPageClient />;
-}
-
 "use client";
 
 import { useEffect, useState } from "react";
