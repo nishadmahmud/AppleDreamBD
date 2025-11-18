@@ -39,12 +39,9 @@ export const metadata = {
   authors: [{ name: "AppleDream" }],
   creator: "AppleDream",
   icons: {
-    icon: [
-      { url: "/logo.png", type: "image/png" },
-      { url: "/favicon.ico", type: "image/x-icon" },
-    ],
+    icon: [{ url: "/favicon.ico", type: "image/x-icon" }],
     shortcut: ["/favicon.ico"],
-    apple: [{ url: "/logo.png", type: "image/png" }],
+    apple: [{ url: "/favicon.ico", type: "image/x-icon" }],
   },
   openGraph: {
     title: "AppleDream",
@@ -55,10 +52,10 @@ export const metadata = {
     type: "website",
     images: [
       {
-        url: "/logo.png",
-        width: 1200,
-        height: 630,
-        alt: "AppleDream logo",
+        url: "/favicon.ico",
+        width: 512,
+        height: 512,
+        alt: "AppleDream icon",
       },
     ],
   },
@@ -67,7 +64,7 @@ export const metadata = {
     title: "AppleDream",
     description:
       "Discover the latest Apple devices, accessories, and offers on AppleDream.",
-    images: ["/logo.png"],
+    images: ["/favicon.ico"],
   },
 };
 

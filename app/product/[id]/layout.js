@@ -4,7 +4,7 @@ const defaultMeta = {
   title: "Product Details",
   description:
     "Explore detailed specifications, pricing, and availability for AppleDream devices.",
-  image: "/logo.png",
+  image: "/favicon.ico",
 };
 
 export async function generateMetadata({ params }) {
