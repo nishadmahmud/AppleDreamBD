@@ -1,4 +1,11 @@
 import Link from "next/link";
+
+export const metadata = {
+  title: "Shipping & Returns",
+  description:
+    "Learn about Apple Dream BD shipping timelines, delivery partners, return windows, and refund processing.",
+};
+
 export default function ShippingReturnsPage() {
   return (
     <section className="px-4 sm:px-8 lg:px-10 py-16 bg-background-light dark:bg-background-dark transition-colors duration-300">
